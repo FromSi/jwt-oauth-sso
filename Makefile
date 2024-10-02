@@ -23,7 +23,7 @@ docker_build:
 
 .PHONY: docker_run_img
 docker_run_img:
-	docker run --rm ghcr.io/fromsi/jwt_oauth_sso:latest
+	docker run --rm -p "8080:8080" ghcr.io/fromsi/jwt_oauth_sso:latest
 
 # https://github.com/settings/tokens
 # Generate New Token > Classic > write:packages
