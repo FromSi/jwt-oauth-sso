@@ -1,0 +1,311 @@
+openapi: 3.0.3
+info:
+  title: jwt-oauth-sso
+  version: 0.0.1
+  description: It's a Go-based authentication server template that provides a complete solution for handling authentication, authorization, and session management using JWT
+  contact:
+    email: fromsi665@gmail.com
+    name: FromSi
+    url: https://fromsi.net
+externalDocs:
+  description: Find out more about OpenAPI 3.0.3
+  url: https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md
+servers:
+  - url: localhost:8080
+    description: make run
+tags:
+  - name: auth
+    description: Authorization User
+  - name: password
+    description: User Password Reset
+  - name: devices
+    description: User Devices
+paths:
+  /auth/login:
+    post:
+      summary: Login With User Credentials
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: 'test@fromsi.net'
+                password:
+                  type: string
+                  example: 'Test12345'
+      responses:
+        '201':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokens'
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /auth/register:
+    post:
+      summary: Register New User
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: 'test@fromsi.net'
+                password:
+                  type: string
+                  example: 'Test12345'
+      responses:
+        '201':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokens'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /auth/refresh:
+    post:
+      summary: Renew Refresh and Access Tokens
+      tags:
+        - auth
+      security:
+        - BearerAuth: []
+      responses:
+        '201':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokens'
+  /auth/send_reset_token:
+    post:
+      summary: Send Reset Password Token To User
+      tags:
+        - password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user_uuid
+              properties:
+                user_uuid:
+                  type: string
+                  format: uuid
+                  example: '09d0ce56-33ab-4fce-90bb-d2b4d6d844ba'
+      responses:
+        '202':
+          description: Successful
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /auth/reset_password:
+    post:
+      summary: Reset Password By Token
+      tags:
+        - password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+              properties:
+                token:
+                  type: string
+                  format: uuid
+                  example: '09d0ce56-33ab-4fce-90bb-d2b4d6d844ba'
+      responses:
+        '202':
+          description: Successful
+        '404':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /auth/logout:
+    post:
+      summary: Forget Device
+      tags:
+        - devices
+      security:
+        - BearerAuth: []
+      responses:
+        '202':
+          description: Successful
+  /auth/logout_all:
+    post:
+      summary: Forget All Devices
+      tags:
+        - devices
+      security:
+        - BearerAuth: []
+      responses:
+        '202':
+          description: Successful
+  /auth/logout_device:
+    post:
+      summary: Forget Device By UUID Device
+      tags:
+        - devices
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - device_uuid
+              properties:
+                device_uuid:
+                  type: string
+                  format: uuid
+                  example: '09d0ce56-33ab-4fce-90bb-d2b4d6d844ba'
+      responses:
+        '202':
+          description: Successful
+  /auth/devices:
+    get:
+      summary: Get All Active Devices
+      tags:
+        - devices
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    type: object
+                    required:
+                      - uuid
+                      - agent
+                      - ip
+                      - expired_at
+                      - created_at
+                      - updated_at
+                    properties:
+                      uuid:
+                        type: string
+                        format: uuid
+                        example: '09d0ce56-33ab-4fce-90bb-d2b4d6d844ba'
+                      user_uuid:
+                        type: string
+                        format: uuid
+                        example: '09d0ce56-33ab-4fce-90bb-d2b4d6d844ba'
+                      agent:
+                        type: string
+                        format: text
+                        example: 'Mozilla/5.0 (X11; Linux x86_64; rv:121.0)'
+                      ip:
+                        type: string
+                        format: ipv4_or_ipv6
+                        example: '1.1.1.1'
+                      expired_at:
+                        type: integer
+                        format: unix
+                        example: 1516300000
+                      created_at:
+                        type: integer
+                        format: unix
+                        example: 1516300000
+                      updated_at:
+                        type: integer
+                        format: unix
+                        example: 1516300000
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Error:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          required:
+            - message
+          properties:
+            message:
+              type: string
+              format: text
+              example: any message
+    AuthTokens:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          required:
+            - auth_type
+            - access_token
+            - refresh_token
+            - access_expires_in
+            - refresh_expires_in
+          properties:
+            auth_type:
+              type: string
+              format: string
+              example: bearer
+              enum:
+                - bearer
+            access_token:
+              type: string
+              format: jwt_hs256
+              example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJqd3Qtb2F1dGgtc3NvIiwiYXVkIjoidXNlciIsInN1YiI6IjA5ZDBjZTU2LTMzYWItNGZjZS05MGJiLWQyYjRkNmQ4NDRiYSIsImlhdCI6MTUxNjIzOTAyMiwiZXhwIjoxNTE2MzAwMDAwLCJkZXZpY2VfdXVpZCI6IjA5ZDBjZTU2LTMzYWItNGZjZS05MGJiLWQyYjRkNmQ4NDRiYSIsImRldmljZV9hZ2VudCI6Ik1vemlsbGEvNS4wIChYMTE7IExpbnV4IHg4Nl82NDsgcnY6MTIxLjApIn0.LUg6bBxygVfBE7rMQjchKpS3VbaKFurK8Rxbk5c4V1w'
+            refresh_token:
+              type: string
+              format: uuid
+              example: '09d0ce56-33ab-4fce-90bb-d2b4d6d844ba'
+            access_expires_in:
+              type: integer
+              format: unix
+              example: 1516300000
+            refresh_expires_in:
+              type: integer
+              format: unix
+              example: 1516300000
