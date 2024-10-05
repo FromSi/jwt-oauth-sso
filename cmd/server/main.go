@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/fromsi/jwt-oauth-sso/internal/configs"
 	"github.com/fromsi/jwt-oauth-sso/internal/http/requests"
 	"github.com/fromsi/jwt-oauth-sso/internal/validator_rules"
 	"github.com/gin-gonic/gin"
@@ -12,11 +13,18 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 )
 
 func main() {
+	config, err := configs.NewBaseConfig(false)
+
+	if err != nil {
+		panic(err)
+	}
+
 	route := gin.Default()
 
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
@@ -162,7 +170,7 @@ func main() {
 	})
 
 	server := &http.Server{
-		Addr:    ":8080",
+		Addr:    config.AppHost + ":" + strconv.Itoa(config.AppPort),
 		Handler: route.Handler(),
 	}
 
@@ -180,7 +188,7 @@ func main() {
 
 	log.Println("Shutdown Server ...")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 
 	defer cancel()
 
@@ -190,7 +198,7 @@ func main() {
 
 	select {
 	case <-ctx.Done():
-		log.Println("timeout of one minute.")
+		log.Println("timeout of 5 seconds.")
 	}
 
 	log.Println("Server exiting")

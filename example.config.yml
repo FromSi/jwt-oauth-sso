@@ -1,0 +1,10 @@
+app:
+  name: jwt-oauth-sso
+  host: localhost
+  port: 8080
+token:
+  expiration_refresh_in_days: 30
+  expiration_access_in_minutes: 30
+  secret_key: secret
+database:
+  dsn: "file:local.sqlite"
