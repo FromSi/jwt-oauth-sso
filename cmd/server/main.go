@@ -28,7 +28,11 @@ func main() {
 	route := gin.Default()
 
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
-		v.RegisterValidation("password", validator_rules.Password)
+		err = v.RegisterValidation("password", validator_rules.Password)
+
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	route.POST("/auth/login", func(ctx *gin.Context) {
@@ -196,10 +200,8 @@ func main() {
 		log.Fatal("Server Shutdown:", err)
 	}
 
-	select {
-	case <-ctx.Done():
-		log.Println("timeout of 5 seconds.")
-	}
+	<-ctx.Done()
 
+	log.Println("timeout of 5 seconds.")
 	log.Println("Server exiting")
 }

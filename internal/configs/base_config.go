@@ -27,6 +27,7 @@ type BaseConfig struct {
 
 func NewBaseConfig(onlyDefaultValues bool) (*BaseConfig, error) {
 	var dirPath, filename string
+	var err error
 
 	if !onlyDefaultValues {
 		flag.StringVar(&filename, "config_filename", "config", "configuration filename. e.g: config")
@@ -36,7 +37,8 @@ func NewBaseConfig(onlyDefaultValues bool) (*BaseConfig, error) {
 		viper.SetConfigName(filename)
 		viper.SetConfigType("yaml")
 		viper.AddConfigPath(dirPath)
-		viper.ReadInConfig()
+
+		err = viper.ReadInConfig()
 	}
 
 	var config BaseConfig
@@ -57,7 +59,7 @@ func NewBaseConfig(onlyDefaultValues bool) (*BaseConfig, error) {
 	config.TokenSecretKey = viper.GetString("token.secret_key")
 	config.DatabaseDsn = viper.GetString("database.dsn")
 
-	return &config, nil
+	return &config, err
 }
 
 func (receiver BaseConfig) GetName() string {
