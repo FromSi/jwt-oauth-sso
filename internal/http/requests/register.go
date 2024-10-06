@@ -21,14 +21,14 @@ func NewRegisterRequest(context *gin.Context) (*RegisterRequest, error) {
 }
 
 type RegisterRequestBody struct {
-	Email    string `from:"email" binding:"required,email"`
-	Password string `from:"password" binding:"required,password"`
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,password"`
 }
 
 func NewRegisterRequestBody(context *gin.Context) (*RegisterRequestBody, error) {
 	var requestBody RegisterRequestBody
 
-	if err := context.ShouldBind(&requestBody); err != nil {
+	if err := context.ShouldBindJSON(&requestBody); err != nil {
 		return nil, err
 	}
 

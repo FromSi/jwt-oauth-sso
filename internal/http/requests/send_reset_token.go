@@ -21,13 +21,13 @@ func NewSendResetTokenRequest(context *gin.Context) (*SendResetTokenRequest, err
 }
 
 type SendResetTokenRequestBody struct {
-	UserUUID string `from:"user_uuid" binding:"required,uuid4"`
+	UserUUID string `json:"user_uuid" binding:"required,uuid4"`
 }
 
 func NewSendResetTokenRequestBody(context *gin.Context) (*SendResetTokenRequestBody, error) {
 	var requestBody SendResetTokenRequestBody
 
-	if err := context.ShouldBind(&requestBody); err != nil {
+	if err := context.ShouldBindJSON(&requestBody); err != nil {
 		return nil, err
 	}
 

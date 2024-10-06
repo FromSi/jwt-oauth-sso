@@ -25,7 +25,7 @@ type RefreshRequestBody struct{}
 func NewRefreshRequestBody(context *gin.Context) (*RefreshRequestBody, error) {
 	var requestBody RefreshRequestBody
 
-	if err := context.ShouldBind(&requestBody); err != nil {
+	if err := context.ShouldBindJSON(&requestBody); err != nil {
 		return nil, err
 	}
 

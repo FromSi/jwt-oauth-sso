@@ -21,14 +21,14 @@ func NewLoginRequest(context *gin.Context) (*LoginRequest, error) {
 }
 
 type LoginRequestBody struct {
-	Email    string `from:"email" binding:"required,email"`
-	Password string `from:"password" binding:"required,password"`
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,password"`
 }
 
 func NewLoginRequestBody(context *gin.Context) (*LoginRequestBody, error) {
 	var requestBody LoginRequestBody
 
-	if err := context.ShouldBind(&requestBody); err != nil {
+	if err := context.ShouldBindJSON(&requestBody); err != nil {
 		return nil, err
 	}
 
