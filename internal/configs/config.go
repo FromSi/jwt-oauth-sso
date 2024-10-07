@@ -7,6 +7,8 @@ type AppConfig interface {
 }
 
 type TokenConfig interface {
+	GetIssuerName() string
+	GetAudienceName() string
 	GetExpirationRefreshInDays() int
 	GetExpirationAccessInMinutes() int
 	GetSecretKey() string

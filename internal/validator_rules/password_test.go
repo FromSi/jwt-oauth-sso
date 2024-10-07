@@ -17,7 +17,7 @@ func (m mockFieldLevel) Field() reflect.Value {
 	return reflect.ValueOf(m.data)
 }
 
-func TestPassword(t *testing.T) {
+func Test_Password(t *testing.T) {
 	tests := []struct {
 		name     string
 		password string

@@ -174,7 +174,7 @@ func main() {
 	})
 
 	server := &http.Server{
-		Addr:    config.AppHost + ":" + strconv.Itoa(config.AppPort),
+		Addr:    config.GetHost() + ":" + strconv.Itoa(config.GetPort()),
 		Handler: route.Handler(),
 	}
 

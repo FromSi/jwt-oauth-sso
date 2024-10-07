@@ -1,10 +1,12 @@
 app:
-  name: jwt-oauth-sso
-  host: localhost
+  name: "JWT OAuth SSO"
+  host: "localhost"
   port: 8080
 token:
+  issuer_name: "jwt-oauth-sso"
+  audience_name: "user"
   expiration_refresh_in_days: 30
   expiration_access_in_minutes: 30
-  secret_key: secret
+  secret_key: "secret"
 database:
   dsn: "file:local.sqlite"
