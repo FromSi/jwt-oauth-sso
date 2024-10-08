@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/fromsi/jwt-oauth-sso/internal/configs"
 	"github.com/fromsi/jwt-oauth-sso/internal/http/requests"
-	"github.com/fromsi/jwt-oauth-sso/internal/tokens"
 	"github.com/fromsi/jwt-oauth-sso/internal/validator_rules"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -71,12 +70,6 @@ func main() {
 	})
 
 	route.POST("/auth/refresh", func(ctx *gin.Context) {
-		validToken, _ := tokens.NewAccessToken(config, "1", "1", "1", time.Unix(1, 1))
-
-		validTokenToJWT, _ := validToken.GetJWT()
-
-		println(validTokenToJWT)
-
 		_, err := requests.NewBearerAuthRequestHeader(ctx, config)
 
 		if err != nil {
