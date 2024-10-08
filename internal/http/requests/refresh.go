@@ -1,6 +1,8 @@
 package requests
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 type RefreshRequest struct {
 	Body RefreshRequestBody

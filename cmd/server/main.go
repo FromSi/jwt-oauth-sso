@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/fromsi/jwt-oauth-sso/internal/configs"
 	"github.com/fromsi/jwt-oauth-sso/internal/http/requests"
+	"github.com/fromsi/jwt-oauth-sso/internal/tokens"
 	"github.com/fromsi/jwt-oauth-sso/internal/validator_rules"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -70,7 +71,21 @@ func main() {
 	})
 
 	route.POST("/auth/refresh", func(ctx *gin.Context) {
-		_, err := requests.NewRefreshRequest(ctx)
+		validToken, _ := tokens.NewAccessToken(config, "1", "1", "1", time.Unix(1, 1))
+
+		validTokenToJWT, _ := validToken.GetJWT()
+
+		println(validTokenToJWT)
+
+		_, err := requests.NewBearerAuthRequestHeader(ctx, config)
+
+		if err != nil {
+			ctx.Status(http.StatusUnauthorized)
+
+			return
+		}
+
+		_, err = requests.NewRefreshRequest(ctx)
 
 		if err != nil {
 			ctx.Status(http.StatusBadRequest)
@@ -84,7 +99,15 @@ func main() {
 	})
 
 	route.POST("/auth/logout", func(ctx *gin.Context) {
-		_, err := requests.NewLogoutRequest(ctx)
+		_, err := requests.NewBearerAuthRequestHeader(ctx, config)
+
+		if err != nil {
+			ctx.Status(http.StatusUnauthorized)
+
+			return
+		}
+
+		_, err = requests.NewLogoutRequest(ctx)
 
 		if err != nil {
 			ctx.Status(http.StatusBadRequest)
@@ -98,7 +121,15 @@ func main() {
 	})
 
 	route.POST("/auth/logout_all", func(ctx *gin.Context) {
-		_, err := requests.NewLogoutAllRequest(ctx)
+		_, err := requests.NewBearerAuthRequestHeader(ctx, config)
+
+		if err != nil {
+			ctx.Status(http.StatusUnauthorized)
+
+			return
+		}
+
+		_, err = requests.NewLogoutAllRequest(ctx)
 
 		if err != nil {
 			ctx.Status(http.StatusBadRequest)
@@ -112,6 +143,14 @@ func main() {
 	})
 
 	route.POST("/auth/logout_device", func(ctx *gin.Context) {
+		_, err := requests.NewBearerAuthRequestHeader(ctx, config)
+
+		if err != nil {
+			ctx.Status(http.StatusUnauthorized)
+
+			return
+		}
+
 		request, err := requests.NewLogoutDeviceRequest(ctx)
 
 		if err != nil {
@@ -128,7 +167,15 @@ func main() {
 	})
 
 	route.GET("/auth/devices", func(ctx *gin.Context) {
-		_, err := requests.NewDevicesRequest(ctx)
+		_, err := requests.NewBearerAuthRequestHeader(ctx, config)
+
+		if err != nil {
+			ctx.Status(http.StatusUnauthorized)
+
+			return
+		}
+
+		_, err = requests.NewDevicesRequest(ctx)
 
 		if err != nil {
 			ctx.Status(http.StatusBadRequest)

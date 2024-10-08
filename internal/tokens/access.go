@@ -18,7 +18,7 @@ const (
 	CommonJWTClaimDeviceAgent    = "device_agent"
 )
 
-type RefreshToken struct {
+type AccessToken struct {
 	Issuer         string
 	Audience       string
 	Subject        string
@@ -29,14 +29,14 @@ type RefreshToken struct {
 	secretKey      string
 }
 
-func NewRefreshToken(
+func NewAccessToken(
 	config configs.TokenConfig,
 	subject string,
 	deviceUUID string,
 	deviceAgent string,
 	currentTime time.Time,
-) (*RefreshToken, error) {
-	return &RefreshToken{
+) (*AccessToken, error) {
+	return &AccessToken{
 		Issuer:         config.GetIssuerName(),
 		Audience:       config.GetAudienceName(),
 		Subject:        subject,
@@ -48,7 +48,7 @@ func NewRefreshToken(
 	}, nil
 }
 
-func NewRefreshTokenByJWT(config configs.TokenConfig, tokenJWT string) (*RefreshToken, error) {
+func NewAccessTokenByJWT(config configs.TokenConfig, tokenJWT string) (*AccessToken, error) {
 	token, err := jwt.Parse(tokenJWT, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
@@ -70,7 +70,7 @@ func NewRefreshTokenByJWT(config configs.TokenConfig, tokenJWT string) (*Refresh
 		return nil, errors.New("invalid claims")
 	}
 
-	refreshToken := RefreshToken{
+	accessToken := AccessToken{
 		Issuer:         claims[CommonJWTClaimIssuer].(string),
 		Audience:       claims[CommonJWTClaimAudience].(string),
 		Subject:        claims[CommonJWTClaimSubject].(string),
@@ -81,18 +81,18 @@ func NewRefreshTokenByJWT(config configs.TokenConfig, tokenJWT string) (*Refresh
 		secretKey:      config.GetSecretKey(),
 	}
 
-	if time.Now().Before(refreshToken.IssuedAt) {
+	if time.Now().Before(accessToken.IssuedAt) {
 		return nil, errors.New("token used before issued")
 	}
 
-	if time.Now().After(refreshToken.ExpirationTime) {
+	if time.Now().After(accessToken.ExpirationTime) {
 		return nil, errors.New("token has expired")
 	}
 
-	return &refreshToken, nil
+	return &accessToken, nil
 }
 
-func (receiver RefreshToken) GetJWT() (string, error) {
+func (receiver AccessToken) GetJWT() (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		CommonJWTClaimIssuer:         receiver.Issuer,
 		CommonJWTClaimAudience:       receiver.Audience,

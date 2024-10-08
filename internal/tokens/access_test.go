@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func Test_NewRefreshToken(t *testing.T) {
+func Test_NewAccessToken(t *testing.T) {
 	tests := []struct {
 		name        string
 		subject     string
@@ -30,7 +30,7 @@ func Test_NewRefreshToken(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			token, err := NewRefreshToken(config, tt.subject, tt.deviceUUID, tt.deviceAgent, tt.currentTime)
+			token, err := NewAccessToken(config, tt.subject, tt.deviceUUID, tt.deviceAgent, tt.currentTime)
 
 			if tt.error {
 				assert.Error(t, err)
@@ -49,7 +49,7 @@ func Test_NewRefreshToken(t *testing.T) {
 	}
 }
 
-func Test_NewRefreshTokenByJWT(t *testing.T) {
+func Test_NewAccessTokenByJWT(t *testing.T) {
 	config, _ := configs.NewBaseConfig(true)
 
 	tests := []struct {
@@ -88,7 +88,7 @@ func Test_NewRefreshTokenByJWT(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			token, err := NewRefreshToken(config, tt.subject, tt.deviceUUID, tt.deviceAgent, tt.currentTime)
+			token, err := NewAccessToken(config, tt.subject, tt.deviceUUID, tt.deviceAgent, tt.currentTime)
 
 			assert.NoError(t, err)
 
@@ -97,7 +97,7 @@ func Test_NewRefreshTokenByJWT(t *testing.T) {
 			assert.NoError(t, err)
 			assert.NotNil(t, tokenToJWT)
 
-			tokenByJWT, err := NewRefreshTokenByJWT(config, tokenToJWT)
+			tokenByJWT, err := NewAccessTokenByJWT(config, tokenToJWT)
 
 			if tt.error {
 				assert.Error(t, err)
