@@ -49,12 +49,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthTokens'
-        '404':
+        '400':
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorBadRequest'
   /auth/register:
     post:
       summary: Register New User
@@ -88,14 +88,30 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorBadRequest'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorConflict'
   /auth/refresh:
     post:
       summary: Renew Refresh and Access Tokens
       tags:
         - auth
-      security:
-        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refreshToken
+              properties:
+                refreshToken:
+                  type: string
+                  format: uuid
+                  example: '09d0ce56-33ab-4fce-90bb-d2b4d6d844ba'
       responses:
         '201':
           description: Successful
@@ -103,6 +119,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthTokens'
+        '404':
+          description: Not Found
   /auth/send_reset_token:
     post:
       summary: Send Reset Password Token To User
@@ -114,21 +132,23 @@ paths:
             schema:
               type: object
               required:
-                - user_uuid
+                - userUuid
               properties:
-                user_uuid:
+                userUuid:
                   type: string
                   format: uuid
                   example: '09d0ce56-33ab-4fce-90bb-d2b4d6d844ba'
       responses:
         '202':
           description: Successful
-        '404':
+        '400':
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorBadRequest'
+        '404':
+          description: Not Found
   /auth/reset_password:
     post:
       summary: Reset Password By Token
@@ -149,12 +169,14 @@ paths:
       responses:
         '202':
           description: Successful
-        '404':
+        '400':
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorBadRequest'
+        '404':
+          description: Not Found
   /auth/logout:
     post:
       summary: Forget Device
@@ -165,6 +187,8 @@ paths:
       responses:
         '202':
           description: Successful
+        '401':
+          description: Unauthorized
   /auth/logout_all:
     post:
       summary: Forget All Devices
@@ -175,6 +199,8 @@ paths:
       responses:
         '202':
           description: Successful
+        '401':
+          description: Unauthorized
   /auth/logout_device:
     post:
       summary: Forget Device By UUID Device
@@ -188,15 +214,17 @@ paths:
             schema:
               type: object
               required:
-                - device_uuid
+                - deviceUuid
               properties:
-                device_uuid:
+                deviceUuid:
                   type: string
                   format: uuid
                   example: '09d0ce56-33ab-4fce-90bb-d2b4d6d844ba'
       responses:
         '202':
           description: Successful
+        '401':
+          description: Unauthorized
   /auth/devices:
     get:
       summary: Get All Active Devices
@@ -218,17 +246,18 @@ paths:
                     type: object
                     required:
                       - uuid
+                      - userUuid
                       - agent
                       - ip
-                      - expired_at
-                      - created_at
-                      - updated_at
+                      - expiredAt
+                      - createdAt
+                      - updatedAt
                     properties:
                       uuid:
                         type: string
                         format: uuid
                         example: '09d0ce56-33ab-4fce-90bb-d2b4d6d844ba'
-                      user_uuid:
+                      userUuid:
                         type: string
                         format: uuid
                         example: '09d0ce56-33ab-4fce-90bb-d2b4d6d844ba'
@@ -240,18 +269,20 @@ paths:
                         type: string
                         format: ipv4_or_ipv6
                         example: '1.1.1.1'
-                      expired_at:
+                      expiredAt:
                         type: integer
                         format: unix
                         example: 1516300000
-                      created_at:
+                      createdAt:
                         type: integer
                         format: unix
                         example: 1516300000
-                      updated_at:
+                      updatedAt:
                         type: integer
                         format: unix
                         example: 1516300000
+        '401':
+          description: Unauthorized
 components:
   securitySchemes:
     BearerAuth:
@@ -259,20 +290,29 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
-    Error:
+    ErrorBadRequest:
       type: object
       required:
-        - data
+        - errors
       properties:
-        data:
+        errors:
           type: object
           required:
-            - message
+            - field
           properties:
-            message:
-              type: string
-              format: text
-              example: any message
+            field:
+              type: array
+              items:
+                type: string
+                example: "any message"
+    ErrorConflict:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: "any message"
     AuthTokens:
       type: object
       required:
@@ -281,31 +321,31 @@ components:
         data:
           type: object
           required:
-            - auth_type
-            - access_token
-            - refresh_token
-            - access_expires_in
-            - refresh_expires_in
+            - authType
+            - accessToken
+            - refreshToken
+            - accessExpiresIn
+            - refreshExpiresIn
           properties:
-            auth_type:
+            authType:
               type: string
               format: string
               example: bearer
               enum:
                 - bearer
-            access_token:
+            accessToken:
               type: string
               format: jwt_hs256
               example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJqd3Qtb2F1dGgtc3NvIiwiYXVkIjoidXNlciIsInN1YiI6IjA5ZDBjZTU2LTMzYWItNGZjZS05MGJiLWQyYjRkNmQ4NDRiYSIsImlhdCI6MTUxNjIzOTAyMiwiZXhwIjoxNTE2MzAwMDAwLCJkZXZpY2VfdXVpZCI6IjA5ZDBjZTU2LTMzYWItNGZjZS05MGJiLWQyYjRkNmQ4NDRiYSIsImRldmljZV9hZ2VudCI6Ik1vemlsbGEvNS4wIChYMTE7IExpbnV4IHg4Nl82NDsgcnY6MTIxLjApIn0.LUg6bBxygVfBE7rMQjchKpS3VbaKFurK8Rxbk5c4V1w'
-            refresh_token:
+            refreshToken:
               type: string
               format: uuid
               example: '09d0ce56-33ab-4fce-90bb-d2b4d6d844ba'
-            access_expires_in:
+            accessExpiresIn:
               type: integer
               format: unix
               example: 1516300000
-            refresh_expires_in:
+            refreshExpiresIn:
               type: integer
               format: unix
               example: 1516300000

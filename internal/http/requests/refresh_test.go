@@ -17,8 +17,13 @@ func Test_NewRefreshRequestBody(t *testing.T) {
 	}{
 		{
 			name:  "Valid request",
-			body:  `{}`,
+			body:  `{"refreshToken": "09d0ce56-33ab-4fce-90bb-d2b4d6d844ba"}`,
 			error: false,
+		},
+		{
+			name:  "Empty request",
+			body:  `{}`,
+			error: true,
 		},
 	}
 

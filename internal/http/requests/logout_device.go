@@ -21,7 +21,7 @@ func NewLogoutDeviceRequest(context *gin.Context) (*LogoutDeviceRequest, error) 
 }
 
 type LogoutDeviceRequestBody struct {
-	DeviceUUID string `json:"device_uuid" binding:"required,uuid4"`
+	DeviceUUID string `json:"deviceUuid" binding:"required,uuid4"`
 }
 
 func NewLogoutDeviceRequestBody(context *gin.Context) (*LogoutDeviceRequestBody, error) {

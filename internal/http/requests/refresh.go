@@ -22,7 +22,9 @@ func NewRefreshRequest(context *gin.Context) (*RefreshRequest, error) {
 	return &request, nil
 }
 
-type RefreshRequestBody struct{}
+type RefreshRequestBody struct {
+	RefreshToken string `json:"refreshToken" binding:"required,uuid4"`
+}
 
 func NewRefreshRequestBody(context *gin.Context) (*RefreshRequestBody, error) {
 	var requestBody RefreshRequestBody

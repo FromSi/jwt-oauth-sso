@@ -17,12 +17,12 @@ func Test_NewSendResetTokenRequestBody(t *testing.T) {
 	}{
 		{
 			name:  "Valid request",
-			body:  `{"user_uuid": "2e79c328-d6a9-45d4-92e7-2677aa36f6c3"}`,
+			body:  `{"userUuid": "2e79c328-d6a9-45d4-92e7-2677aa36f6c3"}`,
 			error: false,
 		},
 		{
 			name:  "Invalid device_uuid",
-			body:  `{"user_uuid": "2e79c328-45d4-92e7-2677aa36f6c3"}`,
+			body:  `{"userUuid": "2e79c328-45d4-92e7-2677aa36f6c3"}`,
 			error: true,
 		},
 		{

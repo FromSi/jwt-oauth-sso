@@ -21,7 +21,7 @@ func NewSendResetTokenRequest(context *gin.Context) (*SendResetTokenRequest, err
 }
 
 type SendResetTokenRequestBody struct {
-	UserUUID string `json:"user_uuid" binding:"required,uuid4"`
+	UserUUID string `json:"userUuid" binding:"required,uuid4"`
 }
 
 func NewSendResetTokenRequestBody(context *gin.Context) (*SendResetTokenRequestBody, error) {

@@ -70,14 +70,6 @@ func main() {
 	})
 
 	route.POST("/auth/refresh", func(ctx *gin.Context) {
-		_, err := requests.NewBearerAuthRequestHeader(ctx, config)
-
-		if err != nil {
-			ctx.Status(http.StatusUnauthorized)
-
-			return
-		}
-
 		_, err = requests.NewRefreshRequest(ctx)
 
 		if err != nil {
