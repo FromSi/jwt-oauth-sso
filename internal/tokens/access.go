@@ -14,8 +14,8 @@ const (
 	CommonJWTClaimSubject        = "sub"
 	CommonJWTClaimIssuedAt       = "iat"
 	CommonJWTClaimExpirationTime = "exp"
-	CommonJWTClaimDeviceUUID     = "device_uuid"
-	CommonJWTClaimDeviceAgent    = "device_agent"
+	CommonJWTClaimDeviceUUID     = "deviceUUID"
+	CommonJWTClaimDeviceAgent    = "deviceAgent"
 )
 
 type AccessToken struct {

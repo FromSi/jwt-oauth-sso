@@ -144,9 +144,9 @@ paths:
             schema:
               type: object
               required:
-                - userUuid
+                - userUUID
               properties:
-                userUuid:
+                userUUID:
                   type: string
                   format: uuid
                   example: '09d0ce56-33ab-4fce-90bb-d2b4d6d844ba'
@@ -277,9 +277,9 @@ paths:
             schema:
               type: object
               required:
-                - deviceUuid
+                - deviceUUID
               properties:
-                deviceUuid:
+                deviceUUID:
                   type: string
                   format: uuid
                   example: '09d0ce56-33ab-4fce-90bb-d2b4d6d844ba'
@@ -309,7 +309,7 @@ paths:
                     type: object
                     required:
                       - uuid
-                      - userUuid
+                      - userUUID
                       - agent
                       - ip
                       - expiredAt
@@ -320,7 +320,7 @@ paths:
                         type: string
                         format: uuid
                         example: '09d0ce56-33ab-4fce-90bb-d2b4d6d844ba'
-                      userUuid:
+                      userUUID:
                         type: string
                         format: uuid
                         example: '09d0ce56-33ab-4fce-90bb-d2b4d6d844ba'
@@ -399,7 +399,7 @@ components:
             accessToken:
               type: string
               format: jwt_hs256
-              example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJqd3Qtb2F1dGgtc3NvIiwiYXVkIjoidXNlciIsInN1YiI6IjA5ZDBjZTU2LTMzYWItNGZjZS05MGJiLWQyYjRkNmQ4NDRiYSIsImlhdCI6MTUxNjIzOTAyMiwiZXhwIjoxNTE2MzAwMDAwLCJkZXZpY2VfdXVpZCI6IjA5ZDBjZTU2LTMzYWItNGZjZS05MGJiLWQyYjRkNmQ4NDRiYSIsImRldmljZV9hZ2VudCI6Ik1vemlsbGEvNS4wIChYMTE7IExpbnV4IHg4Nl82NDsgcnY6MTIxLjApIn0.LUg6bBxygVfBE7rMQjchKpS3VbaKFurK8Rxbk5c4V1w'
+              example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJqd3Qtb2F1dGgtc3NvIiwiYXVkIjoidXNlciIsInN1YiI6IjA5ZDBjZTU2LTMzYWItNGZjZS05MGJiLWQyYjRkNmQ4NDRiYSIsImlhdCI6MTUxNjIzOTAyMiwiZXhwIjoxNTE2MzAwMDAwLCJkZXZpY2VVVUlEIjoiMDlkMGNlNTYtMzNhYi00ZmNlLTkwYmItZDJiNGQ2ZDg0NGJhIiwiZGV2aWNlQWdlbnQiOiJNb3ppbGxhLzUuMCAoWDExOyBMaW51eCB4ODZfNjQ7IHJ2OjEyMS4wKSJ9.c5RCNVX1-f6Ah7FT8PWY76fab-nLRQfkgneh1vI36VM'
             refreshToken:
               type: string
               format: uuid
