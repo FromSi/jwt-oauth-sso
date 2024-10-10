@@ -12,7 +12,7 @@ import (
 	"testing"
 )
 
-func Test_NewLoginRequestBody(t *testing.T) {
+func Test_NewPasswordResetWithOldRequestBody(t *testing.T) {
 	tests := []struct {
 		name  string
 		body  string
@@ -20,27 +20,27 @@ func Test_NewLoginRequestBody(t *testing.T) {
 	}{
 		{
 			name:  "Valid request",
-			body:  `{"email": "test@example.com", "password": "validPass123!"}`,
+			body:  `{"newPassword": "validPass123!", "oldPassword": "validPass123!"}`,
 			error: false,
 		},
 		{
-			name:  "Invalid email",
-			body:  `{"email": "invalid-email", "password": "validPass123!"}`,
+			name:  "Invalid newPassword",
+			body:  `{"newPassword": "123", "oldPassword": "validPass123!"}`,
 			error: true,
 		},
 		{
-			name:  "Invalid password",
-			body:  `{"email": "test@example.com", "password": "123"}`,
+			name:  "Invalid oldPassword",
+			body:  `{"newPassword": "validPass123!", "oldPassword": "123"}`,
 			error: true,
 		},
 		{
-			name:  "Missing email",
-			body:  `{"password": "validPass123!"}`,
+			name:  "Missing newPassword",
+			body:  `{"oldPassword": "validPass123!"}`,
 			error: true,
 		},
 		{
-			name:  "Missing password",
-			body:  `{"email": "test@example.com"}`,
+			name:  "Missing oldPassword",
+			body:  `{"newPassword": "validPass123!"}`,
 			error: true,
 		},
 		{
@@ -66,7 +66,7 @@ func Test_NewLoginRequestBody(t *testing.T) {
 			c.Request, _ = http.NewRequest("POST", "", strings.NewReader(tt.body))
 			c.Request.Header.Set("Content-Type", "application/json")
 
-			requestBody, err := NewLoginRequestBody(c)
+			requestBody, err := NewPasswordResetWithOldRequestBody(c)
 
 			if tt.error {
 				assert.Error(t, err)
@@ -74,8 +74,8 @@ func Test_NewLoginRequestBody(t *testing.T) {
 			} else {
 				assert.NoError(t, err)
 				assert.NotNil(t, requestBody)
-				assert.NotEmpty(t, requestBody.Email)
-				assert.NotEmpty(t, requestBody.Password)
+				assert.NotEmpty(t, requestBody.OldPassword)
+				assert.NotEmpty(t, requestBody.NewPassword)
 			}
 		})
 	}

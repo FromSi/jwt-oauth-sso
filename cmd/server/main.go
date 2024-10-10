@@ -189,8 +189,8 @@ func main() {
 		ctx.Status(http.StatusContinue)
 	})
 
-	route.POST("/auth/reset_password", func(ctx *gin.Context) {
-		request, err := requests.NewResetPasswordRequest(ctx)
+	route.POST("/auth/password_reset_with_token", func(ctx *gin.Context) {
+		request, err := requests.NewPasswordResetWithTokenRequest(ctx)
 
 		if err != nil {
 			ctx.Status(http.StatusBadRequest)
@@ -199,7 +199,25 @@ func main() {
 		}
 
 		fmt.Println(map[string]any{
-			"token": request.Body.Token,
+			"token":        request.Body.Token,
+			"new_password": request.Body.NewPassword,
+		})
+
+		ctx.Status(http.StatusContinue)
+	})
+
+	route.POST("/auth/password_reset_with_old", func(ctx *gin.Context) {
+		request, err := requests.NewPasswordResetWithOldRequest(ctx)
+
+		if err != nil {
+			ctx.Status(http.StatusBadRequest)
+
+			return
+		}
+
+		fmt.Println(map[string]any{
+			"old_password": request.Body.OldPassword,
+			"new_password": request.Body.NewPassword,
 		})
 
 		ctx.Status(http.StatusContinue)

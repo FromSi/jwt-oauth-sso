@@ -21,7 +21,7 @@ func Test_NewSendResetTokenRequestBody(t *testing.T) {
 			error: false,
 		},
 		{
-			name:  "Invalid device_uuid",
+			name:  "Invalid userUuid",
 			body:  `{"userUuid": "2e79c328-45d4-92e7-2677aa36f6c3"}`,
 			error: true,
 		},

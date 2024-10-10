@@ -12,7 +12,7 @@ import (
 	"testing"
 )
 
-func Test_NewLoginRequestBody(t *testing.T) {
+func Test_NewPasswordResetWithTokenRequestBody(t *testing.T) {
 	tests := []struct {
 		name  string
 		body  string
@@ -20,27 +20,27 @@ func Test_NewLoginRequestBody(t *testing.T) {
 	}{
 		{
 			name:  "Valid request",
-			body:  `{"email": "test@example.com", "password": "validPass123!"}`,
+			body:  `{"token": "2e79c328-d6a9-45d4-92e7-2677aa36f6c3", "newPassword": "validPass123!"}`,
 			error: false,
 		},
 		{
-			name:  "Invalid email",
-			body:  `{"email": "invalid-email", "password": "validPass123!"}`,
+			name:  "Invalid token",
+			body:  `{"token": "2e79c328-45d4-92e7-2677aa36f6c3", "newPassword": "validPass123!"}`,
 			error: true,
 		},
 		{
-			name:  "Invalid password",
-			body:  `{"email": "test@example.com", "password": "123"}`,
+			name:  "Invalid newPassword",
+			body:  `{"token": "2e79c328-d6a9-45d4-92e7-2677aa36f6c3", "newPassword": "123"}`,
 			error: true,
 		},
 		{
-			name:  "Missing email",
-			body:  `{"password": "validPass123!"}`,
+			name:  "Missing newPassword",
+			body:  `{"token": "2e79c328-d6a9-45d4-92e7-2677aa36f6c3"}`,
 			error: true,
 		},
 		{
-			name:  "Missing password",
-			body:  `{"email": "test@example.com"}`,
+			name:  "Missing token",
+			body:  `{"newPassword": "validPass123!"}`,
 			error: true,
 		},
 		{
@@ -66,7 +66,7 @@ func Test_NewLoginRequestBody(t *testing.T) {
 			c.Request, _ = http.NewRequest("POST", "", strings.NewReader(tt.body))
 			c.Request.Header.Set("Content-Type", "application/json")
 
-			requestBody, err := NewLoginRequestBody(c)
+			requestBody, err := NewPasswordResetWithTokenRequestBody(c)
 
 			if tt.error {
 				assert.Error(t, err)
@@ -74,8 +74,8 @@ func Test_NewLoginRequestBody(t *testing.T) {
 			} else {
 				assert.NoError(t, err)
 				assert.NotNil(t, requestBody)
-				assert.NotEmpty(t, requestBody.Email)
-				assert.NotEmpty(t, requestBody.Password)
+				assert.NotEmpty(t, requestBody.Token)
+				assert.NotEmpty(t, requestBody.NewPassword)
 			}
 		})
 	}

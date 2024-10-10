@@ -21,7 +21,7 @@ func Test_NewLogoutDeviceRequestBody(t *testing.T) {
 			error: false,
 		},
 		{
-			name:  "Invalid device_uuid",
+			name:  "Invalid deviceUuid",
 			body:  `{"deviceUuid": "2e79c328-45d4-92e7-2677aa36f6c3"}`,
 			error: true,
 		},

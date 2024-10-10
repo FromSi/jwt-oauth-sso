@@ -149,9 +149,9 @@ paths:
                 $ref: '#/components/schemas/ErrorBadRequest'
         '404':
           description: Not Found
-  /auth/reset_password:
+  /auth/password_reset_with_token:
     post:
-      summary: Reset Password By Token
+      summary: Password Reset With Token
       tags:
         - password
       requestBody:
@@ -161,11 +161,46 @@ paths:
               type: object
               required:
                 - token
+                - newPassword
               properties:
                 token:
                   type: string
                   format: uuid
                   example: '09d0ce56-33ab-4fce-90bb-d2b4d6d844ba'
+                newPassword:
+                  type: string
+                  example: 'Test12345'
+      responses:
+        '202':
+          description: Successful
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        '404':
+          description: Not Found
+  /auth/password_reset_with_old:
+    post:
+      summary: Password Reset With Old Password
+      tags:
+        - password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - oldPassword
+                - newPassword
+              properties:
+                oldPassword:
+                  type: string
+                  example: 'Test12345'
+                newPassword:
+                  type: string
+                  example: 'Test12345'
       responses:
         '202':
           description: Successful

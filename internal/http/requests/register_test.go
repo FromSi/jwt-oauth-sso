@@ -29,6 +29,11 @@ func Test_NewRegisterRequestBody(t *testing.T) {
 			error: true,
 		},
 		{
+			name:  "Invalid password",
+			body:  `{"email": "test@example.com", "password": "123"}`,
+			error: true,
+		},
+		{
 			name:  "Missing email",
 			body:  `{"password": "validPass123!"}`,
 			error: true,
