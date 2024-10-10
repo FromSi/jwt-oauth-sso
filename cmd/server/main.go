@@ -207,6 +207,14 @@ func main() {
 	})
 
 	route.POST("/auth/password_reset_with_old", func(ctx *gin.Context) {
+		_, err := requests.NewBearerAuthRequestHeader(ctx, config)
+
+		if err != nil {
+			ctx.Status(http.StatusUnauthorized)
+
+			return
+		}
+
 		request, err := requests.NewPasswordResetWithOldRequest(ctx)
 
 		if err != nil {
