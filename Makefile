@@ -8,7 +8,7 @@ test: ## run test through linux
 
 .PHONY: lint
 lint: ## run golangci-lint (2-minute wait)
-	docker run -t --rm -v $(shell pwd):/app -w /app golangci/golangci-lint:v1.59.1 golangci-lint run -v
+	docker run -t --rm -v $(shell pwd):/app -w /app golangci/golangci-lint:v1.60 golangci-lint run -v
 
 .PHONY: run_pprof
 run_pprof: ## run after 'make pprof_heap'
