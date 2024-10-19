@@ -147,3 +147,7 @@ func (receiver GormDeviceRepository) UpdateDevice(device Device) error {
 func (receiver GormDeviceRepository) DeleteDeviceByUUID(uuid string) error {
 	return receiver.db.Delete(&GormDevice{}, &GormDevice{UUID: uuid}).Error
 }
+
+func (receiver GormDeviceRepository) DeleteAllDevicesByUserUUID(userUUID string) error {
+	return receiver.db.Delete(&GormDevice{}, &GormDevice{UserUUID: userUUID}).Error
+}

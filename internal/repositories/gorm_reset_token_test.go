@@ -11,6 +11,8 @@ import (
 func Test_NewGormResetToken(t *testing.T) {
 	gormResetToken := NewGormResetToken()
 
+	assert.NotNil(t, gormResetToken)
+
 	assert.Equal(t, gormResetToken.Token, GormResetTokenTokenDefault)
 	assert.Equal(t, gormResetToken.UserUUID, GormResetTokenUserUUIDDefault)
 	assert.Equal(t, gormResetToken.ExpiredAt, GormResetTokenExpiredAtDefault)
@@ -20,6 +22,8 @@ func Test_NewGormResetToken(t *testing.T) {
 func Test_NewGormResetTokenByResetToken(t *testing.T) {
 	gormResetTokenTemp := NewGormResetToken()
 	gormResetToken := NewGormResetTokenByResetToken(gormResetTokenTemp)
+
+	assert.NotNil(t, gormResetToken)
 
 	assert.Equal(t, gormResetToken.Token, GormResetTokenTokenDefault)
 	assert.Equal(t, gormResetToken.UserUUID, GormResetTokenUserUUIDDefault)
@@ -96,10 +100,12 @@ func Test_NewGormResetTokenRepository(t *testing.T) {
 	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
 
 	assert.Nil(t, err)
+	assert.NotNil(t, db)
 
-	_, err = NewGormResetTokenRepository(db)
+	gormResetTokenRepository, err := NewGormResetTokenRepository(db)
 
 	assert.Nil(t, err)
+	assert.NotNil(t, gormResetTokenRepository)
 
 	stmt := &gorm.Statement{DB: db}
 	err = stmt.Parse(&GormResetToken{})

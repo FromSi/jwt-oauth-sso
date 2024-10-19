@@ -11,6 +11,8 @@ import (
 func Test_NewGormUser(t *testing.T) {
 	gormUser := NewGormUser()
 
+	assert.NotNil(t, gormUser)
+
 	assert.Equal(t, gormUser.UUID, GormUserUUIDDefault)
 	assert.Equal(t, gormUser.Email, GormUserEmailDefault)
 	assert.Equal(t, gormUser.Password, GormUserPasswordDefault)
@@ -21,6 +23,8 @@ func Test_NewGormUser(t *testing.T) {
 func Test_NewGormUserByUser(t *testing.T) {
 	gormUserTemp := NewGormUser()
 	gormUser := NewGormUserByUser(gormUserTemp)
+
+	assert.NotNil(t, gormUser)
 
 	assert.Equal(t, gormUser.UUID, GormUserUUIDDefault)
 	assert.Equal(t, gormUser.Email, GormUserEmailDefault)
@@ -113,10 +117,12 @@ func Test_NewGormUserRepository(t *testing.T) {
 	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
 
 	assert.Nil(t, err)
+	assert.NotNil(t, db)
 
-	_, err = NewGormUserRepository(db)
+	gormUserRepository, err := NewGormUserRepository(db)
 
 	assert.Nil(t, err)
+	assert.NotNil(t, gormUserRepository)
 
 	stmt := &gorm.Statement{DB: db}
 	err = stmt.Parse(&GormUser{})

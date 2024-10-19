@@ -11,6 +11,8 @@ import (
 func Test_NewGormDevice(t *testing.T) {
 	gormDevice := NewGormDevice()
 
+	assert.NotNil(t, gormDevice)
+
 	assert.Equal(t, gormDevice.UUID, GormDeviceUUIDDefault)
 	assert.Equal(t, gormDevice.UserUUID, GormDeviceUserUUIDDefault)
 	assert.Equal(t, gormDevice.Agent, GormDeviceAgentDefault)
@@ -23,6 +25,8 @@ func Test_NewGormDevice(t *testing.T) {
 func Test_NewGormDeviceByDevice(t *testing.T) {
 	gormDeviceTemp := NewGormDevice()
 	gormDevice := NewGormDeviceByDevice(gormDeviceTemp)
+
+	assert.NotNil(t, gormDevice)
 
 	assert.Equal(t, gormDevice.UUID, GormDeviceUUIDDefault)
 	assert.Equal(t, gormDevice.UserUUID, GormDeviceUserUUIDDefault)
@@ -149,10 +153,12 @@ func Test_NewGormDeviceRepository(t *testing.T) {
 	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
 
 	assert.Nil(t, err)
+	assert.NotNil(t, db)
 
-	_, err = NewGormDeviceRepository(db)
+	gormDeviceRepository, err := NewGormDeviceRepository(db)
 
 	assert.Nil(t, err)
+	assert.NotNil(t, gormDeviceRepository)
 
 	stmt := &gorm.Statement{DB: db}
 	err = stmt.Parse(&GormDevice{})
@@ -252,6 +258,40 @@ func TestGormDeviceRepository_CreateDevice_And_DeleteDeviceByUUID(t *testing.T) 
 	assert.Equal(t, len(gormDevices), 1)
 
 	err = gormDeviceRepository.DeleteDeviceByUUID(gormDevice.GetUUID())
+
+	assert.Nil(t, err)
+
+	gormDevices = gormDeviceRepository.GetDevicesByUserUUID(gormDevice.GetUserUUID())
+
+	assert.Equal(t, len(gormDevices), 0)
+}
+
+func TestGormDeviceRepository_CreateDevice_And_DeleteAllDevicesByUserUUID(t *testing.T) {
+	db, _ := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
+
+	gormDeviceRepository, _ := NewGormDeviceRepository(db)
+
+	gormDevice := NewGormDevice()
+
+	gormDevice.SetUUID("1")
+	gormDevice.SetUserUUID("2")
+
+	err := gormDeviceRepository.CreateDevice(gormDevice)
+
+	assert.Nil(t, err)
+
+	gormDevice.SetUUID("3")
+	gormDevice.SetUserUUID("2")
+
+	err = gormDeviceRepository.CreateDevice(gormDevice)
+
+	assert.Nil(t, err)
+
+	gormDevices := gormDeviceRepository.GetDevicesByUserUUID(gormDevice.GetUserUUID())
+
+	assert.Equal(t, len(gormDevices), 2)
+
+	err = gormDeviceRepository.DeleteAllDevicesByUserUUID(gormDevice.GetUserUUID())
 
 	assert.Nil(t, err)
 
