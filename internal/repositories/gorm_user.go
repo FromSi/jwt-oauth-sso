@@ -111,7 +111,19 @@ func (receiver GormUserRepository) HasUserByEmail(email string) bool {
 func (receiver GormUserRepository) GetUserByEmailAndPassword(email string, password string) User {
 	var gormUser GormUser
 
-	result := receiver.db.Model(&GormUser{}).Where(&GormUser{Email: email, Password: password}).First(&gormUser)
+	result := receiver.db.Model(&GormUser{}).First(&gormUser, &GormUser{Email: email, Password: password})
+
+	if result.RowsAffected == 0 {
+		return nil
+	}
+
+	return &gormUser
+}
+
+func (receiver GormUserRepository) GetUserByUUIDAndPassword(uuid string, password string) User {
+	var gormUser GormUser
+
+	result := receiver.db.Model(&GormUser{}).First(&gormUser, &GormUser{UUID: uuid, Password: password})
 
 	if result.RowsAffected == 0 {
 		return nil

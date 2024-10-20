@@ -119,7 +119,7 @@ func Test_NewGormResetTokenRepository(t *testing.T) {
 	assert.Equal(t, count, 1)
 }
 
-func TestGormResetTokenRepository_CreateToken_And_HasTokenByToken(t *testing.T) {
+func TestGormResetTokenRepository_CreateToken_And_HasToken(t *testing.T) {
 	db, _ := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
 
 	gormResetTokenRepository, _ := NewGormResetTokenRepository(db)
@@ -132,16 +132,46 @@ func TestGormResetTokenRepository_CreateToken_And_HasTokenByToken(t *testing.T) 
 
 	assert.Nil(t, err)
 
-	exists := gormResetTokenRepository.HasTokenByToken(gormResetToken.GetToken())
+	exists := gormResetTokenRepository.HasToken(gormResetToken.GetToken())
 
 	assert.True(t, exists)
 
-	exists = gormResetTokenRepository.HasTokenByToken("0")
+	exists = gormResetTokenRepository.HasToken("0")
 
 	assert.False(t, exists)
 }
 
-func TestGormResetTokenRepository_CreateToken_And_DeleteResetTokenByToken(t *testing.T) {
+func TestGormResetTokenRepository_CreateToken_And_GetResetTokenByToken(t *testing.T) {
+	db, _ := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
+
+	gormResetTokenRepository, _ := NewGormResetTokenRepository(db)
+
+	gormResetToken := NewGormResetToken()
+
+	gormResetToken.SetToken("1")
+	gormResetToken.SetUserUUID("2")
+	gormResetToken.SetExpiredAt(3)
+	gormResetToken.SetCreatedAt(4)
+
+	err := gormResetTokenRepository.CreateResetToken(gormResetToken)
+
+	assert.Nil(t, err)
+
+	resetTokenByToken := gormResetTokenRepository.GetResetTokenByToken(gormResetToken.GetToken())
+
+	assert.NotNil(t, resetTokenByToken)
+
+	assert.Equal(t, resetTokenByToken.GetToken(), gormResetToken.GetToken())
+	assert.Equal(t, resetTokenByToken.GetUserUUID(), gormResetToken.GetUserUUID())
+	assert.Equal(t, resetTokenByToken.GetExpiredAt(), gormResetToken.GetExpiredAt())
+	assert.Equal(t, resetTokenByToken.GetCreatedAt(), gormResetToken.GetCreatedAt())
+
+	resetTokenByToken = gormResetTokenRepository.GetResetTokenByToken("5")
+
+	assert.Nil(t, resetTokenByToken)
+}
+
+func TestGormResetTokenRepository_CreateToken_And_DeleteResetToken(t *testing.T) {
 	db, _ := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
 
 	gormResetTokenRepository, _ := NewGormResetTokenRepository(db)
@@ -154,15 +184,15 @@ func TestGormResetTokenRepository_CreateToken_And_DeleteResetTokenByToken(t *tes
 
 	assert.Nil(t, err)
 
-	result := gormResetTokenRepository.HasTokenByToken(gormResetToken.GetToken())
+	result := gormResetTokenRepository.HasToken(gormResetToken.GetToken())
 
 	assert.True(t, result)
 
-	err = gormResetTokenRepository.DeleteResetTokenByToken(gormResetToken.GetToken())
+	err = gormResetTokenRepository.DeleteResetToken(gormResetToken.GetToken())
 
 	assert.Nil(t, err)
 
-	result = gormResetTokenRepository.HasTokenByToken(gormResetToken.GetToken())
+	result = gormResetTokenRepository.HasToken(gormResetToken.GetToken())
 
 	assert.False(t, result)
 }

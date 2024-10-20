@@ -4,6 +4,7 @@ type QueryUserRepository interface {
 	HasUserByUUID(string) bool
 	HasUserByEmail(string) bool
 	GetUserByEmailAndPassword(string, string) User
+	GetUserByUUIDAndPassword(string, string) User
 }
 
 type MutableUserRepository interface {

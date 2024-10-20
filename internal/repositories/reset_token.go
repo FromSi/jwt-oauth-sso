@@ -1,12 +1,13 @@
 package repositories
 
 type QueryResetTokenRepository interface {
-	HasTokenByToken(string) bool
+	HasToken(string) bool
+	GetResetTokenByToken(string) ResetToken
 }
 
 type MutableResetTokenRepository interface {
 	CreateResetToken(ResetToken) error
-	DeleteResetTokenByToken(string) error
+	DeleteResetToken(string) error
 }
 
 type ResetTokenRepository interface {

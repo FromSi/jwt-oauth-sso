@@ -5,6 +5,8 @@ type QueryResetTokenService interface {
 }
 
 type MutableResetTokenService interface {
+	ResetPasswordByTokenAndNewPassword(string, string) error
+	ResetPasswordByUserUUIDAndOldPasswordAndNewPassword(string, string, string) error
 }
 
 type ResetTokenService interface {
