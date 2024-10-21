@@ -180,38 +180,53 @@ func TestGormUserRepository_CreateUser_And_HasUserByEmail(t *testing.T) {
 	assert.False(t, exists)
 }
 
-func TestGormUserRepository_CreateUser_And_GetUserByEmailAndPassword(t *testing.T) {
+func TestGormUserRepository_CreateUser_And_HasUserByEmailAndPassword(t *testing.T) {
 	db, _ := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
 
 	gormUserRepository, _ := NewGormUserRepository(db)
 
 	gormUser := NewGormUser()
 
-	gormUser.SetUUID("1")
+	gormUser.SetEmail("1")
 	gormUser.SetEmail("2")
-	gormUser.SetPassword("3")
-	gormUser.SetCreatedAt(4)
-	gormUser.SetUpdatedAt(5)
 
 	err := gormUserRepository.CreateUser(gormUser)
 
 	assert.Nil(t, err)
 
-	gormUserForRepository := gormUserRepository.GetUserByEmailAndPassword("0", "0")
+	exists := gormUserRepository.HasUserByEmailAndPassword(gormUser.GetEmail(), gormUser.GetPassword())
 
-	assert.Nil(t, gormUserForRepository)
+	assert.True(t, exists)
 
-	gormUserForRepository = gormUserRepository.GetUserByEmailAndPassword(gormUser.GetEmail(), gormUser.GetPassword())
+	exists = gormUserRepository.HasUserByEmailAndPassword("0", "0")
 
-	assert.NotNil(t, gormUserForRepository)
-	assert.Equal(t, gormUserForRepository.GetUUID(), gormUser.GetUUID())
-	assert.Equal(t, gormUserForRepository.GetEmail(), gormUser.GetEmail())
-	assert.Equal(t, gormUserForRepository.GetPassword(), gormUser.GetPassword())
-	assert.Equal(t, gormUserForRepository.GetCreatedAt(), gormUser.GetCreatedAt())
-	assert.Equal(t, gormUserForRepository.GetUpdatedAt(), gormUser.GetUpdatedAt())
+	assert.False(t, exists)
 }
 
-func TestGormUserRepository_CreateUser_And_GetUserByUUIDAndPassword(t *testing.T) {
+func TestGormUserRepository_CreateUser_And_HasUserByUUIDAndPassword(t *testing.T) {
+	db, _ := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
+
+	gormUserRepository, _ := NewGormUserRepository(db)
+
+	gormUser := NewGormUser()
+
+	gormUser.SetUUID("1")
+	gormUser.SetPassword("2")
+
+	err := gormUserRepository.CreateUser(gormUser)
+
+	assert.Nil(t, err)
+
+	exists := gormUserRepository.HasUserByUUIDAndPassword(gormUser.GetUUID(), gormUser.GetPassword())
+
+	assert.True(t, exists)
+
+	exists = gormUserRepository.HasUserByUUIDAndPassword("0", "0")
+
+	assert.False(t, exists)
+}
+
+func TestGormUserRepository_CreateUser_And_GetUserByEmail(t *testing.T) {
 	db, _ := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
 
 	gormUserRepository, _ := NewGormUserRepository(db)
@@ -228,11 +243,11 @@ func TestGormUserRepository_CreateUser_And_GetUserByUUIDAndPassword(t *testing.T
 
 	assert.Nil(t, err)
 
-	gormUserForRepository := gormUserRepository.GetUserByUUIDAndPassword("0", "0")
+	gormUserForRepository := gormUserRepository.GetUserByEmail("0")
 
 	assert.Nil(t, gormUserForRepository)
 
-	gormUserForRepository = gormUserRepository.GetUserByUUIDAndPassword(gormUser.GetUUID(), gormUser.GetPassword())
+	gormUserForRepository = gormUserRepository.GetUserByEmail(gormUser.GetEmail())
 
 	assert.NotNil(t, gormUserForRepository)
 	assert.Equal(t, gormUserForRepository.GetUUID(), gormUser.GetUUID())
@@ -258,7 +273,7 @@ func TestGormUserRepository_CreateUser_And_UpdatePassword(t *testing.T) {
 
 	assert.Nil(t, err)
 
-	gormUserForRepository := gormUserRepository.GetUserByEmailAndPassword(gormUser.GetEmail(), gormUser.GetPassword())
+	gormUserForRepository := gormUserRepository.GetUserByEmail(gormUser.GetEmail())
 
 	assert.NotNil(t, gormUserForRepository)
 	assert.Equal(t, gormUserForRepository.GetPassword(), gormUser.GetPassword())
@@ -271,7 +286,7 @@ func TestGormUserRepository_CreateUser_And_UpdatePassword(t *testing.T) {
 
 	assert.Nil(t, err)
 
-	gormUserForRepository = gormUserRepository.GetUserByEmailAndPassword(gormUser.GetEmail(), gormUser.GetPassword())
+	gormUserForRepository = gormUserRepository.GetUserByEmail(gormUser.GetEmail())
 
 	assert.NotNil(t, gormUserForRepository)
 	assert.Equal(t, gormUserForRepository.GetPassword(), gormUser.GetPassword())

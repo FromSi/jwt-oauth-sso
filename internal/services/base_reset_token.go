@@ -62,9 +62,9 @@ func (receiver BaseResetTokenService) ResetPasswordByUserUUIDAndOldPasswordAndNe
 	oldPassword string,
 	newPassword string,
 ) error {
-	user := receiver.userRepository.GetUserByUUIDAndPassword(userUUID, oldPassword)
+	userExists := receiver.userRepository.HasUserByUUIDAndPassword(userUUID, oldPassword)
 
-	if user == nil {
+	if !userExists {
 		return errors.New("user not found")
 	}
 

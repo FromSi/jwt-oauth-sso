@@ -108,22 +108,26 @@ func (receiver GormUserRepository) HasUserByEmail(email string) bool {
 	return exists
 }
 
-func (receiver GormUserRepository) GetUserByEmailAndPassword(email string, password string) User {
-	var gormUser GormUser
+func (receiver GormUserRepository) HasUserByEmailAndPassword(email string, password string) bool {
+	var exists bool
 
-	result := receiver.db.Model(&GormUser{}).First(&gormUser, &GormUser{Email: email, Password: password})
+	receiver.db.Model(&GormUser{}).Select("count(*) > 0").Find(&exists, &GormUser{Email: email, Password: password})
 
-	if result.RowsAffected == 0 {
-		return nil
-	}
-
-	return &gormUser
+	return exists
 }
 
-func (receiver GormUserRepository) GetUserByUUIDAndPassword(uuid string, password string) User {
+func (receiver GormUserRepository) HasUserByUUIDAndPassword(uuid string, password string) bool {
+	var exists bool
+
+	receiver.db.Model(&GormUser{}).Select("count(*) > 0").Find(&exists, &GormUser{UUID: uuid, Password: password})
+
+	return exists
+}
+
+func (receiver GormUserRepository) GetUserByEmail(email string) User {
 	var gormUser GormUser
 
-	result := receiver.db.Model(&GormUser{}).First(&gormUser, &GormUser{UUID: uuid, Password: password})
+	result := receiver.db.Model(&GormUser{}).First(&gormUser, &GormUser{Email: email})
 
 	if result.RowsAffected == 0 {
 		return nil
