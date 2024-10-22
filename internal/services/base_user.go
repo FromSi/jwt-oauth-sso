@@ -11,11 +11,11 @@ func NewBaseUserService() *BaseUserService {
 	return &BaseUserService{}
 }
 
-func (receiver BaseUserService) GenerateUUID() string {
+func (receiver *BaseUserService) GenerateUUID() string {
 	return uuid.New().String()
 }
 
-func (receiver BaseUserService) HashPassword(password string) (string, error) {
+func (receiver *BaseUserService) HashPassword(password string) (string, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 
 	if err != nil {
@@ -25,6 +25,6 @@ func (receiver BaseUserService) HashPassword(password string) (string, error) {
 	return string(hashedPassword), nil
 }
 
-func (receiver BaseUserService) CheckPasswordByHashAndPassword(hashedPassword string, password string) error {
+func (receiver *BaseUserService) CheckPasswordByHashAndPassword(hashedPassword string, password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }

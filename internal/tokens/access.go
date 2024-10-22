@@ -92,7 +92,7 @@ func NewAccessTokenByJWT(config configs.TokenConfig, tokenJWT string) (*AccessTo
 	return &accessToken, nil
 }
 
-func (receiver AccessToken) GetJWT() (string, error) {
+func (receiver *AccessToken) GetJWT() (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		CommonJWTClaimIssuer:         receiver.Issuer,
 		CommonJWTClaimAudience:       receiver.Audience,

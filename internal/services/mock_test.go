@@ -86,3 +86,37 @@ func (receiver *MockUserRepository) CreateUser(user repositories.User) error {
 func (receiver *MockUserRepository) UpdatePassword(uuid string, password string, updatedAt int) error {
 	return receiver.Called(uuid, password, updatedAt).Error(0)
 }
+
+type MockDeviceRepository struct {
+	mock.Mock
+}
+
+func (receiver *MockDeviceRepository) GetDevicesByUserUUID(userUUID string) []repositories.Device {
+	return receiver.Called(userUUID).Get(0).([]repositories.Device)
+}
+
+func (receiver *MockDeviceRepository) GetDeviceByUserUUIDAndIpAndAgent(userUUID string, ip string, agent string) repositories.Device {
+	args := receiver.Called(userUUID, ip, agent)
+
+	if args.Get(0) == nil {
+		return nil
+	}
+
+	return args.Get(0).(repositories.Device)
+}
+
+func (receiver *MockDeviceRepository) CreateDevice(device repositories.Device) error {
+	return receiver.Called(device).Error(0)
+}
+
+func (receiver *MockDeviceRepository) UpdateDevice(device repositories.Device) error {
+	return receiver.Called(device).Error(0)
+}
+
+func (receiver *MockDeviceRepository) DeleteDeviceByUUID(uuid string) error {
+	return receiver.Called(uuid).Error(0)
+}
+
+func (receiver *MockDeviceRepository) DeleteAllDevicesByUserUUID(userUUID string) error {
+	return receiver.Called(userUUID).Error(0)
+}

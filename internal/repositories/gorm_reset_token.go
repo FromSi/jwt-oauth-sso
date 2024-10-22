@@ -36,19 +36,19 @@ func NewGormResetTokenByResetToken(resetToken ResetToken) *GormResetToken {
 	}
 }
 
-func (receiver GormResetToken) GetToken() string {
+func (receiver *GormResetToken) GetToken() string {
 	return receiver.Token
 }
 
-func (receiver GormResetToken) GetUserUUID() string {
+func (receiver *GormResetToken) GetUserUUID() string {
 	return receiver.UserUUID
 }
 
-func (receiver GormResetToken) GetExpiredAt() int {
+func (receiver *GormResetToken) GetExpiredAt() int {
 	return receiver.ExpiredAt
 }
 
-func (receiver GormResetToken) GetCreatedAt() int {
+func (receiver *GormResetToken) GetCreatedAt() int {
 	return receiver.CreatedAt
 }
 
@@ -82,7 +82,7 @@ func NewGormResetTokenRepository(db *gorm.DB) (*GormResetTokenRepository, error)
 	return &GormResetTokenRepository{db: db}, nil
 }
 
-func (receiver GormResetTokenRepository) HasToken(token string) bool {
+func (receiver *GormResetTokenRepository) HasToken(token string) bool {
 	var exists bool
 
 	receiver.db.Model(&GormResetToken{}).Select("count(*) > 0").Find(&exists, &GormResetToken{Token: token})
@@ -90,7 +90,7 @@ func (receiver GormResetTokenRepository) HasToken(token string) bool {
 	return exists
 }
 
-func (receiver GormResetTokenRepository) GetResetTokenByToken(token string) ResetToken {
+func (receiver *GormResetTokenRepository) GetResetTokenByToken(token string) ResetToken {
 	var gormResetToken GormResetToken
 
 	result := receiver.db.Model(&GormResetToken{}).First(&gormResetToken, &GormResetToken{Token: token})
@@ -102,12 +102,12 @@ func (receiver GormResetTokenRepository) GetResetTokenByToken(token string) Rese
 	return &gormResetToken
 }
 
-func (receiver GormResetTokenRepository) CreateResetToken(resetToken ResetToken) error {
+func (receiver *GormResetTokenRepository) CreateResetToken(resetToken ResetToken) error {
 	gormResetToken := NewGormResetTokenByResetToken(resetToken)
 
 	return receiver.db.Model(&GormResetToken{}).Create(NewGormResetTokenByResetToken(gormResetToken)).Error
 }
 
-func (receiver GormResetTokenRepository) DeleteResetToken(token string) error {
+func (receiver *GormResetTokenRepository) DeleteResetToken(token string) error {
 	return receiver.db.Delete(&GormResetToken{}, &GormResetToken{Token: token}).Error
 }

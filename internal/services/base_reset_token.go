@@ -25,11 +25,11 @@ func NewBaseResetTokenService(
 	}
 }
 
-func (receiver BaseResetTokenService) GenerateToken() string {
+func (receiver *BaseResetTokenService) GenerateToken() string {
 	return uuid.New().String()
 }
 
-func (receiver BaseResetTokenService) ResetPasswordByTokenAndNewPassword(token string, newPassword string) error {
+func (receiver *BaseResetTokenService) ResetPasswordByTokenAndNewPassword(token string, newPassword string) error {
 	resetToken := receiver.resetTokenRepository.GetResetTokenByToken(token)
 
 	if resetToken == nil {
@@ -57,7 +57,7 @@ func (receiver BaseResetTokenService) ResetPasswordByTokenAndNewPassword(token s
 	return nil
 }
 
-func (receiver BaseResetTokenService) ResetPasswordByUserUUIDAndOldPasswordAndNewPassword(
+func (receiver *BaseResetTokenService) ResetPasswordByUserUUIDAndOldPasswordAndNewPassword(
 	userUUID string,
 	oldPassword string,
 	newPassword string,

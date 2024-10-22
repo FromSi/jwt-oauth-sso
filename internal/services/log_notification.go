@@ -8,6 +8,6 @@ func NewLogNotificationService() *LogNotificationService {
 	return &LogNotificationService{}
 }
 
-func (receiver LogNotificationService) SendText(text string) {
+func (receiver *LogNotificationService) SendText(text string) {
 	log.Println(text)
 }

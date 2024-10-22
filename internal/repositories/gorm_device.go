@@ -1,7 +1,10 @@
 package repositories
 
 import (
+	"github.com/fromsi/jwt-oauth-sso/internal/configs"
+	"github.com/fromsi/jwt-oauth-sso/internal/tokens"
 	"gorm.io/gorm"
+	"time"
 )
 
 const (
@@ -48,31 +51,41 @@ func NewGormDeviceByDevice(device Device) *GormDevice {
 	}
 }
 
-func (receiver GormDevice) GetUUID() string {
+func (receiver *GormDevice) GenerateAccessToken(config configs.TokenConfig) (*tokens.AccessToken, error) {
+	return tokens.NewAccessToken(
+		config,
+		receiver.UserUUID,
+		receiver.UUID,
+		receiver.Agent,
+		time.Now(),
+	)
+}
+
+func (receiver *GormDevice) GetUUID() string {
 	return receiver.UUID
 }
 
-func (receiver GormDevice) GetUserUUID() string {
+func (receiver *GormDevice) GetUserUUID() string {
 	return receiver.UserUUID
 }
 
-func (receiver GormDevice) GetAgent() string {
+func (receiver *GormDevice) GetAgent() string {
 	return receiver.Agent
 }
 
-func (receiver GormDevice) GetIp() string {
+func (receiver *GormDevice) GetIp() string {
 	return receiver.Ip
 }
 
-func (receiver GormDevice) GetExpiredAt() int {
+func (receiver *GormDevice) GetExpiredAt() int {
 	return receiver.ExpiredAt
 }
 
-func (receiver GormDevice) GetCreatedAt() int {
+func (receiver *GormDevice) GetCreatedAt() int {
 	return receiver.CreatedAt
 }
 
-func (receiver GormDevice) GetUpdatedAt() int {
+func (receiver *GormDevice) GetUpdatedAt() int {
 	return receiver.UpdatedAt
 }
 
@@ -118,7 +131,7 @@ func NewGormDeviceRepository(db *gorm.DB) (*GormDeviceRepository, error) {
 	return &GormDeviceRepository{db: db}, nil
 }
 
-func (receiver GormDeviceRepository) GetDevicesByUserUUID(userUUID string) []Device {
+func (receiver *GormDeviceRepository) GetDevicesByUserUUID(userUUID string) []Device {
 	var gormDevices []GormDevice
 
 	receiver.db.Model(&GormDevice{UserUUID: userUUID}).Find(&gormDevices)
@@ -132,22 +145,34 @@ func (receiver GormDeviceRepository) GetDevicesByUserUUID(userUUID string) []Dev
 	return devices
 }
 
-func (receiver GormDeviceRepository) CreateDevice(device Device) error {
+func (receiver *GormDeviceRepository) GetDeviceByUserUUIDAndIpAndAgent(userUUID string, ip string, agent string) Device {
+	var gormDevice GormDevice
+
+	result := receiver.db.Model(&GormDevice{}).First(&gormDevice, &GormDevice{UserUUID: userUUID, Ip: ip, Agent: agent})
+
+	if result.RowsAffected == 0 {
+		return nil
+	}
+
+	return &gormDevice
+}
+
+func (receiver *GormDeviceRepository) CreateDevice(device Device) error {
 	gormDevice := NewGormDeviceByDevice(device)
 
 	return receiver.db.Model(&GormDevice{}).Create(NewGormDeviceByDevice(gormDevice)).Error
 }
 
-func (receiver GormDeviceRepository) UpdateDevice(device Device) error {
+func (receiver *GormDeviceRepository) UpdateDevice(device Device) error {
 	gormDevice := NewGormDeviceByDevice(device)
 
 	return receiver.db.Model(&GormDevice{}).Where(&GormDevice{UUID: device.GetUUID()}).UpdateColumns(NewGormDeviceByDevice(gormDevice)).Error
 }
 
-func (receiver GormDeviceRepository) DeleteDeviceByUUID(uuid string) error {
+func (receiver *GormDeviceRepository) DeleteDeviceByUUID(uuid string) error {
 	return receiver.db.Delete(&GormDevice{}, &GormDevice{UUID: uuid}).Error
 }
 
-func (receiver GormDeviceRepository) DeleteAllDevicesByUserUUID(userUUID string) error {
+func (receiver *GormDeviceRepository) DeleteAllDevicesByUserUUID(userUUID string) error {
 	return receiver.db.Delete(&GormDevice{}, &GormDevice{UserUUID: userUUID}).Error
 }

@@ -1,7 +1,13 @@
 package repositories
 
+import (
+	"github.com/fromsi/jwt-oauth-sso/internal/configs"
+	"github.com/fromsi/jwt-oauth-sso/internal/tokens"
+)
+
 type QueryDeviceRepository interface {
 	GetDevicesByUserUUID(string) []Device
+	GetDeviceByUserUUIDAndIpAndAgent(string, string, string) Device
 }
 
 type MutableDeviceRepository interface {
@@ -17,6 +23,7 @@ type DeviceRepository interface {
 }
 
 type QueryDevice interface {
+	GenerateAccessToken(configs.TokenConfig) (*tokens.AccessToken, error)
 	GetUUID() string
 	GetUserUUID() string
 	GetAgent() string

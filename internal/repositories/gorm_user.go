@@ -38,23 +38,23 @@ func NewGormUserByUser(user User) *GormUser {
 	}
 }
 
-func (receiver GormUser) GetUUID() string {
+func (receiver *GormUser) GetUUID() string {
 	return receiver.UUID
 }
 
-func (receiver GormUser) GetEmail() string {
+func (receiver *GormUser) GetEmail() string {
 	return receiver.Email
 }
 
-func (receiver GormUser) GetPassword() string {
+func (receiver *GormUser) GetPassword() string {
 	return receiver.Password
 }
 
-func (receiver GormUser) GetCreatedAt() int {
+func (receiver *GormUser) GetCreatedAt() int {
 	return receiver.CreatedAt
 }
 
-func (receiver GormUser) GetUpdatedAt() int {
+func (receiver *GormUser) GetUpdatedAt() int {
 	return receiver.UpdatedAt
 }
 
@@ -92,7 +92,7 @@ func NewGormUserRepository(db *gorm.DB) (*GormUserRepository, error) {
 	return &GormUserRepository{db: db}, nil
 }
 
-func (receiver GormUserRepository) HasUserByUUID(uuid string) bool {
+func (receiver *GormUserRepository) HasUserByUUID(uuid string) bool {
 	var exists bool
 
 	receiver.db.Model(&GormUser{}).Select("count(*) > 0").Find(&exists, &GormUser{UUID: uuid})
@@ -100,7 +100,7 @@ func (receiver GormUserRepository) HasUserByUUID(uuid string) bool {
 	return exists
 }
 
-func (receiver GormUserRepository) HasUserByEmail(email string) bool {
+func (receiver *GormUserRepository) HasUserByEmail(email string) bool {
 	var exists bool
 
 	receiver.db.Model(&GormUser{}).Select("count(*) > 0").Find(&exists, &GormUser{Email: email})
@@ -108,7 +108,7 @@ func (receiver GormUserRepository) HasUserByEmail(email string) bool {
 	return exists
 }
 
-func (receiver GormUserRepository) HasUserByEmailAndPassword(email string, password string) bool {
+func (receiver *GormUserRepository) HasUserByEmailAndPassword(email string, password string) bool {
 	var exists bool
 
 	receiver.db.Model(&GormUser{}).Select("count(*) > 0").Find(&exists, &GormUser{Email: email, Password: password})
@@ -116,7 +116,7 @@ func (receiver GormUserRepository) HasUserByEmailAndPassword(email string, passw
 	return exists
 }
 
-func (receiver GormUserRepository) HasUserByUUIDAndPassword(uuid string, password string) bool {
+func (receiver *GormUserRepository) HasUserByUUIDAndPassword(uuid string, password string) bool {
 	var exists bool
 
 	receiver.db.Model(&GormUser{}).Select("count(*) > 0").Find(&exists, &GormUser{UUID: uuid, Password: password})
@@ -124,7 +124,7 @@ func (receiver GormUserRepository) HasUserByUUIDAndPassword(uuid string, passwor
 	return exists
 }
 
-func (receiver GormUserRepository) GetUserByEmail(email string) User {
+func (receiver *GormUserRepository) GetUserByEmail(email string) User {
 	var gormUser GormUser
 
 	result := receiver.db.Model(&GormUser{}).First(&gormUser, &GormUser{Email: email})
@@ -136,12 +136,12 @@ func (receiver GormUserRepository) GetUserByEmail(email string) User {
 	return &gormUser
 }
 
-func (receiver GormUserRepository) CreateUser(user User) error {
+func (receiver *GormUserRepository) CreateUser(user User) error {
 	gormUser := NewGormUserByUser(user)
 
 	return receiver.db.Model(&GormUser{}).Create(NewGormUserByUser(gormUser)).Error
 }
 
-func (receiver GormUserRepository) UpdatePassword(uuid string, password string, updatedAt int) error {
+func (receiver *GormUserRepository) UpdatePassword(uuid string, password string, updatedAt int) error {
 	return receiver.db.Model(&GormUser{}).Where(&GormUser{UUID: uuid}).UpdateColumns(&GormUser{Password: password, UpdatedAt: updatedAt}).Error
 }
