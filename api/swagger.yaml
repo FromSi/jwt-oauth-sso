@@ -57,6 +57,12 @@ paths:
                 $ref: '#/components/schemas/ErrorBadRequest'
         '404':
           description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorInternalServer'
   /auth/register:
     post:
       summary: Register New User
@@ -97,6 +103,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorConflict'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorInternalServer'
   /auth/refresh:
     post:
       summary: Renew Refresh and Access Tokens
@@ -133,6 +145,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorConflict'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorInternalServer'
   /auth/send_reset_token:
     post:
       summary: Send Reset Password Token To User
@@ -306,44 +324,46 @@ paths:
                   - data
                 properties:
                   data:
-                    type: object
-                    required:
-                      - uuid
-                      - userUUID
-                      - agent
-                      - ip
-                      - expiredAt
-                      - createdAt
-                      - updatedAt
-                    properties:
-                      uuid:
-                        type: string
-                        format: uuid
-                        example: '09d0ce56-33ab-4fce-90bb-d2b4d6d844ba'
-                      userUUID:
-                        type: string
-                        format: uuid
-                        example: '09d0ce56-33ab-4fce-90bb-d2b4d6d844ba'
-                      agent:
-                        type: string
-                        format: text
-                        example: 'Mozilla/5.0 (X11; Linux x86_64; rv:121.0)'
-                      ip:
-                        type: string
-                        format: ipv4_or_ipv6
-                        example: '1.1.1.1'
-                      expiredAt:
-                        type: integer
-                        format: unix
-                        example: 1516300000
-                      createdAt:
-                        type: integer
-                        format: unix
-                        example: 1516300000
-                      updatedAt:
-                        type: integer
-                        format: unix
-                        example: 1516300000
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - uuid
+                        - userUUID
+                        - agent
+                        - ip
+                        - expiredAt
+                        - createdAt
+                        - updatedAt
+                      properties:
+                        uuid:
+                          type: string
+                          format: uuid
+                          example: '09d0ce56-33ab-4fce-90bb-d2b4d6d844ba'
+                        userUUID:
+                          type: string
+                          format: uuid
+                          example: '09d0ce56-33ab-4fce-90bb-d2b4d6d844ba'
+                        agent:
+                          type: string
+                          format: text
+                          example: 'Mozilla/5.0 (X11; Linux x86_64; rv:121.0)'
+                        ip:
+                          type: string
+                          format: ipv4_or_ipv6
+                          example: '1.1.1.1'
+                        expiredAt:
+                          type: integer
+                          format: unix
+                          example: 1516300000
+                        createdAt:
+                          type: integer
+                          format: unix
+                          example: 1516300000
+                        updatedAt:
+                          type: integer
+                          format: unix
+                          example: 1516300000
         '401':
           description: Unauthorized
 components:
@@ -369,6 +389,14 @@ components:
                 type: string
                 example: "any message"
     ErrorConflict:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: "any message"
+    ErrorInternalServer:
       type: object
       required:
         - message

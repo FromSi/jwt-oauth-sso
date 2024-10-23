@@ -8,46 +8,50 @@ import (
 )
 
 const (
-	GormDeviceUUIDDefault      = ""
-	GormDeviceUserUUIDDefault  = ""
-	GormDeviceAgentDefault     = ""
-	GormDeviceIpDefault        = ""
-	GormDeviceExpiredAtDefault = 0
-	GormDeviceCreatedAtDefault = 0
-	GormDeviceUpdatedAtDefault = 0
+	GormDeviceUUIDDefault         = ""
+	GormDeviceUserUUIDDefault     = ""
+	GormDeviceAgentDefault        = ""
+	GormDeviceIpDefault           = ""
+	GormDeviceRefreshTokenDefault = ""
+	GormDeviceExpiredAtDefault    = 0
+	GormDeviceCreatedAtDefault    = 0
+	GormDeviceUpdatedAtDefault    = 0
 )
 
 type GormDevice struct {
-	UUID      string `gorm:"unique;not null"`
-	UserUUID  string `gorm:"not null"`
-	Agent     string `gorm:"not null"`
-	Ip        string `gorm:"not null"`
-	ExpiredAt int    `gorm:"not null"`
-	CreatedAt int    `gorm:"not null"`
-	UpdatedAt int    `gorm:"not null"`
+	UUID         string `gorm:"unique;not null"`
+	UserUUID     string `gorm:"not null"`
+	Agent        string `gorm:"not null"`
+	Ip           string `gorm:"not null"`
+	RefreshToken string `gorm:"not null"`
+	ExpiredAt    int    `gorm:"not null"`
+	CreatedAt    int    `gorm:"not null"`
+	UpdatedAt    int    `gorm:"not null"`
 }
 
 func NewGormDevice() *GormDevice {
 	return &GormDevice{
-		UUID:      GormDeviceUUIDDefault,
-		UserUUID:  GormDeviceUserUUIDDefault,
-		Agent:     GormDeviceAgentDefault,
-		Ip:        GormDeviceIpDefault,
-		ExpiredAt: GormDeviceExpiredAtDefault,
-		CreatedAt: GormDeviceCreatedAtDefault,
-		UpdatedAt: GormDeviceUpdatedAtDefault,
+		UUID:         GormDeviceUUIDDefault,
+		UserUUID:     GormDeviceUserUUIDDefault,
+		Agent:        GormDeviceAgentDefault,
+		Ip:           GormDeviceIpDefault,
+		RefreshToken: GormDeviceRefreshTokenDefault,
+		ExpiredAt:    GormDeviceExpiredAtDefault,
+		CreatedAt:    GormDeviceCreatedAtDefault,
+		UpdatedAt:    GormDeviceUpdatedAtDefault,
 	}
 }
 
 func NewGormDeviceByDevice(device Device) *GormDevice {
 	return &GormDevice{
-		UUID:      device.GetUUID(),
-		UserUUID:  device.GetUserUUID(),
-		Agent:     device.GetAgent(),
-		Ip:        device.GetIp(),
-		ExpiredAt: device.GetExpiredAt(),
-		CreatedAt: device.GetCreatedAt(),
-		UpdatedAt: device.GetUpdatedAt(),
+		UUID:         device.GetUUID(),
+		UserUUID:     device.GetUserUUID(),
+		Agent:        device.GetAgent(),
+		Ip:           device.GetIp(),
+		RefreshToken: device.GetRefreshToken(),
+		ExpiredAt:    device.GetExpiredAt(),
+		CreatedAt:    device.GetCreatedAt(),
+		UpdatedAt:    device.GetUpdatedAt(),
 	}
 }
 
@@ -77,6 +81,10 @@ func (receiver *GormDevice) GetIp() string {
 	return receiver.Ip
 }
 
+func (receiver *GormDevice) GetRefreshToken() string {
+	return receiver.RefreshToken
+}
+
 func (receiver *GormDevice) GetExpiredAt() int {
 	return receiver.ExpiredAt
 }
@@ -103,6 +111,10 @@ func (receiver *GormDevice) SetAgent(value string) {
 
 func (receiver *GormDevice) SetIp(value string) {
 	receiver.Ip = value
+}
+
+func (receiver *GormDevice) SetRefreshToken(value string) {
+	receiver.RefreshToken = value
 }
 
 func (receiver *GormDevice) SetExpiredAt(value int) {
