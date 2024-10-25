@@ -9,7 +9,7 @@ import (
 )
 
 func Test_NewSuccessLoginResponse(t *testing.T) {
-	config, _ := configs.NewBaseConfig(true)
+	config := configs.NewBaseConfig()
 	gormDevice := repositories.NewGormDevice()
 	response, err := NewSuccessLoginResponse(config, gormDevice)
 

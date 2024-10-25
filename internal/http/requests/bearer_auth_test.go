@@ -13,7 +13,7 @@ import (
 )
 
 func Test_NewBearerAuthRequestHeader(t *testing.T) {
-	config, _ := configs.NewBaseConfig(true)
+	config := configs.NewBaseConfig()
 
 	validToken, _ := tokens.NewAccessToken(config, "1", "1", "1", time.Now())
 

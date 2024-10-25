@@ -42,7 +42,7 @@ func Test_NewGormDeviceByDevice(t *testing.T) {
 
 func TestGormDeviceByDevice_GenerateAccessToken(t *testing.T) {
 	gormDevice := NewGormDevice()
-	config, _ := configs.NewBaseConfig(true)
+	config := configs.NewBaseConfig()
 
 	gormDevice.SetUUID("1")
 	gormDevice.SetUserUUID("2")

@@ -3,8 +3,6 @@ package requests
 import (
 	"github.com/fromsi/jwt-oauth-sso/internal/validator_rules"
 	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
-	"github.com/go-playground/validator/v10"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
@@ -52,11 +50,9 @@ func Test_NewPasswordResetWithTokenRequestBody(t *testing.T) {
 
 	gin.SetMode(gin.TestMode)
 
-	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
-		err := v.RegisterValidation("password", validator_rules.Password)
+	err := validator_rules.BindPassword()
 
-		assert.NoError(t, err)
-	}
+	assert.NoError(t, err)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -29,22 +29,7 @@ type BaseConfig struct {
 	databaseDsn                    string
 }
 
-func NewBaseConfig(onlyDefaultValues bool) (*BaseConfig, error) {
-	var dirPath, filename string
-	var err error
-
-	if !onlyDefaultValues {
-		flag.StringVar(&filename, "config_filename", "config", "configuration filename. e.g: config")
-		flag.StringVar(&dirPath, "config_dir_path", ".", "configuration file directory path")
-		flag.Parse()
-
-		viper.SetConfigName(filename)
-		viper.SetConfigType("yaml")
-		viper.AddConfigPath(dirPath)
-
-		err = viper.ReadInConfig()
-	}
-
+func NewBaseConfig() *BaseConfig {
 	var config BaseConfig
 
 	viper.SetDefault("app.name", BaseConfigDefaultAppName)
@@ -67,7 +52,27 @@ func NewBaseConfig(onlyDefaultValues bool) (*BaseConfig, error) {
 	config.tokenSecretKey = viper.GetString("token.secret_key")
 	config.databaseDsn = viper.GetString("database.dsn")
 
-	return &config, err
+	return &config
+}
+
+func NewBaseConfigWithYamlFile() (*BaseConfig, error) {
+	var dirPath, filename string
+
+	flag.StringVar(&filename, "config_filename", "config", "configuration filename. e.g: config")
+	flag.StringVar(&dirPath, "config_dir_path", ".", "configuration file directory path")
+	flag.Parse()
+
+	viper.SetConfigName(filename)
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath(dirPath)
+
+	err := viper.ReadInConfig()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return NewBaseConfig(), nil
 }
 
 func (receiver BaseConfig) GetName() string {

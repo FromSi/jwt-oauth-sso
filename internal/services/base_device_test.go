@@ -94,7 +94,7 @@ func TestBaseDeviceService_GetDeviceByUserUUIDAndIpAndAgent(t *testing.T) {
 		},
 	}
 
-	config, _ := configs.NewBaseConfig(true)
+	config := configs.NewBaseConfig()
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
