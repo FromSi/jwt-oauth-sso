@@ -23,10 +23,10 @@ func (receiver RefreshRoute) Pattern() string {
 }
 
 func (receiver RefreshRoute) Handle(context *gin.Context) {
-	_, err := requests.NewRefreshRequest(context)
+	_, errResponse := requests.NewRefreshRequest(context)
 
-	if err != nil {
-		context.Status(http.StatusBadRequest)
+	if errResponse != nil {
+		context.JSON(http.StatusBadRequest, errResponse)
 
 		return
 	}

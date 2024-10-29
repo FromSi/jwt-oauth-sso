@@ -35,10 +35,10 @@ func (receiver DevicesRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	_, err = requests.NewDevicesRequest(context)
+	_, errResponse := requests.NewDevicesRequest(context)
 
-	if err != nil {
-		context.Status(http.StatusBadRequest)
+	if errResponse != nil {
+		context.JSON(http.StatusBadRequest, errResponse)
 
 		return
 	}

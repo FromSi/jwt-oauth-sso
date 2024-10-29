@@ -1,12 +1,15 @@
 package requests
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/fromsi/jwt-oauth-sso/internal/http/responses"
+	"github.com/gin-gonic/gin"
+)
 
 type DevicesRequest struct {
 	Body DevicesRequestBody
 }
 
-func NewDevicesRequest(context *gin.Context) (*DevicesRequest, error) {
+func NewDevicesRequest(context *gin.Context) (*DevicesRequest, *responses.ErrorBadRequestResponse) {
 	var request DevicesRequest
 
 	requestBody, err := NewDevicesRequestBody(context)
@@ -22,11 +25,11 @@ func NewDevicesRequest(context *gin.Context) (*DevicesRequest, error) {
 
 type DevicesRequestBody struct{}
 
-func NewDevicesRequestBody(context *gin.Context) (*DevicesRequestBody, error) {
+func NewDevicesRequestBody(context *gin.Context) (*DevicesRequestBody, *responses.ErrorBadRequestResponse) {
 	var requestBody DevicesRequestBody
 
 	if err := context.ShouldBindJSON(&requestBody); err != nil {
-		return nil, err
+		return nil, responses.NewErrorBadRequestResponseByError(err)
 	}
 
 	return &requestBody, nil

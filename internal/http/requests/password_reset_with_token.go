@@ -1,12 +1,15 @@
 package requests
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/fromsi/jwt-oauth-sso/internal/http/responses"
+	"github.com/gin-gonic/gin"
+)
 
 type PasswordResetWithTokenRequest struct {
 	Body PasswordResetWithTokenRequestBody
 }
 
-func NewPasswordResetWithTokenRequest(context *gin.Context) (*PasswordResetWithTokenRequest, error) {
+func NewPasswordResetWithTokenRequest(context *gin.Context) (*PasswordResetWithTokenRequest, *responses.ErrorBadRequestResponse) {
 	var request PasswordResetWithTokenRequest
 
 	requestBody, err := NewPasswordResetWithTokenRequestBody(context)
@@ -25,11 +28,11 @@ type PasswordResetWithTokenRequestBody struct {
 	NewPassword string `json:"newPassword" binding:"required,password"`
 }
 
-func NewPasswordResetWithTokenRequestBody(context *gin.Context) (*PasswordResetWithTokenRequestBody, error) {
+func NewPasswordResetWithTokenRequestBody(context *gin.Context) (*PasswordResetWithTokenRequestBody, *responses.ErrorBadRequestResponse) {
 	var requestBody PasswordResetWithTokenRequestBody
 
 	if err := context.ShouldBindJSON(&requestBody); err != nil {
-		return nil, err
+		return nil, responses.NewErrorBadRequestResponseByError(err)
 	}
 
 	return &requestBody, nil

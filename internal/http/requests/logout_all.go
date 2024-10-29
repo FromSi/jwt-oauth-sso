@@ -1,12 +1,15 @@
 package requests
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/fromsi/jwt-oauth-sso/internal/http/responses"
+	"github.com/gin-gonic/gin"
+)
 
 type LogoutAllRequest struct {
 	Body LogoutAllRequestBody
 }
 
-func NewLogoutAllRequest(context *gin.Context) (*LogoutAllRequest, error) {
+func NewLogoutAllRequest(context *gin.Context) (*LogoutAllRequest, *responses.ErrorBadRequestResponse) {
 	var request LogoutAllRequest
 
 	requestBody, err := NewLogoutAllRequestBody(context)
@@ -22,11 +25,11 @@ func NewLogoutAllRequest(context *gin.Context) (*LogoutAllRequest, error) {
 
 type LogoutAllRequestBody struct{}
 
-func NewLogoutAllRequestBody(context *gin.Context) (*LogoutAllRequestBody, error) {
+func NewLogoutAllRequestBody(context *gin.Context) (*LogoutAllRequestBody, *responses.ErrorBadRequestResponse) {
 	var requestBody LogoutAllRequestBody
 
 	if err := context.ShouldBindJSON(&requestBody); err != nil {
-		return nil, err
+		return nil, responses.NewErrorBadRequestResponseByError(err)
 	}
 
 	return &requestBody, nil

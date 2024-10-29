@@ -62,13 +62,13 @@ func Test_NewLoginRequestBody(t *testing.T) {
 			c.Request, _ = http.NewRequest("POST", "", strings.NewReader(tt.body))
 			c.Request.Header.Set("Content-Type", "application/json")
 
-			requestBody, err := NewLoginRequestBody(c)
+			requestBody, errResponse := NewLoginRequestBody(c)
 
 			if tt.error {
-				assert.Error(t, err)
+				assert.NotNil(t, errResponse)
 				assert.Nil(t, requestBody)
 			} else {
-				assert.NoError(t, err)
+				assert.Nil(t, errResponse)
 				assert.NotNil(t, requestBody)
 				assert.NotEmpty(t, requestBody.Email)
 				assert.NotEmpty(t, requestBody.Password)

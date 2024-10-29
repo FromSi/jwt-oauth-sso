@@ -1,12 +1,15 @@
 package requests
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/fromsi/jwt-oauth-sso/internal/http/responses"
+	"github.com/gin-gonic/gin"
+)
 
 type RegisterRequest struct {
 	Body RegisterRequestBody
 }
 
-func NewRegisterRequest(context *gin.Context) (*RegisterRequest, error) {
+func NewRegisterRequest(context *gin.Context) (*RegisterRequest, *responses.ErrorBadRequestResponse) {
 	var request RegisterRequest
 
 	requestBody, err := NewRegisterRequestBody(context)
@@ -25,11 +28,11 @@ type RegisterRequestBody struct {
 	Password string `json:"password" binding:"required,password"`
 }
 
-func NewRegisterRequestBody(context *gin.Context) (*RegisterRequestBody, error) {
+func NewRegisterRequestBody(context *gin.Context) (*RegisterRequestBody, *responses.ErrorBadRequestResponse) {
 	var requestBody RegisterRequestBody
 
 	if err := context.ShouldBindJSON(&requestBody); err != nil {
-		return nil, err
+		return nil, responses.NewErrorBadRequestResponseByError(err)
 	}
 
 	return &requestBody, nil

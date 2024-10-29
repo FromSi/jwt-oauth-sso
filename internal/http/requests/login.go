@@ -1,12 +1,15 @@
 package requests
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/fromsi/jwt-oauth-sso/internal/http/responses"
+	"github.com/gin-gonic/gin"
+)
 
 type LoginRequest struct {
 	Body LoginRequestBody
 }
 
-func NewLoginRequest(context *gin.Context) (*LoginRequest, error) {
+func NewLoginRequest(context *gin.Context) (*LoginRequest, *responses.ErrorBadRequestResponse) {
 	var request LoginRequest
 
 	requestBody, err := NewLoginRequestBody(context)
@@ -25,11 +28,11 @@ type LoginRequestBody struct {
 	Password string `json:"password" binding:"required,password"`
 }
 
-func NewLoginRequestBody(context *gin.Context) (*LoginRequestBody, error) {
+func NewLoginRequestBody(context *gin.Context) (*LoginRequestBody, *responses.ErrorBadRequestResponse) {
 	var requestBody LoginRequestBody
 
 	if err := context.ShouldBindJSON(&requestBody); err != nil {
-		return nil, err
+		return nil, responses.NewErrorBadRequestResponseByError(err)
 	}
 
 	return &requestBody, nil

@@ -35,10 +35,10 @@ func (receiver LogoutAllRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	_, err = requests.NewLogoutAllRequest(context)
+	_, errResponse := requests.NewLogoutAllRequest(context)
 
-	if err != nil {
-		context.Status(http.StatusBadRequest)
+	if errResponse != nil {
+		context.JSON(http.StatusBadRequest, errResponse)
 
 		return
 	}

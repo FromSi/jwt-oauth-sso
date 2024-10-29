@@ -23,10 +23,10 @@ func (receiver LoginRoute) Pattern() string {
 }
 
 func (receiver LoginRoute) Handle(context *gin.Context) {
-	request, err := requests.NewLoginRequest(context)
+	request, errResponse := requests.NewLoginRequest(context)
 
-	if err != nil {
-		context.Status(http.StatusBadRequest)
+	if errResponse != nil {
+		context.JSON(http.StatusBadRequest, errResponse)
 
 		return
 	}

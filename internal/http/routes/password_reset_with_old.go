@@ -35,10 +35,10 @@ func (receiver PasswordResetWithOldRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	request, err := requests.NewPasswordResetWithOldRequest(context)
+	request, errResponse := requests.NewPasswordResetWithOldRequest(context)
 
-	if err != nil {
-		context.Status(http.StatusBadRequest)
+	if errResponse != nil {
+		context.JSON(http.StatusBadRequest, errResponse)
 
 		return
 	}

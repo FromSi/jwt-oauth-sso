@@ -1,12 +1,15 @@
 package requests
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/fromsi/jwt-oauth-sso/internal/http/responses"
+	"github.com/gin-gonic/gin"
+)
 
 type LogoutDeviceRequest struct {
 	Body LogoutDeviceRequestBody
 }
 
-func NewLogoutDeviceRequest(context *gin.Context) (*LogoutDeviceRequest, error) {
+func NewLogoutDeviceRequest(context *gin.Context) (*LogoutDeviceRequest, *responses.ErrorBadRequestResponse) {
 	var request LogoutDeviceRequest
 
 	requestBody, err := NewLogoutDeviceRequestBody(context)
@@ -24,11 +27,11 @@ type LogoutDeviceRequestBody struct {
 	DeviceUUID string `json:"deviceUuid" binding:"required,uuid4"`
 }
 
-func NewLogoutDeviceRequestBody(context *gin.Context) (*LogoutDeviceRequestBody, error) {
+func NewLogoutDeviceRequestBody(context *gin.Context) (*LogoutDeviceRequestBody, *responses.ErrorBadRequestResponse) {
 	var requestBody LogoutDeviceRequestBody
 
 	if err := context.ShouldBindJSON(&requestBody); err != nil {
-		return nil, err
+		return nil, responses.NewErrorBadRequestResponseByError(err)
 	}
 
 	return &requestBody, nil

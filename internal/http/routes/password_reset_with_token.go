@@ -23,10 +23,10 @@ func (receiver PasswordResetWithTokenRoute) Pattern() string {
 }
 
 func (receiver PasswordResetWithTokenRoute) Handle(context *gin.Context) {
-	request, err := requests.NewPasswordResetWithTokenRequest(context)
+	request, errResponse := requests.NewPasswordResetWithTokenRequest(context)
 
-	if err != nil {
-		context.Status(http.StatusBadRequest)
+	if errResponse != nil {
+		context.JSON(http.StatusBadRequest, errResponse)
 
 		return
 	}

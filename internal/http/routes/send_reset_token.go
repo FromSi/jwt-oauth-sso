@@ -23,10 +23,10 @@ func (receiver SendResetTokenRoute) Pattern() string {
 }
 
 func (receiver SendResetTokenRoute) Handle(context *gin.Context) {
-	request, err := requests.NewSendResetTokenRequest(context)
+	request, errResponse := requests.NewSendResetTokenRequest(context)
 
-	if err != nil {
-		context.Status(http.StatusBadRequest)
+	if errResponse != nil {
+		context.JSON(http.StatusBadRequest, errResponse)
 
 		return
 	}

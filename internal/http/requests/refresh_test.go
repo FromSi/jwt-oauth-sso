@@ -42,13 +42,13 @@ func Test_NewRefreshRequestBody(t *testing.T) {
 			c.Request, _ = http.NewRequest("POST", "", strings.NewReader(tt.body))
 			c.Request.Header.Set("Content-Type", "application/json")
 
-			requestBody, err := NewRefreshRequestBody(c)
+			requestBody, errResponse := NewRefreshRequestBody(c)
 
 			if tt.error {
-				assert.Error(t, err)
+				assert.NotNil(t, errResponse)
 				assert.Nil(t, requestBody)
 			} else {
-				assert.NoError(t, err)
+				assert.Nil(t, errResponse)
 				assert.NotNil(t, requestBody)
 			}
 		})

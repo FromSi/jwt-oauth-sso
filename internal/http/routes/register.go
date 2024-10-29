@@ -23,10 +23,10 @@ func (receiver RegisterRoute) Pattern() string {
 }
 
 func (receiver RegisterRoute) Handle(context *gin.Context) {
-	request, err := requests.NewRegisterRequest(context)
+	request, errResponse := requests.NewRegisterRequest(context)
 
-	if err != nil {
-		context.Status(http.StatusBadRequest)
+	if errResponse != nil {
+		context.JSON(http.StatusBadRequest, errResponse)
 
 		return
 	}
