@@ -2,24 +2,32 @@ package services
 
 import (
 	"github.com/fromsi/jwt-oauth-sso/internal/configs"
+	repositories_mocks "github.com/fromsi/jwt-oauth-sso/internal/mocks/repositories"
 	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/mock/gomock"
 	"testing"
 )
 
 func Test_NewBaseDeviceService(t *testing.T) {
-	mockDeviceRepository := MockDeviceRepository{}
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
 
-	baseDeviceService := NewBaseDeviceService(&mockDeviceRepository)
+	mockDeviceRepository := repositories_mocks.NewMockDeviceRepository(mockController)
+
+	baseDeviceService := NewBaseDeviceService(mockDeviceRepository)
 
 	assert.NotNil(t, baseDeviceService)
 }
 
 func TestBaseDeviceService_GenerateUUID(t *testing.T) {
-	mockDeviceRepository := MockDeviceRepository{}
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
 
-	baseDeviceService := NewBaseDeviceService(&mockDeviceRepository)
+	mockDeviceRepository := repositories_mocks.NewMockDeviceRepository(mockController)
+
+	baseDeviceService := NewBaseDeviceService(mockDeviceRepository)
 
 	uuidOne := baseDeviceService.GenerateUUID()
 	uuidTwo := baseDeviceService.GenerateUUID()
@@ -39,9 +47,12 @@ func TestBaseDeviceService_GenerateUUID(t *testing.T) {
 }
 
 func TestBaseDeviceService_GenerateRefreshToken(t *testing.T) {
-	mockDeviceRepository := MockDeviceRepository{}
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
 
-	baseDeviceService := NewBaseDeviceService(&mockDeviceRepository)
+	mockDeviceRepository := repositories_mocks.NewMockDeviceRepository(mockController)
+
+	baseDeviceService := NewBaseDeviceService(mockDeviceRepository)
 
 	uuidOne := baseDeviceService.GenerateRefreshToken()
 	uuidTwo := baseDeviceService.GenerateRefreshToken()
@@ -61,7 +72,10 @@ func TestBaseDeviceService_GenerateRefreshToken(t *testing.T) {
 }
 
 func TestBaseDeviceService_GetDeviceByUserUUIDAndIpAndAgent(t *testing.T) {
-	mockDeviceRepository := MockDeviceRepository{}
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
+
+	mockDeviceRepository := repositories_mocks.NewMockDeviceRepository(mockController)
 
 	device := repositories.NewGormDevice()
 
@@ -69,10 +83,10 @@ func TestBaseDeviceService_GetDeviceByUserUUIDAndIpAndAgent(t *testing.T) {
 	device.SetIp("1")
 	device.SetAgent("1")
 
-	mockDeviceRepository.On("GetDeviceByUserUUIDAndIpAndAgent", "1", "1", "1").Return(device)
-	mockDeviceRepository.On("GetDeviceByUserUUIDAndIpAndAgent", "2", "2", "2").Return(nil)
+	mockDeviceRepository.EXPECT().GetDeviceByUserUUIDAndIpAndAgent("1", "1", "1").Return(device).AnyTimes()
+	mockDeviceRepository.EXPECT().GetDeviceByUserUUIDAndIpAndAgent("2", "2", "2").Return(nil).AnyTimes()
 
-	baseDeviceService := NewBaseDeviceService(&mockDeviceRepository)
+	baseDeviceService := NewBaseDeviceService(mockDeviceRepository)
 
 	tests := []struct {
 		name     string

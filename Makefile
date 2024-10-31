@@ -19,6 +19,10 @@ pprof_heap: ## run before 'make run_pprof'
 	curl -o heap.out http://localhost:6060/debug/pprof/heap
 	go tool pprof heap.out
 
+.PHONY: mockgen
+mockgen: ## install mockgen 'go install go.uber.org/mock/mockgen@latest'
+	go generate ./...
+
 .PHONY: build
 build: ## build app for linux
 	CGO_ENABLED=0 GOOS=linux go build -o jwt_oauth_sso ./cmd/server/main.go

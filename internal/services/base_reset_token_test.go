@@ -2,29 +2,37 @@ package services
 
 import (
 	"errors"
+	repositories_mocks "github.com/fromsi/jwt-oauth-sso/internal/mocks/repositories"
+	services_mocks "github.com/fromsi/jwt-oauth-sso/internal/mocks/services"
 	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
+	"go.uber.org/mock/gomock"
 	"testing"
 )
 
 func Test_NewBaseResetTokenService(t *testing.T) {
-	mockUserService := MockUserService{}
-	mockUserRepository := MockUserRepository{}
-	mockResetTokenRepository := MockResetTokenRepository{}
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
 
-	baseResetTokenService := NewBaseResetTokenService(&mockUserService, &mockResetTokenRepository, &mockUserRepository)
+	mockUserService := services_mocks.NewMockUserService(mockController)
+	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
+	mockResetTokenRepository := repositories_mocks.NewMockResetTokenRepository(mockController)
+
+	baseResetTokenService := NewBaseResetTokenService(mockUserService, mockResetTokenRepository, mockUserRepository)
 
 	assert.NotNil(t, baseResetTokenService)
 }
 
 func TestBaseResetTokenService_GenerateToken(t *testing.T) {
-	mockUserService := MockUserService{}
-	mockUserRepository := MockUserRepository{}
-	mockResetTokenRepository := MockResetTokenRepository{}
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
 
-	baseResetTokenService := NewBaseResetTokenService(&mockUserService, &mockResetTokenRepository, &mockUserRepository)
+	mockUserService := services_mocks.NewMockUserService(mockController)
+	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
+	mockResetTokenRepository := repositories_mocks.NewMockResetTokenRepository(mockController)
+
+	baseResetTokenService := NewBaseResetTokenService(mockUserService, mockResetTokenRepository, mockUserRepository)
 
 	uuidOne := baseResetTokenService.GenerateToken()
 	uuidTwo := baseResetTokenService.GenerateToken()
@@ -44,19 +52,22 @@ func TestBaseResetTokenService_GenerateToken(t *testing.T) {
 }
 
 func TestBaseResetTokenService_ResetPasswordByTokenAndNewPassword(t *testing.T) {
-	mockUserService := MockUserService{}
-	mockUserRepository := MockUserRepository{}
-	mockResetTokenRepository := MockResetTokenRepository{}
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
 
-	mockResetToken := &repositories.GormResetToken{}
-	mockResetTokenRepository.On("GetResetTokenByToken", "1").Return(mockResetToken)
-	mockResetTokenRepository.On("GetResetTokenByToken", "2").Return(nil)
-	mockUserService.On("HashPassword", "1").Return("1", nil)
-	mockUserService.On("HashPassword", "2").Return("", errors.New("invalid-password"))
-	mockUserRepository.On("UpdatePassword", mock.Anything, mock.Anything, mock.Anything).Return(nil)
-	mockResetTokenRepository.On("DeleteResetToken", mock.Anything).Return(nil)
+	mockUserService := services_mocks.NewMockUserService(mockController)
+	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
+	mockResetTokenRepository := repositories_mocks.NewMockResetTokenRepository(mockController)
 
-	baseResetTokenService := NewBaseResetTokenService(&mockUserService, &mockResetTokenRepository, &mockUserRepository)
+	mockResetToken := repositories.NewGormResetToken()
+	mockResetTokenRepository.EXPECT().GetResetTokenByToken(gomock.Eq("1")).Return(mockResetToken).AnyTimes()
+	mockResetTokenRepository.EXPECT().GetResetTokenByToken(gomock.Eq("2")).Return(nil).AnyTimes()
+	mockUserService.EXPECT().HashPassword(gomock.Eq("1")).Return("1", nil).AnyTimes()
+	mockUserService.EXPECT().HashPassword(gomock.Eq("2")).Return("", errors.New("invalid-password")).AnyTimes()
+	mockUserRepository.EXPECT().UpdatePassword(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
+	mockResetTokenRepository.EXPECT().DeleteResetToken(gomock.Any()).Return(nil).AnyTimes()
+
+	baseResetTokenService := NewBaseResetTokenService(mockUserService, mockResetTokenRepository, mockUserRepository)
 
 	tests := []struct {
 		name         string
@@ -103,18 +114,21 @@ func TestBaseResetTokenService_ResetPasswordByTokenAndNewPassword(t *testing.T) 
 }
 
 func TestBaseResetTokenService_ResetPasswordByUserUUIDAndOldPasswordAndNewPassword(t *testing.T) {
-	mockUserService := MockUserService{}
-	mockUserRepository := MockUserRepository{}
-	mockResetTokenRepository := MockResetTokenRepository{}
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
 
-	mockUserRepository.On("HasUserByUUIDAndPassword", "1", mock.Anything).Return(true)
-	mockUserRepository.On("HasUserByUUIDAndPassword", "2", mock.Anything).Return(false)
-	mockUserService.On("HashPassword", "1").Return("1", nil)
-	mockUserService.On("HashPassword", "2").Return("", errors.New("invalid-password"))
-	mockUserRepository.On("UpdatePassword", mock.Anything, mock.Anything, mock.Anything).Return(nil)
-	mockResetTokenRepository.On("DeleteResetToken", mock.Anything).Return(nil)
+	mockUserService := services_mocks.NewMockUserService(mockController)
+	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
+	mockResetTokenRepository := repositories_mocks.NewMockResetTokenRepository(mockController)
 
-	baseResetTokenService := NewBaseResetTokenService(&mockUserService, &mockResetTokenRepository, &mockUserRepository)
+	mockUserRepository.EXPECT().HasUserByUUIDAndPassword(gomock.Eq("1"), gomock.Any()).Return(true).AnyTimes()
+	mockUserRepository.EXPECT().HasUserByUUIDAndPassword(gomock.Eq("2"), gomock.Any()).Return(false).AnyTimes()
+	mockUserService.EXPECT().HashPassword(gomock.Eq("1")).Return("1", nil).AnyTimes()
+	mockUserService.EXPECT().HashPassword(gomock.Eq("2")).Return("", errors.New("invalid-password")).AnyTimes()
+	mockUserRepository.EXPECT().UpdatePassword(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
+	mockResetTokenRepository.EXPECT().DeleteResetToken(gomock.Any()).Return(nil).AnyTimes()
+
+	baseResetTokenService := NewBaseResetTokenService(mockUserService, mockResetTokenRepository, mockUserRepository)
 
 	tests := []struct {
 		name         string
