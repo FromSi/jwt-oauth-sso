@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func Test_NewLogoutDeviceRequestBody(t *testing.T) {
+func Test_NewLogoutDeviceRequest_And_NewLogoutDeviceRequestBody(t *testing.T) {
 	tests := []struct {
 		name  string
 		body  string
@@ -42,15 +42,16 @@ func Test_NewLogoutDeviceRequestBody(t *testing.T) {
 			c.Request, _ = http.NewRequest("POST", "", strings.NewReader(tt.body))
 			c.Request.Header.Set("Content-Type", "application/json")
 
-			requestBody, errResponse := NewLogoutDeviceRequestBody(c)
+			request, errResponse := NewLogoutDeviceRequest(c)
 
 			if tt.error {
 				assert.NotNil(t, errResponse)
-				assert.Nil(t, requestBody)
+				assert.Nil(t, request)
 			} else {
 				assert.Nil(t, errResponse)
-				assert.NotNil(t, requestBody)
-				assert.NotEmpty(t, requestBody.DeviceUUID)
+				assert.NotNil(t, request)
+				assert.NotNil(t, request.Body)
+				assert.NotEmpty(t, request.Body.DeviceUUID)
 			}
 		})
 	}

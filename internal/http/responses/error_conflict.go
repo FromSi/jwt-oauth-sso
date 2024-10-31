@@ -4,8 +4,8 @@ type ErrorConflictResponse struct {
 	Message string `json:"message"`
 }
 
-func NewErrorConflictResponse(message string) *ErrorConflictResponse {
+func NewErrorConflictResponse(err error) *ErrorConflictResponse {
 	return &ErrorConflictResponse{
-		Message: message,
+		Message: err.Error(),
 	}
 }

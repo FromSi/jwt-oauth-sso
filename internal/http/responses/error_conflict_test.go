@@ -2,12 +2,13 @@ package responses
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func Test_NewErrorConflictResponse(t *testing.T) {
-	response := NewErrorConflictResponse("value")
+	response := NewErrorConflictResponse(errors.New("value"))
 
 	assert.NotNil(t, response)
 

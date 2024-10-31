@@ -56,20 +56,6 @@ func (mr *MockQueryDeviceMockRecorder) GenerateAccessToken(arg0 any) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateAccessToken", reflect.TypeOf((*MockQueryDevice)(nil).GenerateAccessToken), arg0)
 }
 
-// GetAgent mocks base method.
-func (m *MockQueryDevice) GetAgent() string {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAgent")
-	ret0, _ := ret[0].(string)
-	return ret0
-}
-
-// GetAgent indicates an expected call of GetAgent.
-func (mr *MockQueryDeviceMockRecorder) GetAgent() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAgent", reflect.TypeOf((*MockQueryDevice)(nil).GetAgent))
-}
-
 // GetCreatedAt mocks base method.
 func (m *MockQueryDevice) GetCreatedAt() int {
 	m.ctrl.T.Helper()
@@ -152,6 +138,20 @@ func (m *MockQueryDevice) GetUpdatedAt() int {
 func (mr *MockQueryDeviceMockRecorder) GetUpdatedAt() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUpdatedAt", reflect.TypeOf((*MockQueryDevice)(nil).GetUpdatedAt))
+}
+
+// GetUserAgent mocks base method.
+func (m *MockQueryDevice) GetUserAgent() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserAgent")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// GetUserAgent indicates an expected call of GetUserAgent.
+func (mr *MockQueryDeviceMockRecorder) GetUserAgent() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserAgent", reflect.TypeOf((*MockQueryDevice)(nil).GetUserAgent))
 }
 
 // GetUserUUID mocks base method.

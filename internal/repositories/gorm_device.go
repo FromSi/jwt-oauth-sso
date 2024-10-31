@@ -10,7 +10,7 @@ import (
 const (
 	GormDeviceUUIDDefault         = ""
 	GormDeviceUserUUIDDefault     = ""
-	GormDeviceAgentDefault        = ""
+	GormDeviceUserAgentDefault    = ""
 	GormDeviceIpDefault           = ""
 	GormDeviceRefreshTokenDefault = ""
 	GormDeviceExpiredAtDefault    = 0
@@ -21,7 +21,7 @@ const (
 type GormDevice struct {
 	UUID         string `gorm:"unique;not null"`
 	UserUUID     string `gorm:"not null"`
-	Agent        string `gorm:"not null"`
+	UserAgent    string `gorm:"not null"`
 	Ip           string `gorm:"not null"`
 	RefreshToken string `gorm:"not null"`
 	ExpiredAt    int    `gorm:"not null"`
@@ -33,7 +33,7 @@ func NewGormDevice() *GormDevice {
 	return &GormDevice{
 		UUID:         GormDeviceUUIDDefault,
 		UserUUID:     GormDeviceUserUUIDDefault,
-		Agent:        GormDeviceAgentDefault,
+		UserAgent:    GormDeviceUserAgentDefault,
 		Ip:           GormDeviceIpDefault,
 		RefreshToken: GormDeviceRefreshTokenDefault,
 		ExpiredAt:    GormDeviceExpiredAtDefault,
@@ -46,7 +46,7 @@ func NewGormDeviceByDevice(device Device) *GormDevice {
 	return &GormDevice{
 		UUID:         device.GetUUID(),
 		UserUUID:     device.GetUserUUID(),
-		Agent:        device.GetAgent(),
+		UserAgent:    device.GetUserAgent(),
 		Ip:           device.GetIp(),
 		RefreshToken: device.GetRefreshToken(),
 		ExpiredAt:    device.GetExpiredAt(),
@@ -60,7 +60,7 @@ func (receiver *GormDevice) GenerateAccessToken(config configs.TokenConfig) (*to
 		config,
 		receiver.UserUUID,
 		receiver.UUID,
-		receiver.Agent,
+		receiver.UserAgent,
 		time.Now(),
 	)
 }
@@ -73,8 +73,8 @@ func (receiver *GormDevice) GetUserUUID() string {
 	return receiver.UserUUID
 }
 
-func (receiver *GormDevice) GetAgent() string {
-	return receiver.Agent
+func (receiver *GormDevice) GetUserAgent() string {
+	return receiver.UserAgent
 }
 
 func (receiver *GormDevice) GetIp() string {
@@ -105,8 +105,8 @@ func (receiver *GormDevice) SetUserUUID(value string) {
 	receiver.UserUUID = value
 }
 
-func (receiver *GormDevice) SetAgent(value string) {
-	receiver.Agent = value
+func (receiver *GormDevice) SetUserAgent(value string) {
+	receiver.UserAgent = value
 }
 
 func (receiver *GormDevice) SetIp(value string) {
@@ -157,10 +157,10 @@ func (receiver *GormDeviceRepository) GetDevicesByUserUUID(userUUID string) []De
 	return devices
 }
 
-func (receiver *GormDeviceRepository) GetDeviceByUserUUIDAndIpAndAgent(userUUID string, ip string, agent string) Device {
+func (receiver *GormDeviceRepository) GetDeviceByUserUUIDAndIpAndUserAgent(userUUID string, ip string, agent string) Device {
 	var gormDevice GormDevice
 
-	result := receiver.db.Model(&GormDevice{}).First(&gormDevice, &GormDevice{UserUUID: userUUID, Ip: ip, Agent: agent})
+	result := receiver.db.Model(&GormDevice{}).First(&gormDevice, &GormDevice{UserUUID: userUUID, Ip: ip, UserAgent: agent})
 
 	if result.RowsAffected == 0 {
 		return nil

@@ -427,7 +427,7 @@ components:
             accessToken:
               type: string
               format: jwt_hs256
-              example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJqd3Qtb2F1dGgtc3NvIiwiYXVkIjoidXNlciIsInN1YiI6IjA5ZDBjZTU2LTMzYWItNGZjZS05MGJiLWQyYjRkNmQ4NDRiYSIsImlhdCI6MTUxNjIzOTAyMiwiZXhwIjoxNTE2MzAwMDAwLCJkZXZpY2VVVUlEIjoiMDlkMGNlNTYtMzNhYi00ZmNlLTkwYmItZDJiNGQ2ZDg0NGJhIiwiZGV2aWNlQWdlbnQiOiJNb3ppbGxhLzUuMCAoWDExOyBMaW51eCB4ODZfNjQ7IHJ2OjEyMS4wKSJ9.c5RCNVX1-f6Ah7FT8PWY76fab-nLRQfkgneh1vI36VM'
+              example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJqd3Qtb2F1dGgtc3NvIiwiYXVkIjoidXNlciIsInN1YiI6IjA5ZDBjZTU2LTMzYWItNGZjZS05MGJiLWQyYjRkNmQ4NDRiYSIsImlhdCI6MTUxNjIzOTAyMiwiZXhwIjoxNTE2MzAwMDAwLCJkZXZpY2VVVUlEIjoiMDlkMGNlNTYtMzNhYi00ZmNlLTkwYmItZDJiNGQ2ZDg0NGJhIiwiZGV2aWNlVXNlckFnZW50IjoiTW96aWxsYS81LjAgKFgxMTsgTGludXggeDg2XzY0OyBydjoxMjEuMCkifQ.Sz7XofSn9lElkSUS-rMjttw7ZtFkD7lbh6vAxKT4DD4'
             refreshToken:
               type: string
               format: uuid

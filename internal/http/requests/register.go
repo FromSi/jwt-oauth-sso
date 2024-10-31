@@ -6,7 +6,9 @@ import (
 )
 
 type RegisterRequest struct {
-	Body RegisterRequestBody
+	Body      RegisterRequestBody
+	IP        string
+	UserAgent string
 }
 
 func NewRegisterRequest(context *gin.Context) (*RegisterRequest, *responses.ErrorBadRequestResponse) {
@@ -19,6 +21,14 @@ func NewRegisterRequest(context *gin.Context) (*RegisterRequest, *responses.Erro
 	}
 
 	request.Body = *requestBody
+
+	request.IP = context.ClientIP()
+
+	if request.IP == "" {
+		request.IP = context.GetHeader("X-Real-Ip")
+	}
+
+	request.UserAgent = context.Request.UserAgent()
 
 	return &request, nil
 }

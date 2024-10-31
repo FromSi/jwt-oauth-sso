@@ -23,13 +23,13 @@ func (receiver *BaseDeviceService) GenerateRefreshToken() string {
 	return uuid.New().String()
 }
 
-func (receiver *BaseDeviceService) GetDeviceByUserUUIDAndIpAndAgent(
+func (receiver *BaseDeviceService) GetNewDeviceByUserUUIDAndIpAndUserAgent(
 	config configs.TokenConfig,
 	userUUID string,
 	ip string,
-	agent string,
+	userAgent string,
 ) repositories.Device {
-	device := receiver.deviceRepository.GetDeviceByUserUUIDAndIpAndAgent(userUUID, ip, agent)
+	device := receiver.deviceRepository.GetDeviceByUserUUIDAndIpAndUserAgent(userUUID, ip, userAgent)
 
 	if device != nil {
 		return device
@@ -40,7 +40,8 @@ func (receiver *BaseDeviceService) GetDeviceByUserUUIDAndIpAndAgent(
 	device.SetUUID(receiver.GenerateUUID())
 	device.SetUserUUID(userUUID)
 	device.SetIp(ip)
-	device.SetAgent(agent)
+	device.SetUserAgent(userAgent)
+	device.SetRefreshToken(receiver.GenerateRefreshToken())
 
 	timeNow := time.Now()
 

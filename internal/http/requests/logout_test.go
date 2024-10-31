@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func Test_NewLogoutRequestBody(t *testing.T) {
+func Test_NewLogoutRequest_And_NewLogoutRequestBody(t *testing.T) {
 	tests := []struct {
 		name  string
 		body  string
@@ -32,14 +32,15 @@ func Test_NewLogoutRequestBody(t *testing.T) {
 			c.Request, _ = http.NewRequest("POST", "", strings.NewReader(tt.body))
 			c.Request.Header.Set("Content-Type", "application/json")
 
-			requestBody, errResponse := NewLogoutRequestBody(c)
+			request, errResponse := NewLogoutRequest(c)
 
 			if tt.error {
 				assert.NotNil(t, errResponse)
-				assert.Nil(t, requestBody)
+				assert.Nil(t, request)
 			} else {
 				assert.Nil(t, errResponse)
-				assert.NotNil(t, requestBody)
+				assert.NotNil(t, request)
+				assert.NotNil(t, request.Body)
 			}
 		})
 	}

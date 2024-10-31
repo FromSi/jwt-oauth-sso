@@ -53,6 +53,20 @@ func (mr *MockUserServiceMockRecorder) CheckPasswordByHashAndPassword(arg0, arg1
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckPasswordByHashAndPassword", reflect.TypeOf((*MockUserService)(nil).CheckPasswordByHashAndPassword), arg0, arg1)
 }
 
+// CreateUserByUUIDAndEmailAndPassword mocks base method.
+func (m *MockUserService) CreateUserByUUIDAndEmailAndPassword(arg0, arg1, arg2 string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateUserByUUIDAndEmailAndPassword", arg0, arg1, arg2)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateUserByUUIDAndEmailAndPassword indicates an expected call of CreateUserByUUIDAndEmailAndPassword.
+func (mr *MockUserServiceMockRecorder) CreateUserByUUIDAndEmailAndPassword(arg0, arg1, arg2 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUserByUUIDAndEmailAndPassword", reflect.TypeOf((*MockUserService)(nil).CreateUserByUUIDAndEmailAndPassword), arg0, arg1, arg2)
+}
+
 // GenerateUUID mocks base method.
 func (m *MockUserService) GenerateUUID() string {
 	m.ctrl.T.Helper()

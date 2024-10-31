@@ -69,16 +69,16 @@ func (mr *MockQueryDeviceServiceMockRecorder) GenerateUUID() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateUUID", reflect.TypeOf((*MockQueryDeviceService)(nil).GenerateUUID))
 }
 
-// GetDeviceByUserUUIDAndIpAndAgent mocks base method.
-func (m *MockQueryDeviceService) GetDeviceByUserUUIDAndIpAndAgent(arg0 configs.TokenConfig, arg1, arg2, arg3 string) repositories.Device {
+// GetNewDeviceByUserUUIDAndIpAndUserAgent mocks base method.
+func (m *MockQueryDeviceService) GetNewDeviceByUserUUIDAndIpAndUserAgent(arg0 configs.TokenConfig, arg1, arg2, arg3 string) repositories.Device {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetDeviceByUserUUIDAndIpAndAgent", arg0, arg1, arg2, arg3)
+	ret := m.ctrl.Call(m, "GetNewDeviceByUserUUIDAndIpAndUserAgent", arg0, arg1, arg2, arg3)
 	ret0, _ := ret[0].(repositories.Device)
 	return ret0
 }
 
-// GetDeviceByUserUUIDAndIpAndAgent indicates an expected call of GetDeviceByUserUUIDAndIpAndAgent.
-func (mr *MockQueryDeviceServiceMockRecorder) GetDeviceByUserUUIDAndIpAndAgent(arg0, arg1, arg2, arg3 any) *gomock.Call {
+// GetNewDeviceByUserUUIDAndIpAndUserAgent indicates an expected call of GetNewDeviceByUserUUIDAndIpAndUserAgent.
+func (mr *MockQueryDeviceServiceMockRecorder) GetNewDeviceByUserUUIDAndIpAndUserAgent(arg0, arg1, arg2, arg3 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDeviceByUserUUIDAndIpAndAgent", reflect.TypeOf((*MockQueryDeviceService)(nil).GetDeviceByUserUUIDAndIpAndAgent), arg0, arg1, arg2, arg3)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNewDeviceByUserUUIDAndIpAndUserAgent", reflect.TypeOf((*MockQueryDeviceService)(nil).GetNewDeviceByUserUUIDAndIpAndUserAgent), arg0, arg1, arg2, arg3)
 }

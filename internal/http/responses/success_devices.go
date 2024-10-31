@@ -23,7 +23,7 @@ func NewSuccessDevicesResponse(devices []repositories.Device) *SuccessDevicesRes
 		data[i] = SuccessDevicesResponseData{
 			UUID:      device.GetUUID(),
 			UserUUID:  device.GetUserUUID(),
-			Agent:     device.GetAgent(),
+			Agent:     device.GetUserAgent(),
 			Ip:        device.GetIp(),
 			ExpiredAt: device.GetExpiredAt(),
 			CreatedAt: device.GetCreatedAt(),

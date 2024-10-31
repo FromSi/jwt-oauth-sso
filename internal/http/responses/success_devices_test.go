@@ -14,7 +14,7 @@ func Test_NewSuccessDevicesResponse(t *testing.T) {
 
 	gormDevice.SetUUID("1")
 	gormDevice.SetUserUUID("2")
-	gormDevice.SetAgent("3")
+	gormDevice.SetUserAgent("3")
 	gormDevice.SetIp("4")
 	gormDevice.SetRefreshToken("5")
 	gormDevice.SetExpiredAt(6)

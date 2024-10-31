@@ -10,41 +10,55 @@ import (
 	"testing"
 )
 
-func Test_NewRegisterRequestBody(t *testing.T) {
+func Test_NewRegisterRequest_And_NewRegisterRequestBody(t *testing.T) {
 	tests := []struct {
-		name  string
-		body  string
-		error bool
+		name      string
+		body      string
+		ip        string
+		userAgent string
+		error     bool
 	}{
 		{
-			name:  "Valid request",
-			body:  `{"email": "test@example.com", "password": "validPass123!"}`,
-			error: false,
+			name:      "Valid request",
+			body:      `{"email": "test@example.com", "password": "validPass123!"}`,
+			ip:        "127.0.0.1",
+			userAgent: "Mozilla/5.0",
+			error:     false,
 		},
 		{
-			name:  "Invalid email",
-			body:  `{"email": "invalid-email", "password": "validPass123!"}`,
-			error: true,
+			name:      "Invalid email",
+			body:      `{"email": "invalid-email", "password": "validPass123!"}`,
+			ip:        "127.0.0.1",
+			userAgent: "Mozilla/5.0",
+			error:     true,
 		},
 		{
-			name:  "Invalid password",
-			body:  `{"email": "test@example.com", "password": "123"}`,
-			error: true,
+			name:      "Invalid password",
+			body:      `{"email": "test@example.com", "password": "123"}`,
+			ip:        "127.0.0.1",
+			userAgent: "Mozilla/5.0",
+			error:     true,
 		},
 		{
-			name:  "Missing email",
-			body:  `{"password": "validPass123!"}`,
-			error: true,
+			name:      "Missing email",
+			body:      `{"password": "validPass123!"}`,
+			ip:        "127.0.0.1",
+			userAgent: "Mozilla/5.0",
+			error:     true,
 		},
 		{
-			name:  "Missing password",
-			body:  `{"email": "test@example.com"}`,
-			error: true,
+			name:      "Missing password",
+			body:      `{"email": "test@example.com"}`,
+			ip:        "127.0.0.1",
+			userAgent: "Mozilla/5.0",
+			error:     true,
 		},
 		{
-			name:  "Empty request",
-			body:  `{}`,
-			error: true,
+			name:      "Empty request",
+			body:      `{}`,
+			ip:        "127.0.0.1",
+			userAgent: "Mozilla/5.0",
+			error:     true,
 		},
 	}
 
@@ -61,17 +75,22 @@ func Test_NewRegisterRequestBody(t *testing.T) {
 
 			c.Request, _ = http.NewRequest("POST", "", strings.NewReader(tt.body))
 			c.Request.Header.Set("Content-Type", "application/json")
+			c.Request.Header.Set("User-Agent", tt.userAgent)
+			c.Request.Header.Set("X-Real-Ip", tt.ip)
 
-			requestBody, errResponse := NewRegisterRequestBody(c)
+			request, errResponse := NewRegisterRequest(c)
 
 			if tt.error {
 				assert.NotNil(t, errResponse)
-				assert.Nil(t, requestBody)
+				assert.Nil(t, request)
 			} else {
 				assert.Nil(t, errResponse)
-				assert.NotNil(t, requestBody)
-				assert.NotEmpty(t, requestBody.Email)
-				assert.NotEmpty(t, requestBody.Password)
+				assert.NotNil(t, request)
+				assert.NotNil(t, request.Body)
+				assert.NotEmpty(t, request.Body.Email)
+				assert.NotEmpty(t, request.Body.Password)
+				assert.Equal(t, tt.ip, request.IP)
+				assert.Equal(t, tt.userAgent, request.UserAgent)
 			}
 		})
 	}

@@ -39,18 +39,6 @@ func (m *MockMutableDevice) EXPECT() *MockMutableDeviceMockRecorder {
 	return m.recorder
 }
 
-// SetAgent mocks base method.
-func (m *MockMutableDevice) SetAgent(arg0 string) {
-	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "SetAgent", arg0)
-}
-
-// SetAgent indicates an expected call of SetAgent.
-func (mr *MockMutableDeviceMockRecorder) SetAgent(arg0 any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetAgent", reflect.TypeOf((*MockMutableDevice)(nil).SetAgent), arg0)
-}
-
 // SetCreatedAt mocks base method.
 func (m *MockMutableDevice) SetCreatedAt(arg0 int) {
 	m.ctrl.T.Helper()
@@ -121,6 +109,18 @@ func (m *MockMutableDevice) SetUpdatedAt(arg0 int) {
 func (mr *MockMutableDeviceMockRecorder) SetUpdatedAt(arg0 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetUpdatedAt", reflect.TypeOf((*MockMutableDevice)(nil).SetUpdatedAt), arg0)
+}
+
+// SetUserAgent mocks base method.
+func (m *MockMutableDevice) SetUserAgent(arg0 string) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "SetUserAgent", arg0)
+}
+
+// SetUserAgent indicates an expected call of SetUserAgent.
+func (mr *MockMutableDeviceMockRecorder) SetUserAgent(arg0 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetUserAgent", reflect.TypeOf((*MockMutableDevice)(nil).SetUserAgent), arg0)
 }
 
 // SetUserUUID mocks base method.

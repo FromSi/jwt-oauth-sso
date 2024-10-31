@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func Test_NewLoginRequestBody(t *testing.T) {
+func Test_NewLoginRequest_And_NewLoginRequestBody(t *testing.T) {
 	tests := []struct {
 		name  string
 		body  string
@@ -62,16 +62,17 @@ func Test_NewLoginRequestBody(t *testing.T) {
 			c.Request, _ = http.NewRequest("POST", "", strings.NewReader(tt.body))
 			c.Request.Header.Set("Content-Type", "application/json")
 
-			requestBody, errResponse := NewLoginRequestBody(c)
+			request, errResponse := NewLoginRequest(c)
 
 			if tt.error {
 				assert.NotNil(t, errResponse)
-				assert.Nil(t, requestBody)
+				assert.Nil(t, request)
 			} else {
 				assert.Nil(t, errResponse)
-				assert.NotNil(t, requestBody)
-				assert.NotEmpty(t, requestBody.Email)
-				assert.NotEmpty(t, requestBody.Password)
+				assert.NotNil(t, request)
+				assert.NotNil(t, request.Body)
+				assert.NotEmpty(t, request.Body.Email)
+				assert.NotEmpty(t, request.Body.Password)
 			}
 		})
 	}

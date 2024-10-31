@@ -10,6 +10,8 @@ import (
 	"github.com/fromsi/jwt-oauth-sso/internal/validator_rules"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/fx"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 	"log"
 	"net/http"
 	"strconv"
@@ -38,6 +40,8 @@ func CreateApp() fx.Option {
 	return fx.Options(
 		fx.Provide(
 			NewHTTPServer,
+			NewDatabaseConnection,
+
 			fx.Annotate(
 				configs.NewBaseConfigWithYamlFile,
 				fx.As(new(configs.Config)),
@@ -135,4 +139,14 @@ func NewHTTPServer(lifecycle fx.Lifecycle, fxParams FxParams) *http.Server {
 	})
 
 	return server
+}
+
+func NewDatabaseConnection(config configs.Config) *gorm.DB {
+	db, err := gorm.Open(sqlite.Open(config.GetDsn()))
+
+	if err != nil {
+		panic(err)
+	}
+
+	return db
 }

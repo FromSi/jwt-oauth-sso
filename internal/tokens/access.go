@@ -9,24 +9,24 @@ import (
 )
 
 const (
-	CommonJWTClaimIssuer         = "iss"
-	CommonJWTClaimAudience       = "aud"
-	CommonJWTClaimSubject        = "sub"
-	CommonJWTClaimIssuedAt       = "iat"
-	CommonJWTClaimExpirationTime = "exp"
-	CommonJWTClaimDeviceUUID     = "deviceUUID"
-	CommonJWTClaimDeviceAgent    = "deviceAgent"
+	CommonJWTClaimIssuer          = "iss"
+	CommonJWTClaimAudience        = "aud"
+	CommonJWTClaimSubject         = "sub"
+	CommonJWTClaimIssuedAt        = "iat"
+	CommonJWTClaimExpirationTime  = "exp"
+	CommonJWTClaimDeviceUUID      = "deviceUUID"
+	CommonJWTClaimDeviceUserAgent = "deviceUserAgent"
 )
 
 type AccessToken struct {
-	Issuer         string
-	Audience       string
-	Subject        string
-	IssuedAt       time.Time
-	ExpirationTime time.Time
-	DeviceUUID     string
-	DeviceAgent    string
-	secretKey      string
+	Issuer          string
+	Audience        string
+	Subject         string
+	IssuedAt        time.Time
+	ExpirationTime  time.Time
+	DeviceUUID      string
+	DeviceUserAgent string
+	secretKey       string
 }
 
 func NewAccessToken(
@@ -37,14 +37,14 @@ func NewAccessToken(
 	currentTime time.Time,
 ) (*AccessToken, error) {
 	return &AccessToken{
-		Issuer:         config.GetIssuerName(),
-		Audience:       config.GetAudienceName(),
-		Subject:        subject,
-		IssuedAt:       currentTime,
-		ExpirationTime: currentTime.Add(time.Minute * time.Duration(config.GetExpirationAccessInMinutes())),
-		DeviceUUID:     deviceUUID,
-		DeviceAgent:    deviceAgent,
-		secretKey:      config.GetSecretKey(),
+		Issuer:          config.GetIssuerName(),
+		Audience:        config.GetAudienceName(),
+		Subject:         subject,
+		IssuedAt:        currentTime,
+		ExpirationTime:  currentTime.Add(time.Minute * time.Duration(config.GetExpirationAccessInMinutes())),
+		DeviceUUID:      deviceUUID,
+		DeviceUserAgent: deviceAgent,
+		secretKey:       config.GetSecretKey(),
 	}, nil
 }
 
@@ -71,14 +71,14 @@ func NewAccessTokenByJWT(config configs.TokenConfig, tokenJWT string) (*AccessTo
 	}
 
 	accessToken := AccessToken{
-		Issuer:         claims[CommonJWTClaimIssuer].(string),
-		Audience:       claims[CommonJWTClaimAudience].(string),
-		Subject:        claims[CommonJWTClaimSubject].(string),
-		IssuedAt:       time.Unix(int64(claims[CommonJWTClaimIssuedAt].(float64)), 0),
-		ExpirationTime: time.Unix(int64(claims[CommonJWTClaimExpirationTime].(float64)), 0),
-		DeviceUUID:     claims[CommonJWTClaimDeviceUUID].(string),
-		DeviceAgent:    claims[CommonJWTClaimDeviceAgent].(string),
-		secretKey:      config.GetSecretKey(),
+		Issuer:          claims[CommonJWTClaimIssuer].(string),
+		Audience:        claims[CommonJWTClaimAudience].(string),
+		Subject:         claims[CommonJWTClaimSubject].(string),
+		IssuedAt:        time.Unix(int64(claims[CommonJWTClaimIssuedAt].(float64)), 0),
+		ExpirationTime:  time.Unix(int64(claims[CommonJWTClaimExpirationTime].(float64)), 0),
+		DeviceUUID:      claims[CommonJWTClaimDeviceUUID].(string),
+		DeviceUserAgent: claims[CommonJWTClaimDeviceUserAgent].(string),
+		secretKey:       config.GetSecretKey(),
 	}
 
 	if time.Now().Before(accessToken.IssuedAt) {
@@ -94,13 +94,13 @@ func NewAccessTokenByJWT(config configs.TokenConfig, tokenJWT string) (*AccessTo
 
 func (receiver *AccessToken) GetJWT() (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		CommonJWTClaimIssuer:         receiver.Issuer,
-		CommonJWTClaimAudience:       receiver.Audience,
-		CommonJWTClaimSubject:        receiver.Subject,
-		CommonJWTClaimIssuedAt:       receiver.IssuedAt.Unix(),
-		CommonJWTClaimExpirationTime: receiver.ExpirationTime.Unix(),
-		CommonJWTClaimDeviceUUID:     receiver.DeviceUUID,
-		CommonJWTClaimDeviceAgent:    receiver.DeviceAgent,
+		CommonJWTClaimIssuer:          receiver.Issuer,
+		CommonJWTClaimAudience:        receiver.Audience,
+		CommonJWTClaimSubject:         receiver.Subject,
+		CommonJWTClaimIssuedAt:        receiver.IssuedAt.Unix(),
+		CommonJWTClaimExpirationTime:  receiver.ExpirationTime.Unix(),
+		CommonJWTClaimDeviceUUID:      receiver.DeviceUUID,
+		CommonJWTClaimDeviceUserAgent: receiver.DeviceUserAgent,
 	})
 
 	return token.SignedString([]byte(receiver.secretKey))

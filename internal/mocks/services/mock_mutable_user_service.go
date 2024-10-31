@@ -10,6 +10,8 @@
 package services_mocks
 
 import (
+	reflect "reflect"
+
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -35,4 +37,18 @@ func NewMockMutableUserService(ctrl *gomock.Controller) *MockMutableUserService 
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockMutableUserService) EXPECT() *MockMutableUserServiceMockRecorder {
 	return m.recorder
+}
+
+// CreateUserByUUIDAndEmailAndPassword mocks base method.
+func (m *MockMutableUserService) CreateUserByUUIDAndEmailAndPassword(arg0, arg1, arg2 string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateUserByUUIDAndEmailAndPassword", arg0, arg1, arg2)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateUserByUUIDAndEmailAndPassword indicates an expected call of CreateUserByUUIDAndEmailAndPassword.
+func (mr *MockMutableUserServiceMockRecorder) CreateUserByUUIDAndEmailAndPassword(arg0, arg1, arg2 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUserByUUIDAndEmailAndPassword", reflect.TypeOf((*MockMutableUserService)(nil).CreateUserByUUIDAndEmailAndPassword), arg0, arg1, arg2)
 }

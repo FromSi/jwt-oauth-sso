@@ -1,20 +1,31 @@
 package services
 
 import (
+	repositories_mocks "github.com/fromsi/jwt-oauth-sso/internal/mocks/repositories"
+	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/mock/gomock"
 	"golang.org/x/crypto/bcrypt"
 	"testing"
 )
 
 func Test_NewBaseUserService(t *testing.T) {
-	baseUserService := NewBaseUserService()
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
+
+	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
+	baseUserService := NewBaseUserService(mockUserRepository)
 
 	assert.NotNil(t, baseUserService)
 }
 
 func TestBaseUserService_GenerateUUID(t *testing.T) {
-	baseUserService := NewBaseUserService()
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
+
+	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
+	baseUserService := NewBaseUserService(mockUserRepository)
 
 	uuidOne := baseUserService.GenerateUUID()
 	uuidTwo := baseUserService.GenerateUUID()
@@ -34,7 +45,11 @@ func TestBaseUserService_GenerateUUID(t *testing.T) {
 }
 
 func TestBaseUserService_HashPassword(t *testing.T) {
-	baseUserService := NewBaseUserService()
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
+
+	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
+	baseUserService := NewBaseUserService(mockUserRepository)
 
 	hashedPassword, err := baseUserService.HashPassword("1")
 
@@ -47,7 +62,11 @@ func TestBaseUserService_HashPassword(t *testing.T) {
 }
 
 func TestBaseUserService_CheckPasswordByHashAndPassword(t *testing.T) {
-	baseUserService := NewBaseUserService()
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
+
+	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
+	baseUserService := NewBaseUserService(mockUserRepository)
 
 	hashedPassword, err := baseUserService.HashPassword("1")
 
@@ -61,4 +80,34 @@ func TestBaseUserService_CheckPasswordByHashAndPassword(t *testing.T) {
 	err = baseUserService.CheckPasswordByHashAndPassword(hashedPassword, "2")
 
 	assert.NotNil(t, err)
+}
+
+func TestBaseUserService_CreateUserByUUIDAndEmailAndPassword(t *testing.T) {
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
+
+	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
+	baseUserService := NewBaseUserService(mockUserRepository)
+
+	user := repositories.NewGormUser()
+
+	user.SetUUID("1")
+	user.SetEmail("2")
+	user.SetPassword("3")
+
+	mockUserRepository.
+		EXPECT().
+		CreateUser(gomock.Any()).
+		DoAndReturn(func(user repositories.User) error {
+			assert.Equal(t, "1", user.GetUUID())
+			assert.Equal(t, "2", user.GetEmail())
+			assert.NotEqual(t, "3", user.GetPassword())
+
+			return nil
+		}).
+		AnyTimes()
+
+	err := baseUserService.CreateUserByUUIDAndEmailAndPassword("1", "2", "3")
+
+	assert.Nil(t, err)
 }

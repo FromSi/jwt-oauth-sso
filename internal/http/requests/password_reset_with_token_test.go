@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func Test_NewPasswordResetWithTokenRequestBody(t *testing.T) {
+func Test_NewPasswordResetWithTokenRequest_And_NewPasswordResetWithTokenRequestBody(t *testing.T) {
 	tests := []struct {
 		name  string
 		body  string
@@ -62,16 +62,17 @@ func Test_NewPasswordResetWithTokenRequestBody(t *testing.T) {
 			c.Request, _ = http.NewRequest("POST", "", strings.NewReader(tt.body))
 			c.Request.Header.Set("Content-Type", "application/json")
 
-			requestBody, errResponse := NewPasswordResetWithTokenRequestBody(c)
+			request, errResponse := NewPasswordResetWithTokenRequest(c)
 
 			if tt.error {
 				assert.NotNil(t, errResponse)
-				assert.Nil(t, requestBody)
+				assert.Nil(t, request)
 			} else {
 				assert.Nil(t, errResponse)
-				assert.NotNil(t, requestBody)
-				assert.NotEmpty(t, requestBody.Token)
-				assert.NotEmpty(t, requestBody.NewPassword)
+				assert.NotNil(t, request)
+				assert.NotNil(t, request.Body)
+				assert.NotEmpty(t, request.Body.Token)
+				assert.NotEmpty(t, request.Body.NewPassword)
 			}
 		})
 	}

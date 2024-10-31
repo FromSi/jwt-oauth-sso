@@ -9,20 +9,20 @@ import (
 
 func Test_NewAccessToken(t *testing.T) {
 	tests := []struct {
-		name        string
-		subject     string
-		deviceUUID  string
-		deviceAgent string
-		currentTime time.Time
-		error       bool
+		name            string
+		subject         string
+		deviceUUID      string
+		deviceUserAgent string
+		currentTime     time.Time
+		error           bool
 	}{
 		{
-			name:        "Valid data",
-			subject:     "1",
-			deviceUUID:  "1",
-			deviceAgent: "1",
-			currentTime: time.Now().Truncate(time.Second),
-			error:       false,
+			name:            "Valid data",
+			subject:         "1",
+			deviceUUID:      "1",
+			deviceUserAgent: "1",
+			currentTime:     time.Now().Truncate(time.Second),
+			error:           false,
 		},
 	}
 
@@ -30,7 +30,7 @@ func Test_NewAccessToken(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			token, err := NewAccessToken(config, tt.subject, tt.deviceUUID, tt.deviceAgent, tt.currentTime)
+			token, err := NewAccessToken(config, tt.subject, tt.deviceUUID, tt.deviceUserAgent, tt.currentTime)
 
 			if tt.error {
 				assert.Error(t, err)
@@ -43,7 +43,7 @@ func Test_NewAccessToken(t *testing.T) {
 				assert.Equal(t, token.IssuedAt, tt.currentTime)
 				assert.Equal(t, token.ExpirationTime, tt.currentTime.Add(time.Minute*time.Duration(config.GetExpirationAccessInMinutes())))
 				assert.Equal(t, token.DeviceUUID, tt.deviceUUID)
-				assert.Equal(t, token.DeviceAgent, tt.deviceAgent)
+				assert.Equal(t, token.DeviceUserAgent, tt.deviceUserAgent)
 			}
 		})
 	}
@@ -110,7 +110,7 @@ func Test_NewAccessTokenByJWT(t *testing.T) {
 				assert.Equal(t, tokenByJWT.IssuedAt, token.IssuedAt)
 				assert.Equal(t, tokenByJWT.ExpirationTime, token.ExpirationTime)
 				assert.Equal(t, tokenByJWT.DeviceUUID, token.DeviceUUID)
-				assert.Equal(t, tokenByJWT.DeviceAgent, token.DeviceAgent)
+				assert.Equal(t, tokenByJWT.DeviceUserAgent, token.DeviceUserAgent)
 			}
 		})
 	}

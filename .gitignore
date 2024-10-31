@@ -2,3 +2,4 @@
 jwt_oauth_sso
 heap.out
 config.yml
+local.sqlite
