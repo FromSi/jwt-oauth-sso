@@ -9,6 +9,7 @@ const (
 	BaseConfigDefaultAppName                        = "jwt-oauth-sso"
 	BaseConfigDefaultAppHost                        = "localhost"
 	BaseConfigDefaultAppPort                        = 8080
+	BaseConfigDefaultAppDebug                       = true
 	BaseConfigDefaultTokenIssuerName                = "jwt-oauth-sso"
 	BaseConfigDefaultTokenAudienceName              = "user"
 	BaseConfigDefaultTokenExpirationRefreshInDays   = 30
@@ -21,6 +22,7 @@ type BaseConfig struct {
 	appName                        string
 	appHost                        string
 	appPort                        int
+	appDebug                       bool
 	tokenIssuerName                string
 	tokenAudienceName              string
 	tokenExpirationRefreshInDays   int
@@ -35,6 +37,7 @@ func NewBaseConfig() *BaseConfig {
 	viper.SetDefault("app.name", BaseConfigDefaultAppName)
 	viper.SetDefault("app.host", BaseConfigDefaultAppHost)
 	viper.SetDefault("app.port", BaseConfigDefaultAppPort)
+	viper.SetDefault("app.debug", BaseConfigDefaultAppDebug)
 	viper.SetDefault("token.issuer_name", BaseConfigDefaultTokenIssuerName)
 	viper.SetDefault("token.audience_name", BaseConfigDefaultTokenAudienceName)
 	viper.SetDefault("token.expiration_refresh_in_days", BaseConfigDefaultTokenExpirationRefreshInDays)
@@ -45,6 +48,7 @@ func NewBaseConfig() *BaseConfig {
 	config.appName = viper.GetString("app.name")
 	config.appHost = viper.GetString("app.host")
 	config.appPort = viper.GetInt("app.port")
+	config.appDebug = viper.GetBool("app.debug")
 	config.tokenIssuerName = viper.GetString("token.issuer_name")
 	config.tokenAudienceName = viper.GetString("token.audience_name")
 	config.tokenExpirationRefreshInDays = viper.GetInt("token.expiration_refresh_in_days")
@@ -85,6 +89,10 @@ func (receiver BaseConfig) GetHost() string {
 
 func (receiver BaseConfig) GetPort() int {
 	return receiver.appPort
+}
+
+func (receiver BaseConfig) GetDebug() bool {
+	return receiver.appDebug
 }
 
 func (receiver BaseConfig) GetIssuerName() string {

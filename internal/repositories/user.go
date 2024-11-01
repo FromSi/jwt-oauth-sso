@@ -4,7 +4,6 @@ package repositories
 type QueryUserRepository interface {
 	HasUserByUUID(string) bool
 	HasUserByEmail(string) bool
-	HasUserByEmailAndPassword(string, string) bool
 	HasUserByUUIDAndPassword(string, string) bool
 	GetUserByEmail(string) User
 }

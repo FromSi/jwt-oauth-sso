@@ -9,7 +9,8 @@ import (
 type QueryDeviceService interface {
 	GenerateUUID() string
 	GenerateRefreshToken() string
-	GetNewDeviceByUserUUIDAndIpAndUserAgent(configs.TokenConfig, string, string, string) repositories.Device
+	GetDeviceByUserUUIDAndIpAndUserAgent(configs.TokenConfig, string, string, string) (repositories.Device, error)
+	GetNewDeviceByUserUUIDAndIpAndUserAgent(configs.TokenConfig, string, string, string) (repositories.Device, error)
 }
 
 //go:generate mockgen -destination=../mocks/services/mock_mutable_device_service.go -package=services_mocks github.com/fromsi/jwt-oauth-sso/internal/services MutableDeviceService

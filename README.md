@@ -16,4 +16,12 @@ JWT OAuth SSO is a Go-based authentication server template that provides a compl
 * Secure API authentication and authorization
 * User session management with custom refresh token handling
 
-This template serves as a starting point for creating scalable and secure authentication services using Go, JWT, GORM, Sqlite3, UberFx, UnitTest, GoMock, Gin and OAuth2.
+## Usage:
+This template serves as a starting point for creating scalable and secure authentication services using: 
+* Go 1.22
+* GORM ORM
+* Sqlite3 Database
+* UberFx Dependency Injection
+* Unit Test
+* GoMock
+* Gin HTTP Framework

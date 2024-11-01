@@ -70,17 +70,23 @@ func (receiver RegisterRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	device := receiver.deviceService.GetNewDeviceByUserUUIDAndIpAndUserAgent(
+	device, err := receiver.deviceService.GetNewDeviceByUserUUIDAndIpAndUserAgent(
 		receiver.config,
 		userUUID,
 		request.IP,
 		request.UserAgent,
 	)
 
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, responses.NewErrorInternalServerResponse(err))
+
+		return
+	}
+
 	err = receiver.deviceRepository.CreateDevice(device)
 
 	if err != nil {
-		context.JSON(http.StatusConflict, responses.NewErrorConflictResponse(err))
+		context.JSON(http.StatusInternalServerError, responses.NewErrorInternalServerResponse(err))
 
 		return
 	}
@@ -88,7 +94,7 @@ func (receiver RegisterRoute) Handle(context *gin.Context) {
 	response, err := responses.NewSuccessRegisterResponse(receiver.config, device)
 
 	if err != nil {
-		context.JSON(http.StatusConflict, responses.NewErrorConflictResponse(err))
+		context.JSON(http.StatusInternalServerError, responses.NewErrorInternalServerResponse(err))
 
 		return
 	}

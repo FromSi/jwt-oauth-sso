@@ -6,7 +6,9 @@ import (
 )
 
 type LoginRequest struct {
-	Body LoginRequestBody
+	Body      LoginRequestBody
+	IP        string
+	UserAgent string
 }
 
 func NewLoginRequest(context *gin.Context) (*LoginRequest, *responses.ErrorBadRequestResponse) {
@@ -19,6 +21,14 @@ func NewLoginRequest(context *gin.Context) (*LoginRequest, *responses.ErrorBadRe
 	}
 
 	request.Body = *requestBody
+
+	request.IP = context.ClientIP()
+
+	if request.IP == "" {
+		request.IP = context.GetHeader("X-Real-Ip")
+	}
+
+	request.UserAgent = context.Request.UserAgent()
 
 	return &request, nil
 }

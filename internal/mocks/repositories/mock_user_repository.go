@@ -82,20 +82,6 @@ func (mr *MockUserRepositoryMockRecorder) HasUserByEmail(arg0 any) *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HasUserByEmail", reflect.TypeOf((*MockUserRepository)(nil).HasUserByEmail), arg0)
 }
 
-// HasUserByEmailAndPassword mocks base method.
-func (m *MockUserRepository) HasUserByEmailAndPassword(arg0, arg1 string) bool {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "HasUserByEmailAndPassword", arg0, arg1)
-	ret0, _ := ret[0].(bool)
-	return ret0
-}
-
-// HasUserByEmailAndPassword indicates an expected call of HasUserByEmailAndPassword.
-func (mr *MockUserRepositoryMockRecorder) HasUserByEmailAndPassword(arg0, arg1 any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HasUserByEmailAndPassword", reflect.TypeOf((*MockUserRepository)(nil).HasUserByEmailAndPassword), arg0, arg1)
-}
-
 // HasUserByUUID mocks base method.
 func (m *MockUserRepository) HasUserByUUID(arg0 string) bool {
 	m.ctrl.T.Helper()

@@ -6,6 +6,10 @@ run: ## run server through linux (default: localhost:8080)
 test: ## run test through linux
 	go test -v ./...
 
+.PHONY: coverage
+coverage: ## run coverage through linux
+	go test -coverprofile=coverage.out ./... && go tool cover -html=coverage.out
+
 .PHONY: lint
 lint: ## run golangci-lint (2-minute wait)
 	docker run -t --rm -v $(shell pwd):/app -w /app golangci/golangci-lint:v1.60 golangci-lint run -v

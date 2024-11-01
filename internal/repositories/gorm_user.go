@@ -108,14 +108,6 @@ func (receiver *GormUserRepository) HasUserByEmail(email string) bool {
 	return exists
 }
 
-func (receiver *GormUserRepository) HasUserByEmailAndPassword(email string, password string) bool {
-	var exists bool
-
-	receiver.db.Model(&GormUser{}).Select("count(*) > 0").Find(&exists, &GormUser{Email: email, Password: password})
-
-	return exists
-}
-
 func (receiver *GormUserRepository) HasUserByUUIDAndPassword(uuid string, password string) bool {
 	var exists bool
 

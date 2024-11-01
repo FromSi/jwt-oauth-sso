@@ -1,17 +1,38 @@
 package routes
 
 import (
-	"fmt"
+	"errors"
+	"github.com/fromsi/jwt-oauth-sso/internal/configs"
 	"github.com/fromsi/jwt-oauth-sso/internal/http/requests"
+	"github.com/fromsi/jwt-oauth-sso/internal/http/responses"
+	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
+	"github.com/fromsi/jwt-oauth-sso/internal/services"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type LoginRoute struct {
+	config           configs.Config
+	userService      services.UserService
+	deviceService    services.DeviceService
+	userRepository   repositories.UserRepository
+	deviceRepository repositories.DeviceRepository
 }
 
-func NewLoginRoute() *LoginRoute {
-	return &LoginRoute{}
+func NewLoginRoute(
+	config configs.Config,
+	userService services.UserService,
+	deviceService services.DeviceService,
+	userRepository repositories.UserRepository,
+	deviceRepository repositories.DeviceRepository,
+) *LoginRoute {
+	return &LoginRoute{
+		config:           config,
+		userService:      userService,
+		deviceService:    deviceService,
+		userRepository:   userRepository,
+		deviceRepository: deviceRepository,
+	}
 }
 
 func (receiver LoginRoute) Method() string {
@@ -31,10 +52,57 @@ func (receiver LoginRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	fmt.Println(map[string]any{
-		"email":    request.Body.Email,
-		"password": request.Body.Password,
-	})
+	user := receiver.userRepository.GetUserByEmail(request.Body.Email)
 
-	context.Status(http.StatusContinue)
+	if user == nil {
+		context.JSON(http.StatusConflict, responses.NewErrorConflictResponse(errors.New("invalid email or password")))
+
+		return
+	}
+
+	err := receiver.userService.CheckPasswordByHashAndPassword(user.GetPassword(), request.Body.Password)
+
+	if err != nil {
+		context.JSON(http.StatusConflict, responses.NewErrorConflictResponse(errors.New("invalid email or password")))
+
+		return
+	}
+
+	device, err := receiver.deviceService.GetDeviceByUserUUIDAndIpAndUserAgent(
+		receiver.config,
+		user.GetUUID(),
+		request.IP,
+		request.UserAgent,
+	)
+
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, responses.NewErrorInternalServerResponse(err))
+
+		return
+	}
+
+	if device == nil {
+		device, err = receiver.deviceService.GetNewDeviceByUserUUIDAndIpAndUserAgent(
+			receiver.config,
+			user.GetUUID(),
+			request.IP,
+			request.UserAgent,
+		)
+	}
+
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, responses.NewErrorInternalServerResponse(err))
+
+		return
+	}
+
+	response, err := responses.NewSuccessLoginResponse(receiver.config, device)
+
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, responses.NewErrorInternalServerResponse(err))
+
+		return
+	}
+
+	context.JSON(http.StatusOK, response)
 }

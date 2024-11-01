@@ -2,6 +2,7 @@ app:
   name: "JWT OAuth SSO"
   host: "localhost"
   port: 8080
+  debug: true
 token:
   issuer_name: "jwt-oauth-sso"
   audience_name: "user"

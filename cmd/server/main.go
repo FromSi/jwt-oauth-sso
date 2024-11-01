@@ -110,6 +110,12 @@ func CreateApp() fx.Option {
 }
 
 func NewHTTPServer(lifecycle fx.Lifecycle, fxParams FxParams) *http.Server {
+	if fxParams.Config.GetDebug() {
+		gin.SetMode(gin.DebugMode)
+	} else {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	route := gin.Default()
 
 	for _, appRoute := range fxParams.Routes {

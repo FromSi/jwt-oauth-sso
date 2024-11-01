@@ -180,29 +180,6 @@ func TestGormUserRepository_CreateUser_And_HasUserByEmail(t *testing.T) {
 	assert.False(t, exists)
 }
 
-func TestGormUserRepository_CreateUser_And_HasUserByEmailAndPassword(t *testing.T) {
-	db, _ := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
-
-	gormUserRepository, _ := NewGormUserRepository(db)
-
-	gormUser := NewGormUser()
-
-	gormUser.SetEmail("1")
-	gormUser.SetEmail("2")
-
-	err := gormUserRepository.CreateUser(gormUser)
-
-	assert.Nil(t, err)
-
-	exists := gormUserRepository.HasUserByEmailAndPassword(gormUser.GetEmail(), gormUser.GetPassword())
-
-	assert.True(t, exists)
-
-	exists = gormUserRepository.HasUserByEmailAndPassword("0", "0")
-
-	assert.False(t, exists)
-}
-
 func TestGormUserRepository_CreateUser_And_HasUserByUUIDAndPassword(t *testing.T) {
 	db, _ := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
 

@@ -23,19 +23,40 @@ func (receiver *BaseDeviceService) GenerateRefreshToken() string {
 	return uuid.New().String()
 }
 
+func (receiver *BaseDeviceService) GetDeviceByUserUUIDAndIpAndUserAgent(
+	config configs.TokenConfig,
+	userUUID string,
+	ip string,
+	userAgent string,
+) (repositories.Device, error) {
+	timeNow := time.Now()
+	device := receiver.deviceRepository.GetDeviceByUserUUIDAndIpAndUserAgent(userUUID, ip, userAgent)
+
+	if device == nil {
+		return nil, nil
+	}
+
+	device.SetRefreshToken(receiver.GenerateRefreshToken())
+	device.SetUpdatedAt(int(timeNow.Unix()))
+	device.SetExpiredAt(int(timeNow.AddDate(0, 0, config.GetExpirationRefreshInDays()).Unix()))
+
+	err := receiver.deviceRepository.UpdateDevice(device)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return device, nil
+}
+
 func (receiver *BaseDeviceService) GetNewDeviceByUserUUIDAndIpAndUserAgent(
 	config configs.TokenConfig,
 	userUUID string,
 	ip string,
 	userAgent string,
-) repositories.Device {
-	device := receiver.deviceRepository.GetDeviceByUserUUIDAndIpAndUserAgent(userUUID, ip, userAgent)
-
-	if device != nil {
-		return device
-	}
-
-	device = repositories.NewGormDevice()
+) (repositories.Device, error) {
+	timeNow := time.Now()
+	device := repositories.NewGormDevice()
 
 	device.SetUUID(receiver.GenerateUUID())
 	device.SetUserUUID(userUUID)
@@ -43,11 +64,15 @@ func (receiver *BaseDeviceService) GetNewDeviceByUserUUIDAndIpAndUserAgent(
 	device.SetUserAgent(userAgent)
 	device.SetRefreshToken(receiver.GenerateRefreshToken())
 
-	timeNow := time.Now()
-
 	device.SetCreatedAt(int(timeNow.Unix()))
 	device.SetUpdatedAt(int(timeNow.Unix()))
 	device.SetExpiredAt(int(timeNow.AddDate(0, 0, config.GetExpirationRefreshInDays()).Unix()))
 
-	return device
+	err := receiver.deviceRepository.CreateDevice(device)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return device, nil
 }

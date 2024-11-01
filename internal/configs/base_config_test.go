@@ -29,6 +29,12 @@ func TestBaseConfig_GetPort(t *testing.T) {
 	assert.Equal(t, config.GetHost(), BaseConfigDefaultAppHost)
 }
 
+func TestBaseConfig_GetDebug(t *testing.T) {
+	config := NewBaseConfig()
+
+	assert.Equal(t, config.GetDebug(), BaseConfigDefaultAppDebug)
+}
+
 func TestBaseConfig_GetIssuerName(t *testing.T) {
 	config := NewBaseConfig()
 

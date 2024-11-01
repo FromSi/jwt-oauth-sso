@@ -4,6 +4,7 @@ type AppConfig interface {
 	GetName() string
 	GetHost() string
 	GetPort() int
+	GetDebug() bool
 }
 
 type TokenConfig interface {
