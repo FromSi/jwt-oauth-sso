@@ -76,3 +76,24 @@ func (receiver *BaseDeviceService) GetNewDeviceByUserUUIDAndIpAndUserAgent(
 
 	return device, nil
 }
+
+func (receiver *BaseDeviceService) ResetDevice(
+	config configs.TokenConfig,
+	device repositories.Device,
+) (repositories.Device, error) {
+	timeNow := time.Now()
+
+	deviceForUpdate := repositories.NewGormDeviceByDevice(device)
+
+	deviceForUpdate.SetRefreshToken(receiver.GenerateRefreshToken())
+	deviceForUpdate.SetUpdatedAt(int(timeNow.Unix()))
+	deviceForUpdate.SetExpiredAt(int(timeNow.AddDate(0, 0, config.GetExpirationRefreshInDays()).Unix()))
+
+	err := receiver.deviceRepository.UpdateDevice(deviceForUpdate)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return deviceForUpdate, nil
+}

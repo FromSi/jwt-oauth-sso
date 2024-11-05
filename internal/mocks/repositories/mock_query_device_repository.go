@@ -40,6 +40,20 @@ func (m *MockQueryDeviceRepository) EXPECT() *MockQueryDeviceRepositoryMockRecor
 	return m.recorder
 }
 
+// GetDeviceByRefreshToken mocks base method.
+func (m *MockQueryDeviceRepository) GetDeviceByRefreshToken(arg0 string) repositories.Device {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetDeviceByRefreshToken", arg0)
+	ret0, _ := ret[0].(repositories.Device)
+	return ret0
+}
+
+// GetDeviceByRefreshToken indicates an expected call of GetDeviceByRefreshToken.
+func (mr *MockQueryDeviceRepositoryMockRecorder) GetDeviceByRefreshToken(arg0 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDeviceByRefreshToken", reflect.TypeOf((*MockQueryDeviceRepository)(nil).GetDeviceByRefreshToken), arg0)
+}
+
 // GetDeviceByUserUUIDAndIpAndUserAgent mocks base method.
 func (m *MockQueryDeviceRepository) GetDeviceByUserUUIDAndIpAndUserAgent(arg0, arg1, arg2 string) repositories.Device {
 	m.ctrl.T.Helper()

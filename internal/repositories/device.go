@@ -7,6 +7,7 @@ import (
 
 //go:generate mockgen -destination=../mocks/repositories/mock_query_device_repository.go -package=repositories_mocks github.com/fromsi/jwt-oauth-sso/internal/repositories QueryDeviceRepository
 type QueryDeviceRepository interface {
+	GetDeviceByRefreshToken(string) Device
 	GetDevicesByUserUUID(string) []Device
 	GetDeviceByUserUUIDAndIpAndUserAgent(string, string, string) Device
 }

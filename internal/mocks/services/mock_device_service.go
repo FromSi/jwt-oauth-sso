@@ -98,3 +98,18 @@ func (mr *MockDeviceServiceMockRecorder) GetNewDeviceByUserUUIDAndIpAndUserAgent
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNewDeviceByUserUUIDAndIpAndUserAgent", reflect.TypeOf((*MockDeviceService)(nil).GetNewDeviceByUserUUIDAndIpAndUserAgent), arg0, arg1, arg2, arg3)
 }
+
+// ResetDevice mocks base method.
+func (m *MockDeviceService) ResetDevice(arg0 configs.TokenConfig, arg1 repositories.Device) (repositories.Device, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ResetDevice", arg0, arg1)
+	ret0, _ := ret[0].(repositories.Device)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ResetDevice indicates an expected call of ResetDevice.
+func (mr *MockDeviceServiceMockRecorder) ResetDevice(arg0, arg1 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ResetDevice", reflect.TypeOf((*MockDeviceService)(nil).ResetDevice), arg0, arg1)
+}

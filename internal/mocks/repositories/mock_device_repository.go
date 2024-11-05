@@ -82,6 +82,20 @@ func (mr *MockDeviceRepositoryMockRecorder) DeleteDeviceByUUID(arg0 any) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteDeviceByUUID", reflect.TypeOf((*MockDeviceRepository)(nil).DeleteDeviceByUUID), arg0)
 }
 
+// GetDeviceByRefreshToken mocks base method.
+func (m *MockDeviceRepository) GetDeviceByRefreshToken(arg0 string) repositories.Device {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetDeviceByRefreshToken", arg0)
+	ret0, _ := ret[0].(repositories.Device)
+	return ret0
+}
+
+// GetDeviceByRefreshToken indicates an expected call of GetDeviceByRefreshToken.
+func (mr *MockDeviceRepositoryMockRecorder) GetDeviceByRefreshToken(arg0 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDeviceByRefreshToken", reflect.TypeOf((*MockDeviceRepository)(nil).GetDeviceByRefreshToken), arg0)
+}
+
 // GetDeviceByUserUUIDAndIpAndUserAgent mocks base method.
 func (m *MockDeviceRepository) GetDeviceByUserUUIDAndIpAndUserAgent(arg0, arg1, arg2 string) repositories.Device {
 	m.ctrl.T.Helper()

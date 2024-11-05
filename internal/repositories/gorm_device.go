@@ -169,6 +169,18 @@ func (receiver *GormDeviceRepository) GetDeviceByUserUUIDAndIpAndUserAgent(userU
 	return &gormDevice
 }
 
+func (receiver *GormDeviceRepository) GetDeviceByRefreshToken(refreshToken string) Device {
+	var gormDevice GormDevice
+
+	result := receiver.db.Model(&GormDevice{}).First(&gormDevice, &GormDevice{RefreshToken: refreshToken})
+
+	if result.RowsAffected == 0 {
+		return nil
+	}
+
+	return &gormDevice
+}
+
 func (receiver *GormDeviceRepository) CreateDevice(device Device) error {
 	gormDevice := NewGormDeviceByDevice(device)
 

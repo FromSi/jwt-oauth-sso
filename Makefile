@@ -1,3 +1,5 @@
+default: help
+
 .PHONY: run
 run: ## run server through linux (default: localhost:8080)
 	go run ./cmd/server/main.go

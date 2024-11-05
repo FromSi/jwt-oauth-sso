@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"github.com/fromsi/jwt-oauth-sso/internal/configs"
 	repositories_mocks "github.com/fromsi/jwt-oauth-sso/internal/mocks/repositories"
 	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
@@ -191,4 +192,42 @@ func TestBaseDeviceService_GetNewDeviceByUserUUIDAndIpAndUserAgent(t *testing.T)
 			assert.NotEmpty(t, device.GetRefreshToken())
 		})
 	}
+}
+
+func TestBaseDeviceService_ResetDevice(t *testing.T) {
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
+
+	mockDeviceRepository := repositories_mocks.NewMockDeviceRepository(mockController)
+
+	deviceOne := repositories.NewGormDevice()
+	deviceTwo := repositories.NewGormDevice()
+
+	deviceOne.SetUUID("1")
+	deviceOne.SetRefreshToken("1")
+	deviceTwo.SetUUID("2")
+	deviceTwo.SetRefreshToken("2")
+
+	mockDeviceRepository.EXPECT().UpdateDevice(gomock.Cond(func(device repositories.Device) bool {
+		return device.GetUUID() == deviceTwo.GetUUID()
+	})).Return(errors.New("error")).AnyTimes()
+
+	mockDeviceRepository.EXPECT().UpdateDevice(gomock.Cond(func(device repositories.Device) bool {
+		return device.GetRefreshToken() != deviceOne.GetRefreshToken()
+	})).Return(nil).AnyTimes()
+
+	baseDeviceService := NewBaseDeviceService(mockDeviceRepository)
+
+	config := configs.NewBaseConfig()
+
+	device, err := baseDeviceService.ResetDevice(config, deviceTwo)
+
+	assert.NotNil(t, err)
+	assert.Nil(t, device)
+
+	device, err = baseDeviceService.ResetDevice(config, deviceOne)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, device)
+	assert.NotEqual(t, device.GetRefreshToken(), deviceOne.GetRefreshToken())
 }
