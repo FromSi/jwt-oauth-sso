@@ -1,20 +1,26 @@
 package routes
 
 import (
-	"fmt"
 	"github.com/fromsi/jwt-oauth-sso/internal/configs"
 	"github.com/fromsi/jwt-oauth-sso/internal/http/requests"
+	"github.com/fromsi/jwt-oauth-sso/internal/http/responses"
+	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type LogoutRoute struct {
-	config configs.TokenConfig
+	config           configs.TokenConfig
+	deviceRepository repositories.DeviceRepository
 }
 
-func NewLogoutRoute(config configs.TokenConfig) *LogoutRoute {
+func NewLogoutRoute(
+	config configs.TokenConfig,
+	deviceRepository repositories.DeviceRepository,
+) *LogoutRoute {
 	return &LogoutRoute{
-		config: config,
+		config:           config,
+		deviceRepository: deviceRepository,
 	}
 }
 
@@ -27,7 +33,7 @@ func (receiver LogoutRoute) Pattern() string {
 }
 
 func (receiver LogoutRoute) Handle(context *gin.Context) {
-	_, err := requests.NewBearerAuthRequestHeader(context, receiver.config)
+	headers, err := requests.NewBearerAuthRequestHeader(context, receiver.config)
 
 	if err != nil {
 		context.Status(http.StatusUnauthorized)
@@ -43,7 +49,13 @@ func (receiver LogoutRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	fmt.Println(map[string]any{})
+	err = receiver.deviceRepository.DeleteDeviceByUUID(headers.AccessToken.DeviceUUID)
 
-	context.Status(http.StatusContinue)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, responses.NewErrorInternalServerResponse(err))
+
+		return
+	}
+
+	context.Status(http.StatusAccepted)
 }

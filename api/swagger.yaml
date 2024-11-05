@@ -330,7 +330,7 @@ paths:
                       required:
                         - uuid
                         - userUUID
-                        - agent
+                        - userAgent
                         - ip
                         - expiredAt
                         - createdAt
@@ -344,7 +344,7 @@ paths:
                           type: string
                           format: uuid
                           example: '09d0ce56-33ab-4fce-90bb-d2b4d6d844ba'
-                        agent:
+                        userAgent:
                           type: string
                           format: text
                           example: 'Mozilla/5.0 (X11; Linux x86_64; rv:121.0)'

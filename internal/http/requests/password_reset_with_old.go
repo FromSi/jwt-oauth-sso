@@ -31,7 +31,7 @@ type PasswordResetWithOldRequestBody struct {
 func NewPasswordResetWithOldRequestBody(context *gin.Context) (*PasswordResetWithOldRequestBody, *responses.ErrorBadRequestResponse) {
 	var requestBody PasswordResetWithOldRequestBody
 
-	if err := context.ShouldBindJSON(&requestBody); err != nil {
+	if err := context.ShouldBindJSON(&requestBody); err != nil && err.Error() != "EOF" {
 		return nil, responses.NewErrorBadRequestResponseByError(err)
 	}
 

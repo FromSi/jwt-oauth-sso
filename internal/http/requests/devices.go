@@ -28,7 +28,7 @@ type DevicesRequestBody struct{}
 func NewDevicesRequestBody(context *gin.Context) (*DevicesRequestBody, *responses.ErrorBadRequestResponse) {
 	var requestBody DevicesRequestBody
 
-	if err := context.ShouldBindJSON(&requestBody); err != nil {
+	if err := context.ShouldBindJSON(&requestBody); err != nil && err.Error() != "EOF" {
 		return nil, responses.NewErrorBadRequestResponseByError(err)
 	}
 

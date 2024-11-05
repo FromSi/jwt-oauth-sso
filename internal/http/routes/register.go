@@ -83,14 +83,6 @@ func (receiver RegisterRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	err = receiver.deviceRepository.CreateDevice(device)
-
-	if err != nil {
-		context.JSON(http.StatusInternalServerError, responses.NewErrorInternalServerResponse(err))
-
-		return
-	}
-
 	response, err := responses.NewSuccessRegisterResponse(receiver.config, device)
 
 	if err != nil {

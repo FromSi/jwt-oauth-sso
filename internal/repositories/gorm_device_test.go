@@ -384,6 +384,33 @@ func TestGormDeviceRepository_CreateDevice_And_DeleteDeviceByUUID(t *testing.T) 
 	assert.Equal(t, len(gormDevices), 0)
 }
 
+func TestGormDeviceRepository_CreateDevice_And_DeleteDeviceByUUIDAndUserUUID(t *testing.T) {
+	db, _ := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
+
+	gormDeviceRepository, _ := NewGormDeviceRepository(db)
+
+	gormDevice := NewGormDevice()
+
+	gormDevice.SetUUID("1")
+	gormDevice.SetUserUUID("2")
+
+	err := gormDeviceRepository.CreateDevice(gormDevice)
+
+	assert.Nil(t, err)
+
+	gormDevices := gormDeviceRepository.GetDevicesByUserUUID(gormDevice.GetUserUUID())
+
+	assert.Equal(t, len(gormDevices), 1)
+
+	err = gormDeviceRepository.DeleteDeviceByUUIDAndUserUUID(gormDevice.GetUUID(), gormDevice.GetUserUUID())
+
+	assert.Nil(t, err)
+
+	gormDevices = gormDeviceRepository.GetDevicesByUserUUID(gormDevice.GetUserUUID())
+
+	assert.Equal(t, len(gormDevices), 0)
+}
+
 func TestGormDeviceRepository_CreateDevice_And_DeleteAllDevicesByUserUUID(t *testing.T) {
 	db, _ := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
 

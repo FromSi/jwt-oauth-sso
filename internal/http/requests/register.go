@@ -41,7 +41,7 @@ type RegisterRequestBody struct {
 func NewRegisterRequestBody(context *gin.Context) (*RegisterRequestBody, *responses.ErrorBadRequestResponse) {
 	var requestBody RegisterRequestBody
 
-	if err := context.ShouldBindJSON(&requestBody); err != nil {
+	if err := context.ShouldBindJSON(&requestBody); err != nil && err.Error() != "EOF" {
 		return nil, responses.NewErrorBadRequestResponseByError(err)
 	}
 

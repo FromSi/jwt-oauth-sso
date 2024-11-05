@@ -30,7 +30,7 @@ type RefreshRequestBody struct {
 func NewRefreshRequestBody(context *gin.Context) (*RefreshRequestBody, *responses.ErrorBadRequestResponse) {
 	var requestBody RefreshRequestBody
 
-	if err := context.ShouldBindJSON(&requestBody); err != nil {
+	if err := context.ShouldBindJSON(&requestBody); err != nil && err.Error() != "EOF" {
 		return nil, responses.NewErrorBadRequestResponseByError(err)
 	}
 

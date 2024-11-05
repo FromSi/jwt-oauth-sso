@@ -41,7 +41,7 @@ type LoginRequestBody struct {
 func NewLoginRequestBody(context *gin.Context) (*LoginRequestBody, *responses.ErrorBadRequestResponse) {
 	var requestBody LoginRequestBody
 
-	if err := context.ShouldBindJSON(&requestBody); err != nil {
+	if err := context.ShouldBindJSON(&requestBody); err != nil && err.Error() != "EOF" {
 		return nil, responses.NewErrorBadRequestResponseByError(err)
 	}
 

@@ -9,7 +9,7 @@ type SuccessDevicesResponse struct {
 type SuccessDevicesResponseData struct {
 	UUID      string `json:"uuid"`
 	UserUUID  string `json:"userUUID"`
-	Agent     string `json:"agent"`
+	UserAgent string `json:"userAgent"`
 	Ip        string `json:"ip"`
 	ExpiredAt int    `json:"expiredAt"`
 	CreatedAt int    `json:"createdAt"`
@@ -23,7 +23,7 @@ func NewSuccessDevicesResponse(devices []repositories.Device) *SuccessDevicesRes
 		data[i] = SuccessDevicesResponseData{
 			UUID:      device.GetUUID(),
 			UserUUID:  device.GetUserUUID(),
-			Agent:     device.GetUserAgent(),
+			UserAgent: device.GetUserAgent(),
 			Ip:        device.GetIp(),
 			ExpiredAt: device.GetExpiredAt(),
 			CreatedAt: device.GetCreatedAt(),

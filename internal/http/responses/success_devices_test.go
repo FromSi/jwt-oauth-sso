@@ -31,7 +31,7 @@ func Test_NewSuccessDevicesResponse(t *testing.T) {
 
 	assert.Nil(t, err)
 
-	expected := `{"data":[{"uuid":"1","userUUID":"2","agent":"3","ip":"4","expiredAt":6,"createdAt":7,"updatedAt":8}]}`
+	expected := `{"data":[{"uuid":"1","userUUID":"2","userAgent":"3","ip":"4","expiredAt":6,"createdAt":7,"updatedAt":8}]}`
 
 	assert.Equal(t, string(responseToJson), expected)
 }

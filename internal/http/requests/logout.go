@@ -28,7 +28,8 @@ type LogoutRequestBody struct{}
 func NewLogoutRequestBody(context *gin.Context) (*LogoutRequestBody, *responses.ErrorBadRequestResponse) {
 	var requestBody LogoutRequestBody
 
-	if err := context.ShouldBindJSON(&requestBody); err != nil {
+	if err := context.ShouldBindJSON(&requestBody); err != nil && err.Error() != "EOF" {
+		println(err.Error())
 		return nil, responses.NewErrorBadRequestResponseByError(err)
 	}
 

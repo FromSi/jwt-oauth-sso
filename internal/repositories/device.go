@@ -17,6 +17,7 @@ type MutableDeviceRepository interface {
 	CreateDevice(Device) error
 	UpdateDevice(Device) error
 	DeleteDeviceByUUID(string) error
+	DeleteDeviceByUUIDAndUserUUID(string, string) error
 	DeleteAllDevicesByUserUUID(string) error
 }
 

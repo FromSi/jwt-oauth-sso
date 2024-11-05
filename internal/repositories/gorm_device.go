@@ -197,6 +197,11 @@ func (receiver *GormDeviceRepository) DeleteDeviceByUUID(uuid string) error {
 	return receiver.db.Delete(&GormDevice{}, &GormDevice{UUID: uuid}).Error
 }
 
+func (receiver *GormDeviceRepository) DeleteDeviceByUUIDAndUserUUID(uuid string, userUUID string) error {
+	println(uuid, userUUID)
+	return receiver.db.Delete(&GormDevice{}, &GormDevice{UUID: uuid, UserUUID: userUUID}).Error
+}
+
 func (receiver *GormDeviceRepository) DeleteAllDevicesByUserUUID(userUUID string) error {
 	return receiver.db.Delete(&GormDevice{}, &GormDevice{UserUUID: userUUID}).Error
 }
