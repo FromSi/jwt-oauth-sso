@@ -15,7 +15,10 @@ type SuccessRegisterResponse struct {
 	} `json:"data"`
 }
 
-func NewSuccessRegisterResponse(configs configs.TokenConfig, device repositories.Device) (*SuccessRegisterResponse, error) {
+func NewSuccessRegisterResponse(
+	configs configs.TokenConfig,
+	device repositories.Device,
+) (*SuccessRegisterResponse, error) {
 	accessToken, err := device.GenerateAccessToken(configs)
 
 	if err != nil {

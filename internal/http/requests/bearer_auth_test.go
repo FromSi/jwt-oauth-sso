@@ -15,11 +15,23 @@ import (
 func Test_NewBearerAuthRequestHeader(t *testing.T) {
 	config := configs.NewBaseConfig()
 
-	validToken, _ := tokens.NewAccessToken(config, "1", "1", "1", time.Now())
+	validToken, _ := tokens.NewAccessToken(
+		config,
+		"1",
+		"1",
+		"1",
+		time.Now(),
+	)
 
 	validTokenToJWT, _ := validToken.GetJWT()
 
-	invalidToken, _ := tokens.NewAccessToken(config, "1", "1", "1", time.Unix(1, 1))
+	invalidToken, _ := tokens.NewAccessToken(
+		config,
+		"1",
+		"1",
+		"1",
+		time.Unix(1, 1),
+	)
 
 	invalidTokenToJWT, _ := invalidToken.GetJWT()
 

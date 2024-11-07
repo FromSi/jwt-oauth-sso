@@ -1,17 +1,28 @@
 package routes
 
 import (
-	"fmt"
+	"errors"
 	"github.com/fromsi/jwt-oauth-sso/internal/http/requests"
+	"github.com/fromsi/jwt-oauth-sso/internal/http/responses"
+	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
+	"github.com/fromsi/jwt-oauth-sso/internal/services"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type SendResetTokenRoute struct {
+	userRepository    repositories.UserRepository
+	resetTokenService services.ResetTokenService
 }
 
-func NewSendResetTokenRoute() *SendResetTokenRoute {
-	return &SendResetTokenRoute{}
+func NewSendResetTokenRoute(
+	userRepository repositories.UserRepository,
+	resetTokenService services.ResetTokenService,
+) *SendResetTokenRoute {
+	return &SendResetTokenRoute{
+		userRepository:    userRepository,
+		resetTokenService: resetTokenService,
+	}
 }
 
 func (receiver SendResetTokenRoute) Method() string {
@@ -31,9 +42,25 @@ func (receiver SendResetTokenRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	fmt.Println(map[string]any{
-		"user_uuid": request.Body.UserUUID,
-	})
+	userExists := receiver.userRepository.HasUserByEmail(request.Body.Email)
 
-	context.Status(http.StatusContinue)
+	if !userExists {
+		err := responses.NewErrorConflictResponse(
+			errors.New("user not found with this email"),
+		)
+
+		context.JSON(http.StatusConflict, err)
+
+		return
+	}
+
+	err := receiver.resetTokenService.SendNewResetTokenByUserEmail(request.Body.Email)
+
+	if err != nil {
+		context.JSON(http.StatusConflict, responses.NewErrorConflictResponse(err))
+
+		return
+	}
+
+	context.Status(http.StatusAccepted)
 }

@@ -9,7 +9,9 @@ type SendResetTokenRequest struct {
 	Body SendResetTokenRequestBody
 }
 
-func NewSendResetTokenRequest(context *gin.Context) (*SendResetTokenRequest, *responses.ErrorBadRequestResponse) {
+func NewSendResetTokenRequest(
+	context *gin.Context,
+) (*SendResetTokenRequest, *responses.ErrorBadRequestResponse) {
 	var request SendResetTokenRequest
 
 	requestBody, err := NewSendResetTokenRequestBody(context)
@@ -24,10 +26,12 @@ func NewSendResetTokenRequest(context *gin.Context) (*SendResetTokenRequest, *re
 }
 
 type SendResetTokenRequestBody struct {
-	UserUUID string `json:"userUuid" binding:"required,uuid4"`
+	Email string `json:"email" binding:"required,email"`
 }
 
-func NewSendResetTokenRequestBody(context *gin.Context) (*SendResetTokenRequestBody, *responses.ErrorBadRequestResponse) {
+func NewSendResetTokenRequestBody(
+	context *gin.Context,
+) (*SendResetTokenRequestBody, *responses.ErrorBadRequestResponse) {
 	var requestBody SendResetTokenRequestBody
 
 	if err := context.ShouldBindJSON(&requestBody); err != nil && err.Error() != "EOF" {

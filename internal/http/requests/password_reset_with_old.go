@@ -9,7 +9,9 @@ type PasswordResetWithOldRequest struct {
 	Body PasswordResetWithOldRequestBody
 }
 
-func NewPasswordResetWithOldRequest(context *gin.Context) (*PasswordResetWithOldRequest, *responses.ErrorBadRequestResponse) {
+func NewPasswordResetWithOldRequest(
+	context *gin.Context,
+) (*PasswordResetWithOldRequest, *responses.ErrorBadRequestResponse) {
 	var request PasswordResetWithOldRequest
 
 	requestBody, err := NewPasswordResetWithOldRequestBody(context)
@@ -28,7 +30,9 @@ type PasswordResetWithOldRequestBody struct {
 	NewPassword string `json:"newPassword" binding:"required,password"`
 }
 
-func NewPasswordResetWithOldRequestBody(context *gin.Context) (*PasswordResetWithOldRequestBody, *responses.ErrorBadRequestResponse) {
+func NewPasswordResetWithOldRequestBody(
+	context *gin.Context,
+) (*PasswordResetWithOldRequestBody, *responses.ErrorBadRequestResponse) {
 	var requestBody PasswordResetWithOldRequestBody
 
 	if err := context.ShouldBindJSON(&requestBody); err != nil && err.Error() != "EOF" {

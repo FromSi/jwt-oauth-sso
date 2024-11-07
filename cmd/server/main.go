@@ -94,16 +94,56 @@ func CreateApp() fx.Option {
 				fx.As(new(services.MutableNotificationService)),
 			),
 
-			fx.Annotate(routes.NewDevicesRoute, fx.As(new(routes.Route)), routeAnnotationGroup),
-			fx.Annotate(routes.NewLoginRoute, fx.As(new(routes.Route)), routeAnnotationGroup),
-			fx.Annotate(routes.NewLogoutRoute, fx.As(new(routes.Route)), routeAnnotationGroup),
-			fx.Annotate(routes.NewLogoutAllRoute, fx.As(new(routes.Route)), routeAnnotationGroup),
-			fx.Annotate(routes.NewLogoutDeviceRoute, fx.As(new(routes.Route)), routeAnnotationGroup),
-			fx.Annotate(routes.NewPasswordResetWithOldRoute, fx.As(new(routes.Route)), routeAnnotationGroup),
-			fx.Annotate(routes.NewPasswordResetWithTokenRoute, fx.As(new(routes.Route)), routeAnnotationGroup),
-			fx.Annotate(routes.NewRefreshRoute, fx.As(new(routes.Route)), routeAnnotationGroup),
-			fx.Annotate(routes.NewRegisterRoute, fx.As(new(routes.Route)), routeAnnotationGroup),
-			fx.Annotate(routes.NewSendResetTokenRoute, fx.As(new(routes.Route)), routeAnnotationGroup),
+			fx.Annotate(
+				routes.NewDevicesRoute,
+				fx.As(new(routes.Route)),
+				routeAnnotationGroup,
+			),
+			fx.Annotate(
+				routes.NewLoginRoute,
+				fx.As(new(routes.Route)),
+				routeAnnotationGroup,
+			),
+			fx.Annotate(
+				routes.NewLogoutRoute,
+				fx.As(new(routes.Route)),
+				routeAnnotationGroup,
+			),
+			fx.Annotate(
+				routes.NewLogoutAllRoute,
+				fx.As(new(routes.Route)),
+				routeAnnotationGroup,
+			),
+			fx.Annotate(
+				routes.NewLogoutDeviceRoute,
+				fx.As(new(routes.Route)),
+				routeAnnotationGroup,
+			),
+			fx.Annotate(
+				routes.NewPasswordResetWithOldRoute,
+				fx.As(new(routes.Route)),
+				routeAnnotationGroup,
+			),
+			fx.Annotate(
+				routes.NewPasswordResetWithTokenRoute,
+				fx.As(new(routes.Route)),
+				routeAnnotationGroup,
+			),
+			fx.Annotate(
+				routes.NewRefreshRoute,
+				fx.As(new(routes.Route)),
+				routeAnnotationGroup,
+			),
+			fx.Annotate(
+				routes.NewRegisterRoute,
+				fx.As(new(routes.Route)),
+				routeAnnotationGroup,
+			),
+			fx.Annotate(
+				routes.NewSendResetTokenRoute,
+				fx.As(new(routes.Route)),
+				routeAnnotationGroup,
+			),
 		),
 		fx.Invoke(func(*http.Server) {}),
 	)

@@ -36,22 +36,31 @@ func NewAccessToken(
 	deviceAgent string,
 	currentTime time.Time,
 ) (*AccessToken, error) {
+	expirationTime := currentTime.
+		Add(time.Minute * time.Duration(config.GetExpirationAccessInMinutes()))
+
 	return &AccessToken{
 		Issuer:          config.GetIssuerName(),
 		Audience:        config.GetAudienceName(),
 		Subject:         subject,
 		IssuedAt:        currentTime,
-		ExpirationTime:  currentTime.Add(time.Minute * time.Duration(config.GetExpirationAccessInMinutes())),
+		ExpirationTime:  expirationTime,
 		DeviceUUID:      deviceUUID,
 		DeviceUserAgent: deviceAgent,
 		secretKey:       config.GetSecretKey(),
 	}, nil
 }
 
-func NewAccessTokenByJWT(config configs.TokenConfig, tokenJWT string) (*AccessToken, error) {
+func NewAccessTokenByJWT(
+	config configs.TokenConfig,
+	tokenJWT string,
+) (*AccessToken, error) {
 	token, err := jwt.Parse(tokenJWT, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+			return nil, fmt.Errorf(
+				"unexpected signing method: %v",
+				token.Header["alg"],
+			)
 		}
 		return []byte(config.GetSecretKey()), nil
 	})
@@ -70,22 +79,31 @@ func NewAccessTokenByJWT(config configs.TokenConfig, tokenJWT string) (*AccessTo
 		return nil, errors.New("invalid claims")
 	}
 
+	issuedAt := time.
+		Unix(int64(claims[CommonJWTClaimIssuedAt].(float64)), 0)
+
+	expirationTime := time.
+		Unix(int64(claims[CommonJWTClaimExpirationTime].(float64)), 0)
+
 	accessToken := AccessToken{
 		Issuer:          claims[CommonJWTClaimIssuer].(string),
 		Audience:        claims[CommonJWTClaimAudience].(string),
 		Subject:         claims[CommonJWTClaimSubject].(string),
-		IssuedAt:        time.Unix(int64(claims[CommonJWTClaimIssuedAt].(float64)), 0),
-		ExpirationTime:  time.Unix(int64(claims[CommonJWTClaimExpirationTime].(float64)), 0),
+		IssuedAt:        issuedAt,
+		ExpirationTime:  expirationTime,
 		DeviceUUID:      claims[CommonJWTClaimDeviceUUID].(string),
 		DeviceUserAgent: claims[CommonJWTClaimDeviceUserAgent].(string),
 		secretKey:       config.GetSecretKey(),
 	}
 
-	if time.Now().Before(accessToken.IssuedAt) {
+	isIssued := time.Now().Before(accessToken.IssuedAt)
+	isExpired := time.Now().After(accessToken.ExpirationTime)
+
+	if isIssued {
 		return nil, errors.New("token used before issued")
 	}
 
-	if time.Now().After(accessToken.ExpirationTime) {
+	if isExpired {
 		return nil, errors.New("token has expired")
 	}
 

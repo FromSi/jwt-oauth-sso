@@ -17,12 +17,12 @@ func Test_NewSendResetTokenRequest_And_NewSendResetTokenRequestBody(t *testing.T
 	}{
 		{
 			name:  "Valid request",
-			body:  `{"userUuid": "2e79c328-d6a9-45d4-92e7-2677aa36f6c3"}`,
+			body:  `{"email": "test@fromsi.net"}`,
 			error: false,
 		},
 		{
-			name:  "Invalid userUuid",
-			body:  `{"userUuid": "2e79c328-45d4-92e7-2677aa36f6c3"}`,
+			name:  "Invalid email",
+			body:  `{"email": "test"}`,
 			error: true,
 		},
 		{
@@ -51,7 +51,7 @@ func Test_NewSendResetTokenRequest_And_NewSendResetTokenRequestBody(t *testing.T
 				assert.Nil(t, errResponse)
 				assert.NotNil(t, request)
 				assert.NotNil(t, request.Body)
-				assert.NotEmpty(t, request.Body.UserUUID)
+				assert.NotEmpty(t, request.Body.Email)
 			}
 		})
 	}

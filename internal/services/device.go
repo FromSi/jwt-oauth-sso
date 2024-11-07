@@ -1,7 +1,6 @@
 package services
 
 import (
-	"github.com/fromsi/jwt-oauth-sso/internal/configs"
 	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
 )
 
@@ -9,13 +8,13 @@ import (
 type QueryDeviceService interface {
 	GenerateUUID() string
 	GenerateRefreshToken() string
-	GetDeviceByUserUUIDAndIpAndUserAgent(configs.TokenConfig, string, string, string) (repositories.Device, error)
-	GetNewDeviceByUserUUIDAndIpAndUserAgent(configs.TokenConfig, string, string, string) (repositories.Device, error)
+	GetDeviceByUserUUIDAndIpAndUserAgent(string, string, string) (repositories.Device, error)
+	GetNewDeviceByUserUUIDAndIpAndUserAgent(string, string, string) (repositories.Device, error)
 }
 
 //go:generate mockgen -destination=../mocks/services/mock_mutable_device_service.go -package=services_mocks github.com/fromsi/jwt-oauth-sso/internal/services MutableDeviceService
 type MutableDeviceService interface {
-	ResetDevice(configs.TokenConfig, repositories.Device) (repositories.Device, error)
+	ResetDevice(repositories.Device) (repositories.Device, error)
 }
 
 //go:generate mockgen -destination=../mocks/services/mock_device_service.go -package=services_mocks github.com/fromsi/jwt-oauth-sso/internal/services DeviceService

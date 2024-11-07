@@ -11,7 +11,7 @@ type QueryUserRepository interface {
 //go:generate mockgen -destination=../mocks/repositories/mock_mutable_user_repository.go -package=repositories_mocks github.com/fromsi/jwt-oauth-sso/internal/repositories MutableUserRepository
 type MutableUserRepository interface {
 	CreateUser(User) error
-	UpdatePassword(uuid string, password string, updatedAt int) error
+	UpdatePasswordByUUIDAndPasswordAndUpdatedAt(string, string, int) error
 }
 
 //go:generate mockgen -destination=../mocks/repositories/mock_user_repository.go -package=repositories_mocks github.com/fromsi/jwt-oauth-sso/internal/repositories UserRepository

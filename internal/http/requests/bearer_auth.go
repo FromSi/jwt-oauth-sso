@@ -12,7 +12,10 @@ type BearerAuthRequestHeader struct {
 	AccessToken tokens.AccessToken
 }
 
-func NewBearerAuthRequestHeader(context *gin.Context, config configs.TokenConfig) (*BearerAuthRequestHeader, error) {
+func NewBearerAuthRequestHeader(
+	context *gin.Context,
+	config configs.TokenConfig,
+) (*BearerAuthRequestHeader, error) {
 	authHeader := context.GetHeader("Authorization")
 
 	if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {

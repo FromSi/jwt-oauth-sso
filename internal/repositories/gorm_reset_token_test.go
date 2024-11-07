@@ -114,13 +114,21 @@ func Test_NewGormResetTokenRepository(t *testing.T) {
 
 	var count int
 
-	db.Raw("SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = ?", stmt.Table).Scan(&count)
+	db.
+		Raw(
+			"SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = ?",
+			stmt.Table,
+		).
+		Scan(&count)
 
 	assert.Equal(t, count, 1)
 }
 
 func TestGormResetTokenRepository_CreateToken_And_HasToken(t *testing.T) {
-	db, _ := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
+	db, _ := gorm.Open(
+		sqlite.Open("file::memory:"),
+		&gorm.Config{Logger: logger.Default.LogMode(logger.Silent)},
+	)
 
 	gormResetTokenRepository, _ := NewGormResetTokenRepository(db)
 
@@ -142,7 +150,10 @@ func TestGormResetTokenRepository_CreateToken_And_HasToken(t *testing.T) {
 }
 
 func TestGormResetTokenRepository_CreateToken_And_GetResetTokenByToken(t *testing.T) {
-	db, _ := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
+	db, _ := gorm.Open(
+		sqlite.Open("file::memory:"),
+		&gorm.Config{Logger: logger.Default.LogMode(logger.Silent)},
+	)
 
 	gormResetTokenRepository, _ := NewGormResetTokenRepository(db)
 
@@ -157,7 +168,8 @@ func TestGormResetTokenRepository_CreateToken_And_GetResetTokenByToken(t *testin
 
 	assert.Nil(t, err)
 
-	resetTokenByToken := gormResetTokenRepository.GetResetTokenByToken(gormResetToken.GetToken())
+	resetTokenByToken := gormResetTokenRepository.
+		GetResetTokenByToken(gormResetToken.GetToken())
 
 	assert.NotNil(t, resetTokenByToken)
 
@@ -172,7 +184,10 @@ func TestGormResetTokenRepository_CreateToken_And_GetResetTokenByToken(t *testin
 }
 
 func TestGormResetTokenRepository_CreateToken_And_DeleteResetToken(t *testing.T) {
-	db, _ := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
+	db, _ := gorm.Open(
+		sqlite.Open("file::memory:"),
+		&gorm.Config{Logger: logger.Default.LogMode(logger.Silent)},
+	)
 
 	gormResetTokenRepository, _ := NewGormResetTokenRepository(db)
 

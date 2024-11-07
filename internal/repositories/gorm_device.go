@@ -55,7 +55,9 @@ func NewGormDeviceByDevice(device Device) *GormDevice {
 	}
 }
 
-func (receiver *GormDevice) GenerateAccessToken(config configs.TokenConfig) (*tokens.AccessToken, error) {
+func (receiver *GormDevice) GenerateAccessToken(
+	config configs.TokenConfig,
+) (*tokens.AccessToken, error) {
 	return tokens.NewAccessToken(
 		config,
 		receiver.UserUUID,
@@ -146,7 +148,10 @@ func NewGormDeviceRepository(db *gorm.DB) (*GormDeviceRepository, error) {
 func (receiver *GormDeviceRepository) GetDevicesByUserUUID(userUUID string) []Device {
 	var gormDevices []GormDevice
 
-	receiver.db.Model(&GormDevice{UserUUID: userUUID}).Find(&gormDevices)
+	receiver.
+		db.
+		Model(&GormDevice{UserUUID: userUUID}).
+		Find(&gormDevices)
 
 	devices := make([]Device, len(gormDevices))
 
@@ -157,10 +162,17 @@ func (receiver *GormDeviceRepository) GetDevicesByUserUUID(userUUID string) []De
 	return devices
 }
 
-func (receiver *GormDeviceRepository) GetDeviceByUserUUIDAndIpAndUserAgent(userUUID string, ip string, agent string) Device {
+func (receiver *GormDeviceRepository) GetDeviceByUserUUIDAndIpAndUserAgent(
+	userUUID string,
+	ip string,
+	agent string,
+) Device {
 	var gormDevice GormDevice
 
-	result := receiver.db.Model(&GormDevice{}).First(&gormDevice, &GormDevice{UserUUID: userUUID, Ip: ip, UserAgent: agent})
+	result := receiver.
+		db.
+		Model(&GormDevice{}).
+		First(&gormDevice, &GormDevice{UserUUID: userUUID, Ip: ip, UserAgent: agent})
 
 	if result.RowsAffected == 0 {
 		return nil
@@ -172,7 +184,10 @@ func (receiver *GormDeviceRepository) GetDeviceByUserUUIDAndIpAndUserAgent(userU
 func (receiver *GormDeviceRepository) GetDeviceByRefreshToken(refreshToken string) Device {
 	var gormDevice GormDevice
 
-	result := receiver.db.Model(&GormDevice{}).First(&gormDevice, &GormDevice{RefreshToken: refreshToken})
+	result := receiver.
+		db.
+		Model(&GormDevice{}).
+		First(&gormDevice, &GormDevice{RefreshToken: refreshToken})
 
 	if result.RowsAffected == 0 {
 		return nil
@@ -184,24 +199,44 @@ func (receiver *GormDeviceRepository) GetDeviceByRefreshToken(refreshToken strin
 func (receiver *GormDeviceRepository) CreateDevice(device Device) error {
 	gormDevice := NewGormDeviceByDevice(device)
 
-	return receiver.db.Model(&GormDevice{}).Create(NewGormDeviceByDevice(gormDevice)).Error
+	return receiver.
+		db.
+		Model(&GormDevice{}).
+		Create(NewGormDeviceByDevice(gormDevice)).
+		Error
 }
 
 func (receiver *GormDeviceRepository) UpdateDevice(device Device) error {
 	gormDevice := NewGormDeviceByDevice(device)
 
-	return receiver.db.Model(&GormDevice{}).Where(&GormDevice{UUID: device.GetUUID()}).UpdateColumns(NewGormDeviceByDevice(gormDevice)).Error
+	return receiver.
+		db.
+		Model(&GormDevice{}).
+		Where(&GormDevice{UUID: device.GetUUID()}).
+		UpdateColumns(NewGormDeviceByDevice(gormDevice)).
+		Error
 }
 
 func (receiver *GormDeviceRepository) DeleteDeviceByUUID(uuid string) error {
-	return receiver.db.Delete(&GormDevice{}, &GormDevice{UUID: uuid}).Error
+	return receiver.
+		db.
+		Delete(&GormDevice{}, &GormDevice{UUID: uuid}).
+		Error
 }
 
-func (receiver *GormDeviceRepository) DeleteDeviceByUUIDAndUserUUID(uuid string, userUUID string) error {
-	println(uuid, userUUID)
-	return receiver.db.Delete(&GormDevice{}, &GormDevice{UUID: uuid, UserUUID: userUUID}).Error
+func (receiver *GormDeviceRepository) DeleteDeviceByUUIDAndUserUUID(
+	uuid string,
+	userUUID string,
+) error {
+	return receiver.
+		db.
+		Delete(&GormDevice{}, &GormDevice{UUID: uuid, UserUUID: userUUID}).
+		Error
 }
 
 func (receiver *GormDeviceRepository) DeleteAllDevicesByUserUUID(userUUID string) error {
-	return receiver.db.Delete(&GormDevice{}, &GormDevice{UserUUID: userUUID}).Error
+	return receiver.
+		db.
+		Delete(&GormDevice{}, &GormDevice{UserUUID: userUUID}).
+		Error
 }

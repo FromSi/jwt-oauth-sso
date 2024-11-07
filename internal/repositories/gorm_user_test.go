@@ -131,13 +131,21 @@ func Test_NewGormUserRepository(t *testing.T) {
 
 	var count int
 
-	db.Raw("SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = ?", stmt.Table).Scan(&count)
+	db.
+		Raw(
+			"SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = ?",
+			stmt.Table,
+		).
+		Scan(&count)
 
 	assert.Equal(t, count, 1)
 }
 
 func TestGormUserRepository_CreateUser_And_HasUserByUUID(t *testing.T) {
-	db, _ := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
+	db, _ := gorm.Open(
+		sqlite.Open("file::memory:"),
+		&gorm.Config{Logger: logger.Default.LogMode(logger.Silent)},
+	)
 
 	gormUserRepository, _ := NewGormUserRepository(db)
 
@@ -159,7 +167,10 @@ func TestGormUserRepository_CreateUser_And_HasUserByUUID(t *testing.T) {
 }
 
 func TestGormUserRepository_CreateUser_And_HasUserByEmail(t *testing.T) {
-	db, _ := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
+	db, _ := gorm.Open(
+		sqlite.Open("file::memory:"),
+		&gorm.Config{Logger: logger.Default.LogMode(logger.Silent)},
+	)
 
 	gormUserRepository, _ := NewGormUserRepository(db)
 
@@ -181,7 +192,10 @@ func TestGormUserRepository_CreateUser_And_HasUserByEmail(t *testing.T) {
 }
 
 func TestGormUserRepository_CreateUser_And_HasUserByUUIDAndPassword(t *testing.T) {
-	db, _ := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
+	db, _ := gorm.Open(
+		sqlite.Open("file::memory:"),
+		&gorm.Config{Logger: logger.Default.LogMode(logger.Silent)},
+	)
 
 	gormUserRepository, _ := NewGormUserRepository(db)
 
@@ -194,7 +208,8 @@ func TestGormUserRepository_CreateUser_And_HasUserByUUIDAndPassword(t *testing.T
 
 	assert.Nil(t, err)
 
-	exists := gormUserRepository.HasUserByUUIDAndPassword(gormUser.GetUUID(), gormUser.GetPassword())
+	exists := gormUserRepository.
+		HasUserByUUIDAndPassword(gormUser.GetUUID(), gormUser.GetPassword())
 
 	assert.True(t, exists)
 
@@ -204,7 +219,10 @@ func TestGormUserRepository_CreateUser_And_HasUserByUUIDAndPassword(t *testing.T
 }
 
 func TestGormUserRepository_CreateUser_And_GetUserByEmail(t *testing.T) {
-	db, _ := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
+	db, _ := gorm.Open(
+		sqlite.Open("file::memory:"),
+		&gorm.Config{Logger: logger.Default.LogMode(logger.Silent)},
+	)
 
 	gormUserRepository, _ := NewGormUserRepository(db)
 
@@ -234,8 +252,11 @@ func TestGormUserRepository_CreateUser_And_GetUserByEmail(t *testing.T) {
 	assert.Equal(t, gormUserForRepository.GetUpdatedAt(), gormUser.GetUpdatedAt())
 }
 
-func TestGormUserRepository_CreateUser_And_UpdatePassword(t *testing.T) {
-	db, _ := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
+func TestGormUserRepository_CreateUser_And_UpdatePasswordByUUIDAndPasswordAndUpdatedAt(t *testing.T) {
+	db, _ := gorm.Open(
+		sqlite.Open("file::memory:"),
+		&gorm.Config{Logger: logger.Default.LogMode(logger.Silent)},
+	)
 
 	gormUserRepository, _ := NewGormUserRepository(db)
 
@@ -259,7 +280,11 @@ func TestGormUserRepository_CreateUser_And_UpdatePassword(t *testing.T) {
 	gormUser.SetPassword("5")
 	gormUser.SetUpdatedAt(6)
 
-	err = gormUserRepository.UpdatePassword(gormUser.GetUUID(), gormUser.GetPassword(), gormUser.GetUpdatedAt())
+	err = gormUserRepository.UpdatePasswordByUUIDAndPasswordAndUpdatedAt(
+		gormUser.GetUUID(),
+		gormUser.GetPassword(),
+		gormUser.GetUpdatedAt(),
+	)
 
 	assert.Nil(t, err)
 

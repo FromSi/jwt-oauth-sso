@@ -9,7 +9,9 @@ type RefreshRequest struct {
 	Body RefreshRequestBody
 }
 
-func NewRefreshRequest(context *gin.Context) (*RefreshRequest, *responses.ErrorBadRequestResponse) {
+func NewRefreshRequest(
+	context *gin.Context,
+) (*RefreshRequest, *responses.ErrorBadRequestResponse) {
 	var request RefreshRequest
 
 	requestBody, err := NewRefreshRequestBody(context)
@@ -27,7 +29,9 @@ type RefreshRequestBody struct {
 	RefreshToken string `json:"refreshToken" binding:"required,uuid4"`
 }
 
-func NewRefreshRequestBody(context *gin.Context) (*RefreshRequestBody, *responses.ErrorBadRequestResponse) {
+func NewRefreshRequestBody(
+	context *gin.Context,
+) (*RefreshRequestBody, *responses.ErrorBadRequestResponse) {
 	var requestBody RefreshRequestBody
 
 	if err := context.ShouldBindJSON(&requestBody); err != nil && err.Error() != "EOF" {

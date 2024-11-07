@@ -11,7 +11,9 @@ type LoginRequest struct {
 	UserAgent string
 }
 
-func NewLoginRequest(context *gin.Context) (*LoginRequest, *responses.ErrorBadRequestResponse) {
+func NewLoginRequest(
+	context *gin.Context,
+) (*LoginRequest, *responses.ErrorBadRequestResponse) {
 	var request LoginRequest
 
 	requestBody, err := NewLoginRequestBody(context)
@@ -38,7 +40,9 @@ type LoginRequestBody struct {
 	Password string `json:"password" binding:"required,password"`
 }
 
-func NewLoginRequestBody(context *gin.Context) (*LoginRequestBody, *responses.ErrorBadRequestResponse) {
+func NewLoginRequestBody(
+	context *gin.Context,
+) (*LoginRequestBody, *responses.ErrorBadRequestResponse) {
 	var requestBody LoginRequestBody
 
 	if err := context.ShouldBindJSON(&requestBody); err != nil && err.Error() != "EOF" {

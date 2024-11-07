@@ -204,13 +204,21 @@ func Test_NewGormDeviceRepository(t *testing.T) {
 
 	var count int
 
-	db.Raw("SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = ?", stmt.Table).Scan(&count)
+	db.
+		Raw(
+			"SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = ?",
+			stmt.Table,
+		).
+		Scan(&count)
 
 	assert.Equal(t, count, 1)
 }
 
 func TestGormDeviceRepository_CreateDevice_And_GetDevicesByUserUUID(t *testing.T) {
-	db, _ := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
+	db, _ := gorm.Open(
+		sqlite.Open("file::memory:"),
+		&gorm.Config{Logger: logger.Default.LogMode(logger.Silent)},
+	)
 
 	gormDeviceRepository, _ := NewGormDeviceRepository(db)
 
@@ -243,7 +251,10 @@ func TestGormDeviceRepository_CreateDevice_And_GetDevicesByUserUUID(t *testing.T
 }
 
 func TestGormDeviceRepository_CreateDevice_And_GetDeviceByUserUUIDAndIpAndUserAgent(t *testing.T) {
-	db, _ := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
+	db, _ := gorm.Open(
+		sqlite.Open("file::memory:"),
+		&gorm.Config{Logger: logger.Default.LogMode(logger.Silent)},
+	)
 
 	gormDeviceRepository, _ := NewGormDeviceRepository(db)
 
@@ -262,7 +273,8 @@ func TestGormDeviceRepository_CreateDevice_And_GetDeviceByUserUUIDAndIpAndUserAg
 
 	assert.Nil(t, err)
 
-	gormDeviceResult := gormDeviceRepository.GetDeviceByUserUUIDAndIpAndUserAgent("0", "0", "0")
+	gormDeviceResult := gormDeviceRepository.
+		GetDeviceByUserUUIDAndIpAndUserAgent("0", "0", "0")
 
 	assert.Nil(t, gormDeviceResult)
 
@@ -284,7 +296,10 @@ func TestGormDeviceRepository_CreateDevice_And_GetDeviceByUserUUIDAndIpAndUserAg
 }
 
 func TestGormDeviceRepository_CreateDevice_And_GetDeviceByRefreshToken(t *testing.T) {
-	db, _ := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
+	db, _ := gorm.Open(
+		sqlite.Open("file::memory:"),
+		&gorm.Config{Logger: logger.Default.LogMode(logger.Silent)},
+	)
 
 	gormDeviceRepository, _ := NewGormDeviceRepository(db)
 
@@ -323,7 +338,10 @@ func TestGormDeviceRepository_CreateDevice_And_GetDeviceByRefreshToken(t *testin
 }
 
 func TestGormDeviceRepository_CreateDevice_And_UpdateDevice(t *testing.T) {
-	db, _ := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
+	db, _ := gorm.Open(
+		sqlite.Open("file::memory:"),
+		&gorm.Config{Logger: logger.Default.LogMode(logger.Silent)},
+	)
 
 	gormDeviceRepository, _ := NewGormDeviceRepository(db)
 
@@ -358,7 +376,10 @@ func TestGormDeviceRepository_CreateDevice_And_UpdateDevice(t *testing.T) {
 }
 
 func TestGormDeviceRepository_CreateDevice_And_DeleteDeviceByUUID(t *testing.T) {
-	db, _ := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
+	db, _ := gorm.Open(
+		sqlite.Open("file::memory:"),
+		&gorm.Config{Logger: logger.Default.LogMode(logger.Silent)},
+	)
 
 	gormDeviceRepository, _ := NewGormDeviceRepository(db)
 
@@ -385,7 +406,10 @@ func TestGormDeviceRepository_CreateDevice_And_DeleteDeviceByUUID(t *testing.T) 
 }
 
 func TestGormDeviceRepository_CreateDevice_And_DeleteDeviceByUUIDAndUserUUID(t *testing.T) {
-	db, _ := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
+	db, _ := gorm.Open(
+		sqlite.Open("file::memory:"),
+		&gorm.Config{Logger: logger.Default.LogMode(logger.Silent)},
+	)
 
 	gormDeviceRepository, _ := NewGormDeviceRepository(db)
 
@@ -402,7 +426,8 @@ func TestGormDeviceRepository_CreateDevice_And_DeleteDeviceByUUIDAndUserUUID(t *
 
 	assert.Equal(t, len(gormDevices), 1)
 
-	err = gormDeviceRepository.DeleteDeviceByUUIDAndUserUUID(gormDevice.GetUUID(), gormDevice.GetUserUUID())
+	err = gormDeviceRepository.
+		DeleteDeviceByUUIDAndUserUUID(gormDevice.GetUUID(), gormDevice.GetUserUUID())
 
 	assert.Nil(t, err)
 
@@ -412,7 +437,10 @@ func TestGormDeviceRepository_CreateDevice_And_DeleteDeviceByUUIDAndUserUUID(t *
 }
 
 func TestGormDeviceRepository_CreateDevice_And_DeleteAllDevicesByUserUUID(t *testing.T) {
-	db, _ := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
+	db, _ := gorm.Open(
+		sqlite.Open("file::memory:"),
+		&gorm.Config{Logger: logger.Default.LogMode(logger.Silent)},
+	)
 
 	gormDeviceRepository, _ := NewGormDeviceRepository(db)
 

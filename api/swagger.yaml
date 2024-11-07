@@ -162,12 +162,12 @@ paths:
             schema:
               type: object
               required:
-                - userUUID
+                - email
               properties:
-                userUUID:
+                email:
                   type: string
-                  format: uuid
-                  example: '09d0ce56-33ab-4fce-90bb-d2b4d6d844ba'
+                  format: email
+                  example: 'test@fromsi.net'
       responses:
         '202':
           description: Successful

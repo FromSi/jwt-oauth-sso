@@ -51,15 +51,21 @@ func (receiver RefreshRoute) Handle(context *gin.Context) {
 	)
 
 	if device == nil {
-		context.JSON(http.StatusConflict, responses.NewErrorConflictResponse(errors.New("invalid refresh token")))
+		context.JSON(
+			http.StatusConflict,
+			responses.NewErrorConflictResponse(errors.New("invalid refresh token")),
+		)
 
 		return
 	}
 
-	device, err := receiver.deviceService.ResetDevice(receiver.config, device)
+	device, err := receiver.deviceService.ResetDevice(device)
 
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, responses.NewErrorInternalServerResponse(err))
+		context.JSON(
+			http.StatusInternalServerError,
+			responses.NewErrorInternalServerResponse(err),
+		)
 
 		return
 	}
@@ -67,7 +73,10 @@ func (receiver RefreshRoute) Handle(context *gin.Context) {
 	response, err := responses.NewSuccessRefreshResponse(receiver.config, device)
 
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, responses.NewErrorInternalServerResponse(err))
+		context.JSON(
+			http.StatusInternalServerError,
+			responses.NewErrorInternalServerResponse(err),
+		)
 
 		return
 	}

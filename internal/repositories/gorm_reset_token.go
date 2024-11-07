@@ -85,7 +85,11 @@ func NewGormResetTokenRepository(db *gorm.DB) (*GormResetTokenRepository, error)
 func (receiver *GormResetTokenRepository) HasToken(token string) bool {
 	var exists bool
 
-	receiver.db.Model(&GormResetToken{}).Select("count(*) > 0").Find(&exists, &GormResetToken{Token: token})
+	receiver.
+		db.
+		Model(&GormResetToken{}).
+		Select("count(*) > 0").
+		Find(&exists, &GormResetToken{Token: token})
 
 	return exists
 }
@@ -93,7 +97,10 @@ func (receiver *GormResetTokenRepository) HasToken(token string) bool {
 func (receiver *GormResetTokenRepository) GetResetTokenByToken(token string) ResetToken {
 	var gormResetToken GormResetToken
 
-	result := receiver.db.Model(&GormResetToken{}).First(&gormResetToken, &GormResetToken{Token: token})
+	result := receiver.
+		db.
+		Model(&GormResetToken{}).
+		First(&gormResetToken, &GormResetToken{Token: token})
 
 	if result.RowsAffected == 0 {
 		return nil
@@ -105,9 +112,16 @@ func (receiver *GormResetTokenRepository) GetResetTokenByToken(token string) Res
 func (receiver *GormResetTokenRepository) CreateResetToken(resetToken ResetToken) error {
 	gormResetToken := NewGormResetTokenByResetToken(resetToken)
 
-	return receiver.db.Model(&GormResetToken{}).Create(NewGormResetTokenByResetToken(gormResetToken)).Error
+	return receiver.
+		db.
+		Model(&GormResetToken{}).
+		Create(NewGormResetTokenByResetToken(gormResetToken)).
+		Error
 }
 
 func (receiver *GormResetTokenRepository) DeleteResetToken(token string) error {
-	return receiver.db.Delete(&GormResetToken{}, &GormResetToken{Token: token}).Error
+	return receiver.
+		db.
+		Delete(&GormResetToken{}, &GormResetToken{Token: token}).
+		Error
 }

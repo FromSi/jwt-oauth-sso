@@ -12,7 +12,6 @@ package services_mocks
 import (
 	reflect "reflect"
 
-	configs "github.com/fromsi/jwt-oauth-sso/internal/configs"
 	repositories "github.com/fromsi/jwt-oauth-sso/internal/repositories"
 	gomock "go.uber.org/mock/gomock"
 )
@@ -42,16 +41,16 @@ func (m *MockMutableDeviceService) EXPECT() *MockMutableDeviceServiceMockRecorde
 }
 
 // ResetDevice mocks base method.
-func (m *MockMutableDeviceService) ResetDevice(arg0 configs.TokenConfig, arg1 repositories.Device) (repositories.Device, error) {
+func (m *MockMutableDeviceService) ResetDevice(arg0 repositories.Device) (repositories.Device, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ResetDevice", arg0, arg1)
+	ret := m.ctrl.Call(m, "ResetDevice", arg0)
 	ret0, _ := ret[0].(repositories.Device)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ResetDevice indicates an expected call of ResetDevice.
-func (mr *MockMutableDeviceServiceMockRecorder) ResetDevice(arg0, arg1 any) *gomock.Call {
+func (mr *MockMutableDeviceServiceMockRecorder) ResetDevice(arg0 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ResetDevice", reflect.TypeOf((*MockMutableDeviceService)(nil).ResetDevice), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ResetDevice", reflect.TypeOf((*MockMutableDeviceService)(nil).ResetDevice), arg0)
 }

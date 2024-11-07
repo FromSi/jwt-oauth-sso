@@ -55,14 +55,22 @@ func (receiver RegisterRoute) Handle(context *gin.Context) {
 	userExists := receiver.userRepository.HasUserByEmail(request.Body.Email)
 
 	if userExists {
-		context.JSON(http.StatusConflict, responses.NewErrorConflictResponse(errors.New("user already exists with this email")))
+		err := responses.NewErrorConflictResponse(
+			errors.New("user already exists with this email"),
+		)
+
+		context.JSON(http.StatusConflict, err)
 
 		return
 	}
 
 	userUUID := receiver.userService.GenerateUUID()
 
-	err := receiver.userService.CreateUserByUUIDAndEmailAndPassword(userUUID, request.Body.Email, request.Body.Password)
+	err := receiver.userService.CreateUserByUUIDAndEmailAndPassword(
+		userUUID,
+		request.Body.Email,
+		request.Body.Password,
+	)
 
 	if err != nil {
 		context.JSON(http.StatusConflict, responses.NewErrorConflictResponse(err))
@@ -71,14 +79,16 @@ func (receiver RegisterRoute) Handle(context *gin.Context) {
 	}
 
 	device, err := receiver.deviceService.GetNewDeviceByUserUUIDAndIpAndUserAgent(
-		receiver.config,
 		userUUID,
 		request.IP,
 		request.UserAgent,
 	)
 
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, responses.NewErrorInternalServerResponse(err))
+		context.JSON(
+			http.StatusInternalServerError,
+			responses.NewErrorInternalServerResponse(err),
+		)
 
 		return
 	}
@@ -86,7 +96,10 @@ func (receiver RegisterRoute) Handle(context *gin.Context) {
 	response, err := responses.NewSuccessRegisterResponse(receiver.config, device)
 
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, responses.NewErrorInternalServerResponse(err))
+		context.JSON(
+			http.StatusInternalServerError,
+			responses.NewErrorInternalServerResponse(err),
+		)
 
 		return
 	}

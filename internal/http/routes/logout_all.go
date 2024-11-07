@@ -52,7 +52,10 @@ func (receiver LogoutAllRoute) Handle(context *gin.Context) {
 	err = receiver.deviceRepository.DeleteAllDevicesByUserUUID(headers.AccessToken.Subject)
 
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, responses.NewErrorInternalServerResponse(err))
+		context.JSON(
+			http.StatusInternalServerError,
+			responses.NewErrorInternalServerResponse(err),
+		)
 
 		return
 	}

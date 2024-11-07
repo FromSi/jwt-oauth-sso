@@ -12,6 +12,7 @@ package services_mocks
 import (
 	reflect "reflect"
 
+	repositories "github.com/fromsi/jwt-oauth-sso/internal/repositories"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -39,14 +40,16 @@ func (m *MockNotificationService) EXPECT() *MockNotificationServiceMockRecorder 
 	return m.recorder
 }
 
-// SendText mocks base method.
-func (m *MockNotificationService) SendText(arg0 string) {
+// SendTextByUser mocks base method.
+func (m *MockNotificationService) SendTextByUser(arg0 repositories.User, arg1 string) error {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "SendText", arg0)
+	ret := m.ctrl.Call(m, "SendTextByUser", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
-// SendText indicates an expected call of SendText.
-func (mr *MockNotificationServiceMockRecorder) SendText(arg0 any) *gomock.Call {
+// SendTextByUser indicates an expected call of SendTextByUser.
+func (mr *MockNotificationServiceMockRecorder) SendTextByUser(arg0, arg1 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendText", reflect.TypeOf((*MockNotificationService)(nil).SendText), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendTextByUser", reflect.TypeOf((*MockNotificationService)(nil).SendTextByUser), arg0, arg1)
 }

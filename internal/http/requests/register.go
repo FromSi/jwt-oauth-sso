@@ -11,7 +11,9 @@ type RegisterRequest struct {
 	UserAgent string
 }
 
-func NewRegisterRequest(context *gin.Context) (*RegisterRequest, *responses.ErrorBadRequestResponse) {
+func NewRegisterRequest(
+	context *gin.Context,
+) (*RegisterRequest, *responses.ErrorBadRequestResponse) {
 	var request RegisterRequest
 
 	requestBody, err := NewRegisterRequestBody(context)
@@ -38,7 +40,9 @@ type RegisterRequestBody struct {
 	Password string `json:"password" binding:"required,password"`
 }
 
-func NewRegisterRequestBody(context *gin.Context) (*RegisterRequestBody, *responses.ErrorBadRequestResponse) {
+func NewRegisterRequestBody(
+	context *gin.Context,
+) (*RegisterRequestBody, *responses.ErrorBadRequestResponse) {
 	var requestBody RegisterRequestBody
 
 	if err := context.ShouldBindJSON(&requestBody); err != nil && err.Error() != "EOF" {

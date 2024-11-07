@@ -9,7 +9,9 @@ type DevicesRequest struct {
 	Body DevicesRequestBody
 }
 
-func NewDevicesRequest(context *gin.Context) (*DevicesRequest, *responses.ErrorBadRequestResponse) {
+func NewDevicesRequest(
+	context *gin.Context,
+) (*DevicesRequest, *responses.ErrorBadRequestResponse) {
 	var request DevicesRequest
 
 	requestBody, err := NewDevicesRequestBody(context)
@@ -25,7 +27,9 @@ func NewDevicesRequest(context *gin.Context) (*DevicesRequest, *responses.ErrorB
 
 type DevicesRequestBody struct{}
 
-func NewDevicesRequestBody(context *gin.Context) (*DevicesRequestBody, *responses.ErrorBadRequestResponse) {
+func NewDevicesRequestBody(
+	context *gin.Context,
+) (*DevicesRequestBody, *responses.ErrorBadRequestResponse) {
 	var requestBody DevicesRequestBody
 
 	if err := context.ShouldBindJSON(&requestBody); err != nil && err.Error() != "EOF" {

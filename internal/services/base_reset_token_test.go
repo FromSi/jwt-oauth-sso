@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"github.com/fromsi/jwt-oauth-sso/internal/configs"
 	repositories_mocks "github.com/fromsi/jwt-oauth-sso/internal/mocks/repositories"
 	services_mocks "github.com/fromsi/jwt-oauth-sso/internal/mocks/services"
 	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
@@ -15,11 +16,19 @@ func Test_NewBaseResetTokenService(t *testing.T) {
 	mockController := gomock.NewController(t)
 	defer mockController.Finish()
 
+	config := configs.NewBaseConfig()
 	mockUserService := services_mocks.NewMockUserService(mockController)
 	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
 	mockResetTokenRepository := repositories_mocks.NewMockResetTokenRepository(mockController)
+	mockNotificationService := services_mocks.NewMockNotificationService(mockController)
 
-	baseResetTokenService := NewBaseResetTokenService(mockUserService, mockResetTokenRepository, mockUserRepository)
+	baseResetTokenService := NewBaseResetTokenService(
+		config,
+		mockUserService,
+		mockResetTokenRepository,
+		mockUserRepository,
+		mockNotificationService,
+	)
 
 	assert.NotNil(t, baseResetTokenService)
 }
@@ -28,11 +37,19 @@ func TestBaseResetTokenService_GenerateToken(t *testing.T) {
 	mockController := gomock.NewController(t)
 	defer mockController.Finish()
 
+	config := configs.NewBaseConfig()
 	mockUserService := services_mocks.NewMockUserService(mockController)
 	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
 	mockResetTokenRepository := repositories_mocks.NewMockResetTokenRepository(mockController)
+	mockNotificationService := services_mocks.NewMockNotificationService(mockController)
 
-	baseResetTokenService := NewBaseResetTokenService(mockUserService, mockResetTokenRepository, mockUserRepository)
+	baseResetTokenService := NewBaseResetTokenService(
+		config,
+		mockUserService,
+		mockResetTokenRepository,
+		mockUserRepository,
+		mockNotificationService,
+	)
 
 	uuidOne := baseResetTokenService.GenerateToken()
 	uuidTwo := baseResetTokenService.GenerateToken()
@@ -51,23 +68,112 @@ func TestBaseResetTokenService_GenerateToken(t *testing.T) {
 	assert.Nil(t, err)
 }
 
+func TestBaseResetTokenService_SendNewResetTokenByUserEmail(t *testing.T) {
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
+
+	config := configs.NewBaseConfig()
+	mockUserService := services_mocks.NewMockUserService(mockController)
+	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
+	mockResetTokenRepository := repositories_mocks.NewMockResetTokenRepository(mockController)
+	mockNotificationService := services_mocks.NewMockNotificationService(mockController)
+
+	user := repositories.NewGormUser()
+	mockUserRepository.
+		EXPECT().
+		GetUserByEmail(gomock.Eq("1")).
+		Return(user).
+		AnyTimes()
+
+	mockUserRepository.
+		EXPECT().
+		GetUserByEmail(gomock.Any()).
+		Return(nil).
+		AnyTimes()
+
+	mockResetTokenRepository.
+		EXPECT().
+		CreateResetToken(gomock.Any()).
+		Return(nil).
+		AnyTimes()
+
+	mockNotificationService.
+		EXPECT().
+		SendTextByUser(gomock.Any(), gomock.Any()).
+		Return(nil).
+		AnyTimes()
+
+	baseResetTokenService := NewBaseResetTokenService(
+		config,
+		mockUserService,
+		mockResetTokenRepository,
+		mockUserRepository,
+		mockNotificationService,
+	)
+
+	err := baseResetTokenService.SendNewResetTokenByUserEmail("1")
+
+	assert.NoError(t, err)
+
+	err = baseResetTokenService.SendNewResetTokenByUserEmail("2")
+
+	assert.Error(t, err)
+}
+
 func TestBaseResetTokenService_ResetPasswordByTokenAndNewPassword(t *testing.T) {
 	mockController := gomock.NewController(t)
 	defer mockController.Finish()
 
+	config := configs.NewBaseConfig()
 	mockUserService := services_mocks.NewMockUserService(mockController)
 	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
 	mockResetTokenRepository := repositories_mocks.NewMockResetTokenRepository(mockController)
+	mockNotificationService := services_mocks.NewMockNotificationService(mockController)
 
 	mockResetToken := repositories.NewGormResetToken()
-	mockResetTokenRepository.EXPECT().GetResetTokenByToken(gomock.Eq("1")).Return(mockResetToken).AnyTimes()
-	mockResetTokenRepository.EXPECT().GetResetTokenByToken(gomock.Eq("2")).Return(nil).AnyTimes()
-	mockUserService.EXPECT().HashPassword(gomock.Eq("1")).Return("1", nil).AnyTimes()
-	mockUserService.EXPECT().HashPassword(gomock.Eq("2")).Return("", errors.New("invalid-password")).AnyTimes()
-	mockUserRepository.EXPECT().UpdatePassword(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
-	mockResetTokenRepository.EXPECT().DeleteResetToken(gomock.Any()).Return(nil).AnyTimes()
+	mockResetTokenRepository.
+		EXPECT().
+		GetResetTokenByToken(gomock.Eq("1")).
+		Return(mockResetToken).
+		AnyTimes()
 
-	baseResetTokenService := NewBaseResetTokenService(mockUserService, mockResetTokenRepository, mockUserRepository)
+	mockResetTokenRepository.
+		EXPECT().
+		GetResetTokenByToken(gomock.Eq("2")).
+		Return(nil).
+		AnyTimes()
+
+	mockUserService.
+		EXPECT().
+		HashPassword(gomock.Eq("1")).
+		Return("1", nil).
+		AnyTimes()
+
+	mockUserService.
+		EXPECT().
+		HashPassword(gomock.Eq("2")).
+		Return("", errors.New("invalid-password")).
+		AnyTimes()
+
+	mockUserRepository.
+		EXPECT().
+		UpdatePasswordByUUIDAndPasswordAndUpdatedAt(gomock.Any(), gomock.Any(), gomock.Any()).
+		Return(nil).
+		AnyTimes()
+
+	mockResetTokenRepository.
+		EXPECT().
+		DeleteResetToken(gomock.Any()).
+		Return(nil).
+		AnyTimes()
+
+	baseResetTokenService := NewBaseResetTokenService(
+		config,
+		mockUserService,
+		mockResetTokenRepository,
+		mockUserRepository,
+		mockNotificationService,
+	)
 
 	tests := []struct {
 		name         string
@@ -101,7 +207,8 @@ func TestBaseResetTokenService_ResetPasswordByTokenAndNewPassword(t *testing.T) 
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := baseResetTokenService.ResetPasswordByTokenAndNewPassword(tt.token, tt.password)
+			err := baseResetTokenService.
+				ResetPasswordByTokenAndNewPassword(tt.token, tt.password)
 
 			if tt.expectError {
 				assert.Error(t, err)
@@ -117,18 +224,55 @@ func TestBaseResetTokenService_ResetPasswordByUserUUIDAndOldPasswordAndNewPasswo
 	mockController := gomock.NewController(t)
 	defer mockController.Finish()
 
+	config := configs.NewBaseConfig()
 	mockUserService := services_mocks.NewMockUserService(mockController)
 	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
 	mockResetTokenRepository := repositories_mocks.NewMockResetTokenRepository(mockController)
+	mockNotificationService := services_mocks.NewMockNotificationService(mockController)
 
-	mockUserRepository.EXPECT().HasUserByUUIDAndPassword(gomock.Eq("1"), gomock.Any()).Return(true).AnyTimes()
-	mockUserRepository.EXPECT().HasUserByUUIDAndPassword(gomock.Eq("2"), gomock.Any()).Return(false).AnyTimes()
-	mockUserService.EXPECT().HashPassword(gomock.Eq("1")).Return("1", nil).AnyTimes()
-	mockUserService.EXPECT().HashPassword(gomock.Eq("2")).Return("", errors.New("invalid-password")).AnyTimes()
-	mockUserRepository.EXPECT().UpdatePassword(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
-	mockResetTokenRepository.EXPECT().DeleteResetToken(gomock.Any()).Return(nil).AnyTimes()
+	mockUserRepository.
+		EXPECT().
+		HasUserByUUIDAndPassword(gomock.Eq("1"), gomock.Any()).
+		Return(true).
+		AnyTimes()
 
-	baseResetTokenService := NewBaseResetTokenService(mockUserService, mockResetTokenRepository, mockUserRepository)
+	mockUserRepository.
+		EXPECT().
+		HasUserByUUIDAndPassword(gomock.Eq("2"), gomock.Any()).
+		Return(false).
+		AnyTimes()
+
+	mockUserService.
+		EXPECT().
+		HashPassword(gomock.Eq("1")).
+		Return("1", nil).
+		AnyTimes()
+
+	mockUserService.
+		EXPECT().
+		HashPassword(gomock.Eq("2")).
+		Return("", errors.New("invalid-password")).
+		AnyTimes()
+
+	mockUserRepository.
+		EXPECT().
+		UpdatePasswordByUUIDAndPasswordAndUpdatedAt(gomock.Any(), gomock.Any(), gomock.Any()).
+		Return(nil).
+		AnyTimes()
+
+	mockResetTokenRepository.
+		EXPECT().
+		DeleteResetToken(gomock.Any()).
+		Return(nil).
+		AnyTimes()
+
+	baseResetTokenService := NewBaseResetTokenService(
+		config,
+		mockUserService,
+		mockResetTokenRepository,
+		mockUserRepository,
+		mockNotificationService,
+	)
 
 	tests := []struct {
 		name         string
@@ -166,7 +310,12 @@ func TestBaseResetTokenService_ResetPasswordByUserUUIDAndOldPasswordAndNewPasswo
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := baseResetTokenService.ResetPasswordByUserUUIDAndOldPasswordAndNewPassword(tt.userUUID, tt.oldPassword, tt.newPassword)
+			err := baseResetTokenService.
+				ResetPasswordByUserUUIDAndOldPasswordAndNewPassword(
+					tt.userUUID,
+					tt.oldPassword,
+					tt.newPassword,
+				)
 
 			if tt.expectError {
 				assert.Error(t, err)

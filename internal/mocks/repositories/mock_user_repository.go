@@ -110,16 +110,16 @@ func (mr *MockUserRepositoryMockRecorder) HasUserByUUIDAndPassword(arg0, arg1 an
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HasUserByUUIDAndPassword", reflect.TypeOf((*MockUserRepository)(nil).HasUserByUUIDAndPassword), arg0, arg1)
 }
 
-// UpdatePassword mocks base method.
-func (m *MockUserRepository) UpdatePassword(uuid, password string, updatedAt int) error {
+// UpdatePasswordByUUIDAndPasswordAndUpdatedAt mocks base method.
+func (m *MockUserRepository) UpdatePasswordByUUIDAndPasswordAndUpdatedAt(arg0, arg1 string, arg2 int) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdatePassword", uuid, password, updatedAt)
+	ret := m.ctrl.Call(m, "UpdatePasswordByUUIDAndPasswordAndUpdatedAt", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// UpdatePassword indicates an expected call of UpdatePassword.
-func (mr *MockUserRepositoryMockRecorder) UpdatePassword(uuid, password, updatedAt any) *gomock.Call {
+// UpdatePasswordByUUIDAndPasswordAndUpdatedAt indicates an expected call of UpdatePasswordByUUIDAndPasswordAndUpdatedAt.
+func (mr *MockUserRepositoryMockRecorder) UpdatePasswordByUUIDAndPasswordAndUpdatedAt(arg0, arg1, arg2 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePassword", reflect.TypeOf((*MockUserRepository)(nil).UpdatePassword), uuid, password, updatedAt)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePasswordByUUIDAndPasswordAndUpdatedAt", reflect.TypeOf((*MockUserRepository)(nil).UpdatePasswordByUUIDAndPasswordAndUpdatedAt), arg0, arg1, arg2)
 }

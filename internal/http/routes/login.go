@@ -55,35 +55,45 @@ func (receiver LoginRoute) Handle(context *gin.Context) {
 	user := receiver.userRepository.GetUserByEmail(request.Body.Email)
 
 	if user == nil {
-		context.JSON(http.StatusConflict, responses.NewErrorConflictResponse(errors.New("invalid email or password")))
+		context.JSON(
+			http.StatusConflict,
+			responses.NewErrorConflictResponse(errors.New("invalid email or password")),
+		)
 
 		return
 	}
 
-	err := receiver.userService.CheckPasswordByHashAndPassword(user.GetPassword(), request.Body.Password)
+	err := receiver.userService.CheckPasswordByHashAndPassword(
+		user.GetPassword(),
+		request.Body.Password,
+	)
 
 	if err != nil {
-		context.JSON(http.StatusConflict, responses.NewErrorConflictResponse(errors.New("invalid email or password")))
+		context.JSON(
+			http.StatusConflict,
+			responses.NewErrorConflictResponse(errors.New("invalid email or password")),
+		)
 
 		return
 	}
 
 	device, err := receiver.deviceService.GetDeviceByUserUUIDAndIpAndUserAgent(
-		receiver.config,
 		user.GetUUID(),
 		request.IP,
 		request.UserAgent,
 	)
 
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, responses.NewErrorInternalServerResponse(err))
+		context.JSON(
+			http.StatusInternalServerError,
+			responses.NewErrorInternalServerResponse(err),
+		)
 
 		return
 	}
 
 	if device == nil {
 		device, err = receiver.deviceService.GetNewDeviceByUserUUIDAndIpAndUserAgent(
-			receiver.config,
 			user.GetUUID(),
 			request.IP,
 			request.UserAgent,
@@ -91,7 +101,10 @@ func (receiver LoginRoute) Handle(context *gin.Context) {
 	}
 
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, responses.NewErrorInternalServerResponse(err))
+		context.JSON(
+			http.StatusInternalServerError,
+			responses.NewErrorInternalServerResponse(err),
+		)
 
 		return
 	}
@@ -99,7 +112,10 @@ func (receiver LoginRoute) Handle(context *gin.Context) {
 	response, err := responses.NewSuccessLoginResponse(receiver.config, device)
 
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, responses.NewErrorInternalServerResponse(err))
+		context.JSON(
+			http.StatusInternalServerError,
+			responses.NewErrorInternalServerResponse(err),
+		)
 
 		return
 	}

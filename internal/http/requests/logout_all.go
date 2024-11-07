@@ -9,7 +9,9 @@ type LogoutAllRequest struct {
 	Body LogoutAllRequestBody
 }
 
-func NewLogoutAllRequest(context *gin.Context) (*LogoutAllRequest, *responses.ErrorBadRequestResponse) {
+func NewLogoutAllRequest(
+	context *gin.Context,
+) (*LogoutAllRequest, *responses.ErrorBadRequestResponse) {
 	var request LogoutAllRequest
 
 	requestBody, err := NewLogoutAllRequestBody(context)
@@ -25,7 +27,9 @@ func NewLogoutAllRequest(context *gin.Context) (*LogoutAllRequest, *responses.Er
 
 type LogoutAllRequestBody struct{}
 
-func NewLogoutAllRequestBody(context *gin.Context) (*LogoutAllRequestBody, *responses.ErrorBadRequestResponse) {
+func NewLogoutAllRequestBody(
+	context *gin.Context,
+) (*LogoutAllRequestBody, *responses.ErrorBadRequestResponse) {
 	var requestBody LogoutAllRequestBody
 
 	if err := context.ShouldBindJSON(&requestBody); err != nil && err.Error() != "EOF" {

@@ -30,18 +30,29 @@ func Test_NewAccessToken(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			token, err := NewAccessToken(config, tt.subject, tt.deviceUUID, tt.deviceUserAgent, tt.currentTime)
+			token, err := NewAccessToken(
+				config,
+				tt.subject,
+				tt.deviceUUID,
+				tt.deviceUserAgent,
+				tt.currentTime,
+			)
 
 			if tt.error {
 				assert.Error(t, err)
 				assert.Nil(t, token)
 			} else {
 				assert.NoError(t, err)
+
+				expirationTime := tt.
+					currentTime.
+					Add(time.Minute * time.Duration(config.GetExpirationAccessInMinutes()))
+
 				assert.Equal(t, token.Issuer, config.GetIssuerName())
 				assert.Equal(t, token.Audience, config.GetAudienceName())
 				assert.Equal(t, token.Subject, tt.subject)
 				assert.Equal(t, token.IssuedAt, tt.currentTime)
-				assert.Equal(t, token.ExpirationTime, tt.currentTime.Add(time.Minute*time.Duration(config.GetExpirationAccessInMinutes())))
+				assert.Equal(t, token.ExpirationTime, expirationTime)
 				assert.Equal(t, token.DeviceUUID, tt.deviceUUID)
 				assert.Equal(t, token.DeviceUserAgent, tt.deviceUserAgent)
 			}
@@ -73,22 +84,34 @@ func Test_NewAccessTokenByJWT(t *testing.T) {
 			subject:     "2",
 			deviceUUID:  "2",
 			deviceAgent: "2",
-			currentTime: time.Now().Add(time.Minute * time.Duration(config.GetExpirationAccessInMinutes())).Truncate(time.Second),
-			error:       true,
+			currentTime: time.
+				Now().
+				Add(time.Minute * time.Duration(config.GetExpirationAccessInMinutes())).
+				Truncate(time.Second),
+			error: true,
 		},
 		{
 			name:        "Invalid token is expired",
 			subject:     "3",
 			deviceUUID:  "3",
 			deviceAgent: "3",
-			currentTime: time.Now().Add(-(time.Minute * time.Duration(config.GetExpirationAccessInMinutes()))).Truncate(time.Second),
-			error:       true,
+			currentTime: time.
+				Now().
+				Add(-(time.Minute * time.Duration(config.GetExpirationAccessInMinutes()))).
+				Truncate(time.Second),
+			error: true,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			token, err := NewAccessToken(config, tt.subject, tt.deviceUUID, tt.deviceAgent, tt.currentTime)
+			token, err := NewAccessToken(
+				config,
+				tt.subject,
+				tt.deviceUUID,
+				tt.deviceAgent,
+				tt.currentTime,
+			)
 
 			assert.NoError(t, err)
 

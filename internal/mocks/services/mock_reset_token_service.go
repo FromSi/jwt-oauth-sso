@@ -80,3 +80,17 @@ func (mr *MockResetTokenServiceMockRecorder) ResetPasswordByUserUUIDAndOldPasswo
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ResetPasswordByUserUUIDAndOldPasswordAndNewPassword", reflect.TypeOf((*MockResetTokenService)(nil).ResetPasswordByUserUUIDAndOldPasswordAndNewPassword), arg0, arg1, arg2)
 }
+
+// SendNewResetTokenByUserEmail mocks base method.
+func (m *MockResetTokenService) SendNewResetTokenByUserEmail(arg0 string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendNewResetTokenByUserEmail", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SendNewResetTokenByUserEmail indicates an expected call of SendNewResetTokenByUserEmail.
+func (mr *MockResetTokenServiceMockRecorder) SendNewResetTokenByUserEmail(arg0 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendNewResetTokenByUserEmail", reflect.TypeOf((*MockResetTokenService)(nil).SendNewResetTokenByUserEmail), arg0)
+}
