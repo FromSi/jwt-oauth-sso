@@ -58,3 +58,23 @@ func (receiver *BaseUserService) CreateUserByUUIDAndEmailAndPassword(uuid string
 
 	return nil
 }
+
+func (receiver *BaseUserService) UpdatePasswordByUUIDAndPassword(uuid string, password string) error {
+	hashedPassword, err := receiver.HashPassword(password)
+
+	if err != nil {
+		return err
+	}
+
+	err = receiver.userRepository.UpdatePasswordByUUIDAndPasswordAndUpdatedAt(
+		uuid,
+		hashedPassword,
+		int(time.Now().Unix()),
+	)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

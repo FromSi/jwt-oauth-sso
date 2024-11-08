@@ -1,20 +1,31 @@
 package routes
 
 import (
-	"fmt"
+	"errors"
 	"github.com/fromsi/jwt-oauth-sso/internal/configs"
 	"github.com/fromsi/jwt-oauth-sso/internal/http/requests"
+	"github.com/fromsi/jwt-oauth-sso/internal/http/responses"
+	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
+	"github.com/fromsi/jwt-oauth-sso/internal/services"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type PasswordResetWithOldRoute struct {
-	config configs.TokenConfig
+	config         configs.TokenConfig
+	userRepository repositories.UserRepository
+	userService    services.UserService
 }
 
-func NewPasswordResetWithOldRoute(config configs.TokenConfig) *PasswordResetWithOldRoute {
+func NewPasswordResetWithOldRoute(
+	config configs.TokenConfig,
+	userRepository repositories.UserRepository,
+	userService services.UserService,
+) *PasswordResetWithOldRoute {
 	return &PasswordResetWithOldRoute{
-		config: config,
+		config:         config,
+		userRepository: userRepository,
+		userService:    userService,
 	}
 }
 
@@ -27,7 +38,7 @@ func (receiver PasswordResetWithOldRoute) Pattern() string {
 }
 
 func (receiver PasswordResetWithOldRoute) Handle(context *gin.Context) {
-	_, err := requests.NewBearerAuthRequestHeader(context, receiver.config)
+	headers, err := requests.NewBearerAuthRequestHeader(context, receiver.config)
 
 	if err != nil {
 		context.Status(http.StatusUnauthorized)
@@ -43,10 +54,44 @@ func (receiver PasswordResetWithOldRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	fmt.Println(map[string]any{
-		"old_password": request.Body.OldPassword,
-		"new_password": request.Body.NewPassword,
-	})
+	user := receiver.userRepository.GetUserByUUID(headers.AccessToken.Subject)
 
-	context.Status(http.StatusContinue)
+	if user == nil {
+		context.JSON(
+			http.StatusInternalServerError,
+			responses.NewErrorInternalServerResponse(errors.New("user not found")),
+		)
+
+		return
+	}
+
+	err = receiver.userService.CheckPasswordByHashAndPassword(
+		user.GetPassword(),
+		request.Body.OldPassword,
+	)
+
+	if err != nil {
+		context.JSON(
+			http.StatusConflict,
+			responses.NewErrorConflictResponse(errors.New("invalid old password")),
+		)
+
+		return
+	}
+
+	err = receiver.userService.UpdatePasswordByUUIDAndPassword(
+		user.GetUUID(),
+		request.Body.NewPassword,
+	)
+
+	if err != nil {
+		context.JSON(
+			http.StatusInternalServerError,
+			responses.NewErrorInternalServerResponse(err),
+		)
+
+		return
+	}
+
+	context.Status(http.StatusAccepted)
 }

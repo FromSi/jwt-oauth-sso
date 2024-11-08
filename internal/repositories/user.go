@@ -6,6 +6,7 @@ type QueryUserRepository interface {
 	HasUserByEmail(string) bool
 	HasUserByUUIDAndPassword(string, string) bool
 	GetUserByEmail(string) User
+	GetUserByUUID(string) User
 }
 
 //go:generate mockgen -destination=../mocks/repositories/mock_mutable_user_repository.go -package=repositories_mocks github.com/fromsi/jwt-oauth-sso/internal/repositories MutableUserRepository

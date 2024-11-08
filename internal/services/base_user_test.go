@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	repositories_mocks "github.com/fromsi/jwt-oauth-sso/internal/mocks/repositories"
 	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
 	"github.com/google/uuid"
@@ -110,4 +111,32 @@ func TestBaseUserService_CreateUserByUUIDAndEmailAndPassword(t *testing.T) {
 	err := baseUserService.CreateUserByUUIDAndEmailAndPassword("1", "2", "3")
 
 	assert.Nil(t, err)
+}
+
+func TestBaseUserService_UpdatePasswordByUUIDAndPassword(t *testing.T) {
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
+
+	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
+	baseUserService := NewBaseUserService(mockUserRepository)
+
+	mockUserRepository.
+		EXPECT().
+		UpdatePasswordByUUIDAndPasswordAndUpdatedAt("1", gomock.Any(), gomock.Any()).
+		Return(nil).
+		AnyTimes()
+
+	mockUserRepository.
+		EXPECT().
+		UpdatePasswordByUUIDAndPasswordAndUpdatedAt(gomock.Any(), gomock.Any(), gomock.Any()).
+		Return(errors.New("error")).
+		AnyTimes()
+
+	err := baseUserService.UpdatePasswordByUUIDAndPassword("1", "2")
+
+	assert.Nil(t, err)
+
+	err = baseUserService.UpdatePasswordByUUIDAndPassword("0", "0")
+
+	assert.NotNil(t, err)
 }

@@ -54,6 +54,20 @@ func (mr *MockQueryUserRepositoryMockRecorder) GetUserByEmail(arg0 any) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByEmail", reflect.TypeOf((*MockQueryUserRepository)(nil).GetUserByEmail), arg0)
 }
 
+// GetUserByUUID mocks base method.
+func (m *MockQueryUserRepository) GetUserByUUID(arg0 string) repositories.User {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserByUUID", arg0)
+	ret0, _ := ret[0].(repositories.User)
+	return ret0
+}
+
+// GetUserByUUID indicates an expected call of GetUserByUUID.
+func (mr *MockQueryUserRepositoryMockRecorder) GetUserByUUID(arg0 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByUUID", reflect.TypeOf((*MockQueryUserRepository)(nil).GetUserByUUID), arg0)
+}
+
 // HasUserByEmail mocks base method.
 func (m *MockQueryUserRepository) HasUserByEmail(arg0 string) bool {
 	m.ctrl.T.Helper()

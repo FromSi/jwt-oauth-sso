@@ -95,3 +95,17 @@ func (mr *MockUserServiceMockRecorder) HashPassword(arg0 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HashPassword", reflect.TypeOf((*MockUserService)(nil).HashPassword), arg0)
 }
+
+// UpdatePasswordByUUIDAndPassword mocks base method.
+func (m *MockUserService) UpdatePasswordByUUIDAndPassword(arg0, arg1 string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdatePasswordByUUIDAndPassword", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdatePasswordByUUIDAndPassword indicates an expected call of UpdatePasswordByUUIDAndPassword.
+func (mr *MockUserServiceMockRecorder) UpdatePasswordByUUIDAndPassword(arg0, arg1 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePasswordByUUIDAndPassword", reflect.TypeOf((*MockUserService)(nil).UpdatePasswordByUUIDAndPassword), arg0, arg1)
+}

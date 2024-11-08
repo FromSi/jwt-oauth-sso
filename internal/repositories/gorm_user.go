@@ -146,6 +146,21 @@ func (receiver *GormUserRepository) GetUserByEmail(email string) User {
 	return &gormUser
 }
 
+func (receiver *GormUserRepository) GetUserByUUID(uuid string) User {
+	var gormUser GormUser
+
+	result := receiver.
+		db.
+		Model(&GormUser{}).
+		First(&gormUser, &GormUser{UUID: uuid})
+
+	if result.RowsAffected == 0 {
+		return nil
+	}
+
+	return &gormUser
+}
+
 func (receiver *GormUserRepository) CreateUser(user User) error {
 	gormUser := NewGormUserByUser(user)
 
