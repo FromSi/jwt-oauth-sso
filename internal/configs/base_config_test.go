@@ -36,8 +36,8 @@ func TestBaseConfig_GetPort(t *testing.T) {
 
 	assert.Equal(
 		t,
-		config.GetHost(),
-		BaseConfigDefaultAppHost,
+		config.GetPort(),
+		BaseConfigDefaultAppPort,
 	)
 }
 

@@ -8,133 +8,103 @@ import (
 )
 
 func Test_NewAccessToken(t *testing.T) {
-	tests := []struct {
-		name            string
-		subject         string
-		deviceUUID      string
-		deviceUserAgent string
-		currentTime     time.Time
-		error           bool
-	}{
-		{
-			name:            "Valid data",
-			subject:         "1",
-			deviceUUID:      "1",
-			deviceUserAgent: "1",
-			currentTime:     time.Now().Truncate(time.Second),
-			error:           false,
-		},
-	}
-
 	config := configs.NewBaseConfig()
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			token, err := NewAccessToken(
-				config,
-				tt.subject,
-				tt.deviceUUID,
-				tt.deviceUserAgent,
-				tt.currentTime,
-			)
+	currentTime := time.Now().Truncate(time.Second)
 
-			if tt.error {
-				assert.Error(t, err)
-				assert.Nil(t, token)
-			} else {
-				assert.NoError(t, err)
+	expirationTime := currentTime.
+		Add(time.Minute * time.Duration(config.GetExpirationAccessInMinutes()))
 
-				expirationTime := tt.
-					currentTime.
-					Add(time.Minute * time.Duration(config.GetExpirationAccessInMinutes()))
+	token, err := NewAccessToken(
+		config,
+		"1",
+		"1",
+		"1",
+		currentTime,
+	)
 
-				assert.Equal(t, token.Issuer, config.GetIssuerName())
-				assert.Equal(t, token.Audience, config.GetAudienceName())
-				assert.Equal(t, token.Subject, tt.subject)
-				assert.Equal(t, token.IssuedAt, tt.currentTime)
-				assert.Equal(t, token.ExpirationTime, expirationTime)
-				assert.Equal(t, token.DeviceUUID, tt.deviceUUID)
-				assert.Equal(t, token.DeviceUserAgent, tt.deviceUserAgent)
-			}
-		})
-	}
+	assert.NoError(t, err)
+
+	assert.Equal(t, token.Issuer, config.GetIssuerName())
+	assert.Equal(t, token.Audience, config.GetAudienceName())
+	assert.Equal(t, token.Subject, "1")
+	assert.Equal(t, token.IssuedAt, currentTime)
+	assert.Equal(t, token.ExpirationTime, expirationTime)
+	assert.Equal(t, token.DeviceUUID, "1")
+	assert.Equal(t, token.DeviceUserAgent, "1")
 }
 
 func Test_NewAccessTokenByJWT(t *testing.T) {
 	config := configs.NewBaseConfig()
 
-	tests := []struct {
-		name        string
-		subject     string
-		deviceUUID  string
-		deviceAgent string
-		currentTime time.Time
-		error       bool
-	}{
-		{
-			name:        "Valid data",
-			subject:     "1",
-			deviceUUID:  "1",
-			deviceAgent: "1",
-			currentTime: time.Now().Truncate(time.Second),
-			error:       false,
-		},
-		{
-			name:        "Invalid token used before issued",
-			subject:     "2",
-			deviceUUID:  "2",
-			deviceAgent: "2",
-			currentTime: time.
-				Now().
-				Add(time.Minute * time.Duration(config.GetExpirationAccessInMinutes())).
-				Truncate(time.Second),
-			error: true,
-		},
-		{
-			name:        "Invalid token is expired",
-			subject:     "3",
-			deviceUUID:  "3",
-			deviceAgent: "3",
-			currentTime: time.
-				Now().
-				Add(-(time.Minute * time.Duration(config.GetExpirationAccessInMinutes()))).
-				Truncate(time.Second),
-			error: true,
-		},
-	}
+	currentTime := time.Now().Truncate(time.Second)
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			token, err := NewAccessToken(
-				config,
-				tt.subject,
-				tt.deviceUUID,
-				tt.deviceAgent,
-				tt.currentTime,
-			)
+	token, err := NewAccessToken(
+		config,
+		"1",
+		"1",
+		"1",
+		currentTime,
+	)
 
-			assert.NoError(t, err)
+	assert.Nil(t, err)
+	assert.NotNil(t, token)
 
-			tokenToJWT, err := token.GetJWT()
+	tokenToJWT, err := token.GetJWT()
 
-			assert.NoError(t, err)
-			assert.NotNil(t, tokenToJWT)
+	assert.NoError(t, err)
+	assert.NotNil(t, tokenToJWT)
 
-			tokenByJWT, err := NewAccessTokenByJWT(config, tokenToJWT)
+	tokenByJWT, err := NewAccessTokenByJWT(config, tokenToJWT)
 
-			if tt.error {
-				assert.Error(t, err)
-				assert.Nil(t, tokenByJWT)
-			} else {
-				assert.NoError(t, err)
-				assert.Equal(t, tokenByJWT.Issuer, token.Issuer)
-				assert.Equal(t, tokenByJWT.Audience, token.Audience)
-				assert.Equal(t, tokenByJWT.Subject, token.Subject)
-				assert.Equal(t, tokenByJWT.IssuedAt, token.IssuedAt)
-				assert.Equal(t, tokenByJWT.ExpirationTime, token.ExpirationTime)
-				assert.Equal(t, tokenByJWT.DeviceUUID, token.DeviceUUID)
-				assert.Equal(t, tokenByJWT.DeviceUserAgent, token.DeviceUserAgent)
-			}
-		})
-	}
+	assert.NoError(t, err)
+	assert.NotNil(t, tokenByJWT)
+
+	assert.Equal(t, tokenByJWT.Issuer, token.Issuer)
+	assert.Equal(t, tokenByJWT.Audience, token.Audience)
+	assert.Equal(t, tokenByJWT.Subject, token.Subject)
+	assert.Equal(t, tokenByJWT.IssuedAt, token.IssuedAt)
+	assert.Equal(t, tokenByJWT.ExpirationTime, token.ExpirationTime)
+	assert.Equal(t, tokenByJWT.DeviceUUID, token.DeviceUUID)
+	assert.Equal(t, tokenByJWT.DeviceUserAgent, token.DeviceUserAgent)
+
+	token.IssuedAt = time.
+		Now().
+		Add(time.Minute * time.Duration(config.GetExpirationAccessInMinutes())).
+		Truncate(time.Second)
+
+	tokenToJWT, err = token.GetJWT()
+
+	assert.NoError(t, err)
+	assert.NotNil(t, tokenToJWT)
+
+	tokenByJWT, err = NewAccessTokenByJWT(config, tokenToJWT)
+
+	assert.Error(t, err)
+	assert.Nil(t, tokenByJWT)
+
+	token.ExpirationTime = time.
+		Now().
+		Add(-(time.Minute * time.Duration(config.GetExpirationAccessInMinutes()))).
+		Truncate(time.Second)
+
+	tokenToJWT, err = token.GetJWT()
+
+	assert.NoError(t, err)
+	assert.NotNil(t, tokenToJWT)
+
+	tokenByJWT, err = NewAccessTokenByJWT(config, tokenToJWT)
+
+	assert.Error(t, err)
+	assert.Nil(t, tokenByJWT)
+
+	tokenByJWT, err = NewAccessTokenByJWT(config, "0")
+
+	assert.Error(t, err)
+	assert.Nil(t, tokenByJWT)
+
+	tokenByJWT, err = NewAccessTokenByJWT(config, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIn0.0-0-0-0-0-0")
+
+	assert.Error(t, err)
+	assert.Nil(t, tokenByJWT)
 }

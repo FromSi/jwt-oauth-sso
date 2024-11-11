@@ -47,11 +47,11 @@ func (receiver *BaseDeviceService) GetDeviceByUserUUIDAndIpAndUserAgent(
 	device.SetRefreshToken(receiver.GenerateRefreshToken())
 	device.SetUpdatedAt(int(timeNow.Unix()))
 
-	expiredAt := timeNow.
+	expiresAt := timeNow.
 		AddDate(0, 0, receiver.config.GetExpirationRefreshInDays()).
 		Unix()
 
-	device.SetExpiresAt(int(expiredAt))
+	device.SetExpiresAt(int(expiresAt))
 
 	err := receiver.deviceRepository.UpdateDevice(device)
 
@@ -79,11 +79,11 @@ func (receiver *BaseDeviceService) GetNewDeviceByUserUUIDAndIpAndUserAgent(
 	device.SetCreatedAt(int(timeNow.Unix()))
 	device.SetUpdatedAt(int(timeNow.Unix()))
 
-	expiredAt := timeNow.
+	expiresAt := timeNow.
 		AddDate(0, 0, receiver.config.GetExpirationRefreshInDays()).
 		Unix()
 
-	device.SetExpiresAt(int(expiredAt))
+	device.SetExpiresAt(int(expiresAt))
 
 	err := receiver.deviceRepository.CreateDevice(device)
 
@@ -104,11 +104,11 @@ func (receiver *BaseDeviceService) ResetDevice(
 	deviceForUpdate.SetRefreshToken(receiver.GenerateRefreshToken())
 	deviceForUpdate.SetUpdatedAt(int(timeNow.Unix()))
 
-	expiredAt := timeNow.
+	expiresAt := timeNow.
 		AddDate(0, 0, receiver.config.GetExpirationRefreshInDays()).
 		Unix()
 
-	deviceForUpdate.SetExpiresAt(int(expiredAt))
+	deviceForUpdate.SetExpiresAt(int(expiresAt))
 
 	err := receiver.deviceRepository.UpdateDevice(deviceForUpdate)
 

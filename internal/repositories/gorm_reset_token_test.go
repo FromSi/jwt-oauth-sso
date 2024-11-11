@@ -16,7 +16,7 @@ func Test_NewGormResetToken(t *testing.T) {
 
 	assert.Equal(t, gormResetToken.Token, GormResetTokenTokenDefault)
 	assert.Equal(t, gormResetToken.UserUUID, GormResetTokenUserUUIDDefault)
-	assert.Equal(t, gormResetToken.ExpiresAt, GormResetTokenExpiredAtDefault)
+	assert.Equal(t, gormResetToken.ExpiresAt, GormResetTokenExpiresAtDefault)
 	assert.Equal(t, gormResetToken.CreatedAt, GormResetTokenCreatedAtDefault)
 }
 
@@ -28,7 +28,7 @@ func Test_NewGormResetTokenByResetToken(t *testing.T) {
 
 	assert.Equal(t, gormResetToken.Token, GormResetTokenTokenDefault)
 	assert.Equal(t, gormResetToken.UserUUID, GormResetTokenUserUUIDDefault)
-	assert.Equal(t, gormResetToken.ExpiresAt, GormResetTokenExpiredAtDefault)
+	assert.Equal(t, gormResetToken.ExpiresAt, GormResetTokenExpiresAtDefault)
 	assert.Equal(t, gormResetToken.CreatedAt, GormResetTokenCreatedAtDefault)
 
 }
@@ -39,6 +39,10 @@ func TestGormResetToken_GetToken(t *testing.T) {
 	gormResetToken.Token = "1"
 
 	assert.Equal(t, gormResetToken.GetToken(), "1")
+
+	gormResetToken.Token = "2"
+
+	assert.Equal(t, gormResetToken.GetToken(), "2")
 }
 
 func TestGormResetToken_GetUserUUID(t *testing.T) {
@@ -47,14 +51,22 @@ func TestGormResetToken_GetUserUUID(t *testing.T) {
 	gormResetToken.UserUUID = "1"
 
 	assert.Equal(t, gormResetToken.GetUserUUID(), "1")
+
+	gormResetToken.UserUUID = "2"
+
+	assert.Equal(t, gormResetToken.GetUserUUID(), "2")
 }
 
-func TestGormResetToken_GetExpiredAt(t *testing.T) {
+func TestGormResetToken_GetExpiresAt(t *testing.T) {
 	gormResetToken := NewGormResetToken()
 
 	gormResetToken.ExpiresAt = 1
 
 	assert.Equal(t, gormResetToken.GetExpiresAt(), 1)
+
+	gormResetToken.ExpiresAt = 2
+
+	assert.Equal(t, gormResetToken.GetExpiresAt(), 2)
 }
 
 func TestGormResetToken_GetCreatedAt(t *testing.T) {
@@ -63,6 +75,10 @@ func TestGormResetToken_GetCreatedAt(t *testing.T) {
 	gormResetToken.CreatedAt = 1
 
 	assert.Equal(t, gormResetToken.GetCreatedAt(), 1)
+
+	gormResetToken.CreatedAt = 2
+
+	assert.Equal(t, gormResetToken.GetCreatedAt(), 2)
 }
 
 func TestGormResetToken_SetToken(t *testing.T) {
@@ -71,6 +87,10 @@ func TestGormResetToken_SetToken(t *testing.T) {
 	gormResetToken.SetToken("1")
 
 	assert.Equal(t, gormResetToken.Token, "1")
+
+	gormResetToken.SetToken("2")
+
+	assert.Equal(t, gormResetToken.Token, "2")
 }
 
 func TestGormResetToken_SetUserUUID(t *testing.T) {
@@ -79,14 +99,22 @@ func TestGormResetToken_SetUserUUID(t *testing.T) {
 	gormResetToken.SetUserUUID("1")
 
 	assert.Equal(t, gormResetToken.UserUUID, "1")
+
+	gormResetToken.SetUserUUID("2")
+
+	assert.Equal(t, gormResetToken.UserUUID, "2")
 }
 
-func TestGormResetToken_SetExpiredAt(t *testing.T) {
+func TestGormResetToken_SetExpiresAt(t *testing.T) {
 	gormResetToken := NewGormResetToken()
 
 	gormResetToken.SetExpiresAt(1)
 
 	assert.Equal(t, gormResetToken.ExpiresAt, 1)
+
+	gormResetToken.SetExpiresAt(2)
+
+	assert.Equal(t, gormResetToken.ExpiresAt, 2)
 }
 
 func TestGormResetToken_SetCreatedAt(t *testing.T) {
@@ -95,59 +123,58 @@ func TestGormResetToken_SetCreatedAt(t *testing.T) {
 	gormResetToken.SetCreatedAt(1)
 
 	assert.Equal(t, gormResetToken.CreatedAt, 1)
+
+	gormResetToken.SetCreatedAt(2)
+
+	assert.Equal(t, gormResetToken.CreatedAt, 2)
 }
 
 func Test_NewGormResetTokenRepository(t *testing.T) {
-	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("file::memory:?mode=ro"), &gorm.Config{})
 
 	assert.Nil(t, err)
 	assert.NotNil(t, db)
 
 	gormResetTokenRepository, err := NewGormResetTokenRepository(db)
 
+	assert.NotNil(t, err)
+	assert.Nil(t, gormResetTokenRepository)
+
+	db, err = gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
+
 	assert.Nil(t, err)
-	assert.NotNil(t, gormResetTokenRepository)
+	assert.NotNil(t, db)
 
 	stmt := &gorm.Statement{DB: db}
-	err = stmt.Parse(&GormResetToken{})
 
-	assert.Nil(t, err)
-
-	var count int
+	var tableCount int
 
 	db.
 		Raw(
 			"SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = ?",
 			stmt.Table,
 		).
-		Scan(&count)
+		Scan(&tableCount)
 
-	assert.Equal(t, count, 1)
-}
+	assert.Equal(t, tableCount, 0)
 
-func TestGormResetTokenRepository_CreateToken_And_HasToken(t *testing.T) {
-	db, _ := gorm.Open(
-		sqlite.Open("file::memory:"),
-		&gorm.Config{Logger: logger.Default.LogMode(logger.Silent)},
-	)
+	gormResetTokenRepository, err = NewGormResetTokenRepository(db)
 
-	gormResetTokenRepository, _ := NewGormResetTokenRepository(db)
+	assert.Nil(t, err)
+	assert.NotNil(t, gormResetTokenRepository)
 
-	gormResetToken := NewGormResetToken()
-
-	gormResetToken.SetToken("1")
-
-	err := gormResetTokenRepository.CreateResetToken(gormResetToken)
+	err = stmt.Parse(&GormResetToken{})
 
 	assert.Nil(t, err)
 
-	exists := gormResetTokenRepository.HasToken(gormResetToken.GetToken())
+	db.
+		Raw(
+			"SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = ?",
+			(&GormResetToken{}).TableName(),
+		).
+		Scan(&tableCount)
 
-	assert.True(t, exists)
-
-	exists = gormResetTokenRepository.HasToken("0")
-
-	assert.False(t, exists)
+	assert.Equal(t, tableCount, 1)
 }
 
 func TestGormResetTokenRepository_CreateToken_And_GetActiveResetTokenByToken(t *testing.T) {
@@ -158,38 +185,32 @@ func TestGormResetTokenRepository_CreateToken_And_GetActiveResetTokenByToken(t *
 
 	gormResetTokenRepository, _ := NewGormResetTokenRepository(db)
 
-	gormResetToken := NewGormResetToken()
+	gormResetTokenOne := NewGormResetToken()
 
-	gormResetToken.SetToken("1")
-	gormResetToken.SetUserUUID("2")
-	gormResetToken.SetExpiresAt(int(time.Now().AddDate(0, 0, 1).Unix()))
+	gormResetTokenOne.SetToken("1")
+	gormResetTokenOne.SetExpiresAt(int(time.Now().AddDate(0, 0, 1).Unix()))
 
-	err := gormResetTokenRepository.CreateResetToken(gormResetToken)
+	err := gormResetTokenRepository.CreateResetToken(gormResetTokenOne)
+
+	assert.Nil(t, err)
+
+	gormResetTokenTwo := NewGormResetToken()
+
+	gormResetTokenTwo.SetToken("2")
+	gormResetTokenTwo.SetExpiresAt(0)
+
+	err = gormResetTokenRepository.CreateResetToken(gormResetTokenTwo)
 
 	assert.Nil(t, err)
 
 	resetTokenByToken := gormResetTokenRepository.
-		GetActiveResetTokenByToken(gormResetToken.GetToken())
+		GetActiveResetTokenByToken(gormResetTokenOne.GetToken())
 
 	assert.NotNil(t, resetTokenByToken)
 
-	assert.Equal(t, resetTokenByToken.GetToken(), gormResetToken.GetToken())
-	assert.Equal(t, resetTokenByToken.GetUserUUID(), gormResetToken.GetUserUUID())
-	assert.Equal(t, resetTokenByToken.GetExpiresAt(), gormResetToken.GetExpiresAt())
+	assert.Equal(t, resetTokenByToken.GetToken(), gormResetTokenOne.GetToken())
 
-	resetTokenByToken = gormResetTokenRepository.GetActiveResetTokenByToken("5")
-
-	assert.Nil(t, resetTokenByToken)
-
-	gormResetToken = NewGormResetToken()
-
-	gormResetToken.SetToken("2")
-	gormResetToken.SetUserUUID("2")
-	gormResetToken.SetExpiresAt(0)
-
-	err = gormResetTokenRepository.CreateResetToken(gormResetToken)
-
-	assert.Nil(t, err)
+	resetTokenByToken = gormResetTokenRepository.GetActiveResetTokenByToken("2")
 
 	assert.Nil(t, resetTokenByToken)
 }
@@ -202,23 +223,41 @@ func TestGormResetTokenRepository_CreateToken_And_DeleteResetToken(t *testing.T)
 
 	gormResetTokenRepository, _ := NewGormResetTokenRepository(db)
 
-	gormResetToken := NewGormResetToken()
+	gormResetTokenOne := NewGormResetToken()
 
-	gormResetToken.SetToken("1")
+	gormResetTokenOne.SetToken("1")
+	gormResetTokenOne.SetExpiresAt(int(time.Now().AddDate(0, 0, 1).Unix()))
 
-	err := gormResetTokenRepository.CreateResetToken(gormResetToken)
-
-	assert.Nil(t, err)
-
-	result := gormResetTokenRepository.HasToken(gormResetToken.GetToken())
-
-	assert.True(t, result)
-
-	err = gormResetTokenRepository.DeleteResetToken(gormResetToken.GetToken())
+	err := gormResetTokenRepository.CreateResetToken(gormResetTokenOne)
 
 	assert.Nil(t, err)
 
-	result = gormResetTokenRepository.HasToken(gormResetToken.GetToken())
+	gormResetTokenTwo := NewGormResetToken()
 
-	assert.False(t, result)
+	gormResetTokenTwo.SetToken("2")
+	gormResetTokenTwo.SetExpiresAt(int(time.Now().AddDate(0, 0, 1).Unix()))
+
+	err = gormResetTokenRepository.CreateResetToken(gormResetTokenTwo)
+
+	assert.Nil(t, err)
+
+	result := gormResetTokenRepository.GetActiveResetTokenByToken(gormResetTokenOne.GetToken())
+
+	assert.NotNil(t, result)
+
+	result = gormResetTokenRepository.GetActiveResetTokenByToken(gormResetTokenTwo.GetToken())
+
+	assert.NotNil(t, result)
+
+	err = gormResetTokenRepository.DeleteResetToken(gormResetTokenOne.GetToken())
+
+	assert.Nil(t, err)
+
+	result = gormResetTokenRepository.GetActiveResetTokenByToken(gormResetTokenOne.GetToken())
+
+	assert.Nil(t, result)
+
+	result = gormResetTokenRepository.GetActiveResetTokenByToken(gormResetTokenTwo.GetToken())
+
+	assert.NotNil(t, result)
 }

@@ -41,13 +41,7 @@ func (receiver DevicesRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	_, errResponse := requests.NewDevicesRequest(context)
-
-	if errResponse != nil {
-		context.JSON(http.StatusBadRequest, errResponse)
-
-		return
-	}
+	_ = requests.NewDevicesRequest(context)
 
 	devices := receiver.deviceRepository.GetDevicesByUserUUID(headers.AccessToken.Subject)
 

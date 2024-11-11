@@ -51,10 +51,7 @@ func NewAccessToken(
 	}, nil
 }
 
-func NewAccessTokenByJWT(
-	config configs.TokenConfig,
-	tokenJWT string,
-) (*AccessToken, error) {
+func NewAccessTokenByJWT(config configs.TokenConfig, tokenJWT string) (*AccessToken, error) {
 	token, err := jwt.Parse(tokenJWT, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf(
@@ -66,18 +63,14 @@ func NewAccessTokenByJWT(
 	})
 
 	if err != nil {
-		return nil, err
-	}
+		if errors.Is(err, jwt.ErrTokenExpired) {
+			return nil, errors.New("token expired")
+		}
 
-	if !token.Valid {
 		return nil, errors.New("invalid token")
 	}
 
-	claims, ok := token.Claims.(jwt.MapClaims)
-
-	if !ok {
-		return nil, errors.New("invalid claims")
-	}
+	claims := token.Claims.(jwt.MapClaims)
 
 	issuedAt := time.
 		Unix(int64(claims[CommonJWTClaimIssuedAt].(float64)), 0)
@@ -97,14 +90,9 @@ func NewAccessTokenByJWT(
 	}
 
 	isIssued := time.Now().Before(accessToken.IssuedAt)
-	isExpired := time.Now().After(accessToken.ExpirationTime)
 
 	if isIssued {
 		return nil, errors.New("token used before issued")
-	}
-
-	if isExpired {
-		return nil, errors.New("token has expired")
 	}
 
 	return &accessToken, nil

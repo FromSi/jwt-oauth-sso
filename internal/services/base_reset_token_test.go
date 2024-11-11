@@ -3,9 +3,9 @@ package services
 import (
 	"errors"
 	"github.com/fromsi/jwt-oauth-sso/internal/configs"
-	repositories_mocks "github.com/fromsi/jwt-oauth-sso/internal/mocks/repositories"
-	services_mocks "github.com/fromsi/jwt-oauth-sso/internal/mocks/services"
 	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
+	repositories_mocks2 "github.com/fromsi/jwt-oauth-sso/mocks/repositories"
+	services_mocks2 "github.com/fromsi/jwt-oauth-sso/mocks/services"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
@@ -17,10 +17,10 @@ func Test_NewBaseResetTokenService(t *testing.T) {
 	defer mockController.Finish()
 
 	config := configs.NewBaseConfig()
-	mockUserService := services_mocks.NewMockUserService(mockController)
-	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
-	mockResetTokenRepository := repositories_mocks.NewMockResetTokenRepository(mockController)
-	mockNotificationService := services_mocks.NewMockNotificationService(mockController)
+	mockUserService := services_mocks2.NewMockUserService(mockController)
+	mockUserRepository := repositories_mocks2.NewMockUserRepository(mockController)
+	mockResetTokenRepository := repositories_mocks2.NewMockResetTokenRepository(mockController)
+	mockNotificationService := services_mocks2.NewMockNotificationService(mockController)
 
 	baseResetTokenService := NewBaseResetTokenService(
 		config,
@@ -38,10 +38,10 @@ func TestBaseResetTokenService_GenerateToken(t *testing.T) {
 	defer mockController.Finish()
 
 	config := configs.NewBaseConfig()
-	mockUserService := services_mocks.NewMockUserService(mockController)
-	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
-	mockResetTokenRepository := repositories_mocks.NewMockResetTokenRepository(mockController)
-	mockNotificationService := services_mocks.NewMockNotificationService(mockController)
+	mockUserService := services_mocks2.NewMockUserService(mockController)
+	mockUserRepository := repositories_mocks2.NewMockUserRepository(mockController)
+	mockResetTokenRepository := repositories_mocks2.NewMockResetTokenRepository(mockController)
+	mockNotificationService := services_mocks2.NewMockNotificationService(mockController)
 
 	baseResetTokenService := NewBaseResetTokenService(
 		config,
@@ -73,10 +73,10 @@ func TestBaseResetTokenService_SendNewResetTokenByUserEmail(t *testing.T) {
 	defer mockController.Finish()
 
 	config := configs.NewBaseConfig()
-	mockUserService := services_mocks.NewMockUserService(mockController)
-	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
-	mockResetTokenRepository := repositories_mocks.NewMockResetTokenRepository(mockController)
-	mockNotificationService := services_mocks.NewMockNotificationService(mockController)
+	mockUserService := services_mocks2.NewMockUserService(mockController)
+	mockUserRepository := repositories_mocks2.NewMockUserRepository(mockController)
+	mockResetTokenRepository := repositories_mocks2.NewMockResetTokenRepository(mockController)
+	mockNotificationService := services_mocks2.NewMockNotificationService(mockController)
 
 	user := repositories.NewGormUser()
 	mockUserRepository.
@@ -125,10 +125,10 @@ func TestBaseResetTokenService_ResetPasswordByUserUUIDAndNewPassword(t *testing.
 	defer mockController.Finish()
 
 	config := configs.NewBaseConfig()
-	mockUserService := services_mocks.NewMockUserService(mockController)
-	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
-	mockResetTokenRepository := repositories_mocks.NewMockResetTokenRepository(mockController)
-	mockNotificationService := services_mocks.NewMockNotificationService(mockController)
+	mockUserService := services_mocks2.NewMockUserService(mockController)
+	mockUserRepository := repositories_mocks2.NewMockUserRepository(mockController)
+	mockResetTokenRepository := repositories_mocks2.NewMockResetTokenRepository(mockController)
+	mockNotificationService := services_mocks2.NewMockNotificationService(mockController)
 
 	mockResetToken := repositories.NewGormResetToken()
 	mockResetTokenRepository.
@@ -212,10 +212,10 @@ func TestBaseResetTokenService_ResetPasswordByUserUUIDAndOldPasswordAndNewPasswo
 	defer mockController.Finish()
 
 	config := configs.NewBaseConfig()
-	mockUserService := services_mocks.NewMockUserService(mockController)
-	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
-	mockResetTokenRepository := repositories_mocks.NewMockResetTokenRepository(mockController)
-	mockNotificationService := services_mocks.NewMockNotificationService(mockController)
+	mockUserService := services_mocks2.NewMockUserService(mockController)
+	mockUserRepository := repositories_mocks2.NewMockUserRepository(mockController)
+	mockResetTokenRepository := repositories_mocks2.NewMockResetTokenRepository(mockController)
+	mockNotificationService := services_mocks2.NewMockNotificationService(mockController)
 
 	mockUserRepository.
 		EXPECT().

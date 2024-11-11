@@ -3,8 +3,8 @@ package services
 import (
 	"errors"
 	"github.com/fromsi/jwt-oauth-sso/internal/configs"
-	repositories_mocks "github.com/fromsi/jwt-oauth-sso/internal/mocks/repositories"
 	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
+	"github.com/fromsi/jwt-oauth-sso/mocks/repositories"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"

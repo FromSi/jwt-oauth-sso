@@ -4,3 +4,4 @@ heap.out
 config.yml
 local.sqlite
 coverage.out
+filtered_coverage.out

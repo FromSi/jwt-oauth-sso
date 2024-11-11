@@ -1,12 +1,23 @@
 package validator_rules
 
 import (
+	"github.com/gin-gonic/gin/binding"
 	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
 
 	"github.com/go-playground/validator/v10"
 )
+
+type EmptyValidator struct{}
+
+func (e EmptyValidator) ValidateStruct(a any) error {
+	return nil
+}
+
+func (e EmptyValidator) Engine() any {
+	return nil
+}
 
 type mockFieldLevel struct {
 	validator.FieldLevel
@@ -45,5 +56,9 @@ func Test_Password(t *testing.T) {
 }
 
 func Test_BindPassword(t *testing.T) {
+	assert.Nil(t, BindPassword())
+
+	binding.Validator = &EmptyValidator{}
+
 	assert.Nil(t, BindPassword())
 }

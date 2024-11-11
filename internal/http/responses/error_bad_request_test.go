@@ -10,21 +10,21 @@ import (
 
 func Test_NewErrorBadRequestResponse(t *testing.T) {
 	data := make(map[string][]string)
-	data["field"] = append(data["field"], "valueOne")
-	data["field"] = append(data["field"], "valueTwo")
+	data["field"] = append(data["field"], "1")
+	data["field"] = append(data["field"], "2")
 
 	response := NewErrorBadRequestResponse(data)
 
 	assert.NotNil(t, response)
 
-	assert.Equal(t, response.Errors["field"][0], "valueOne")
-	assert.Equal(t, response.Errors["field"][1], "valueTwo")
+	assert.Equal(t, response.Errors["field"][0], "1")
+	assert.Equal(t, response.Errors["field"][1], "2")
 
 	responseToJson, err := json.Marshal(response)
 
 	assert.Nil(t, err)
 
-	expected := `{"errors":{"field":["valueOne","valueTwo"]}}`
+	expected := `{"errors":{"field":["1","2"]}}`
 
 	assert.Equal(t, string(responseToJson), expected)
 }

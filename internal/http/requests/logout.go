@@ -1,7 +1,6 @@
 package requests
 
 import (
-	"github.com/fromsi/jwt-oauth-sso/internal/http/responses"
 	"github.com/gin-gonic/gin"
 )
 
@@ -9,33 +8,20 @@ type LogoutRequest struct {
 	Body LogoutRequestBody
 }
 
-func NewLogoutRequest(
-	context *gin.Context,
-) (*LogoutRequest, *responses.ErrorBadRequestResponse) {
+func NewLogoutRequest(context *gin.Context) *LogoutRequest {
 	var request LogoutRequest
 
-	requestBody, err := NewLogoutRequestBody(context)
-
-	if err != nil {
-		return nil, err
-	}
+	requestBody := NewLogoutRequestBody(context)
 
 	request.Body = *requestBody
 
-	return &request, nil
+	return &request
 }
 
 type LogoutRequestBody struct{}
 
-func NewLogoutRequestBody(
-	context *gin.Context,
-) (*LogoutRequestBody, *responses.ErrorBadRequestResponse) {
+func NewLogoutRequestBody(context *gin.Context) *LogoutRequestBody {
 	var requestBody LogoutRequestBody
 
-	if err := context.ShouldBindJSON(&requestBody); err != nil && err.Error() != "EOF" {
-		println(err.Error())
-		return nil, responses.NewErrorBadRequestResponseByError(err)
-	}
-
-	return &requestBody, nil
+	return &requestBody
 }

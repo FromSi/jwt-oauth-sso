@@ -96,18 +96,6 @@ func NewGormUserRepository(db *gorm.DB) (*GormUserRepository, error) {
 	return &GormUserRepository{db: db}, nil
 }
 
-func (receiver *GormUserRepository) HasUserByUUID(uuid string) bool {
-	var exists bool
-
-	receiver.
-		db.
-		Model(&GormUser{}).
-		Select("count(*) > 0").
-		Find(&exists, &GormUser{UUID: uuid})
-
-	return exists
-}
-
 func (receiver *GormUserRepository) HasUserByEmail(email string) bool {
 	var exists bool
 

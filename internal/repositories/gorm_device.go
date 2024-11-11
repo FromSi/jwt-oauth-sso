@@ -154,8 +154,8 @@ func (receiver *GormDeviceRepository) GetDevicesByUserUUID(userUUID string) []De
 
 	receiver.
 		db.
-		Model(&GormDevice{UserUUID: userUUID}).
-		Find(&gormDevices)
+		Model(&GormDevice{}).
+		Find(&gormDevices, &GormDevice{UserUUID: userUUID})
 
 	devices := make([]Device, len(gormDevices))
 

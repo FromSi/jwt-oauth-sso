@@ -1,16 +1,17 @@
 default: help
 
 .PHONY: run
-run: ## run server through linux (default: localhost:8080)
+run: ## running a server through linux (default: localhost:8080)
 	go run ./cmd/server/main.go
 
 .PHONY: test
-test: ## run test through linux
-	go test -v ./...
+test: ## running a test through linux
+	go test -v -coverpkg=./internal/...,./cmd/server/... ./...
 
-.PHONY: coverage
-coverage: ## run coverage through linux
-	go test -coverprofile=coverage.out ./... && go tool cover -html=coverage.out
+.PHONY: test_coverage
+test_coverage: ## running a test coverage via linux
+	go test -coverprofile=coverage.out -coverpkg=./internal/...,./cmd/server/... ./...
+	go tool cover -html=coverage.out
 
 .PHONY: lint
 lint: ## run golangci-lint (2-minute wait)

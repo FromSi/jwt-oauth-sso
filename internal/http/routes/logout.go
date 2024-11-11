@@ -41,13 +41,7 @@ func (receiver LogoutRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	_, errResponse := requests.NewLogoutRequest(context)
-
-	if errResponse != nil {
-		context.JSON(http.StatusBadRequest, errResponse)
-
-		return
-	}
+	_ = requests.NewLogoutRequest(context)
 
 	err = receiver.deviceRepository.DeleteDeviceByUUID(headers.AccessToken.DeviceUUID)
 

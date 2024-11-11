@@ -8,7 +8,7 @@ import (
 const (
 	GormResetTokenTokenDefault     = ""
 	GormResetTokenUserUUIDDefault  = ""
-	GormResetTokenExpiredAtDefault = 1
+	GormResetTokenExpiresAtDefault = 1
 	GormResetTokenCreatedAtDefault = 1
 )
 
@@ -23,7 +23,7 @@ func NewGormResetToken() *GormResetToken {
 	return &GormResetToken{
 		Token:     GormResetTokenTokenDefault,
 		UserUUID:  GormResetTokenUserUUIDDefault,
-		ExpiresAt: GormResetTokenExpiredAtDefault,
+		ExpiresAt: GormResetTokenExpiresAtDefault,
 		CreatedAt: GormResetTokenCreatedAtDefault,
 	}
 }
@@ -85,18 +85,6 @@ func NewGormResetTokenRepository(db *gorm.DB) (*GormResetTokenRepository, error)
 	}
 
 	return &GormResetTokenRepository{db: db}, nil
-}
-
-func (receiver *GormResetTokenRepository) HasToken(token string) bool {
-	var exists bool
-
-	receiver.
-		db.
-		Model(&GormResetToken{}).
-		Select("count(*) > 0").
-		Find(&exists, &GormResetToken{Token: token})
-
-	return exists
 }
 
 func (receiver *GormResetTokenRepository) GetActiveResetTokenByToken(token string) ResetToken {
