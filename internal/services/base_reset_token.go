@@ -47,7 +47,7 @@ func (receiver *BaseResetTokenService) SendNewResetTokenByUserEmail(email string
 
 	newResetToken.SetToken(receiver.GenerateToken())
 	newResetToken.SetUserUUID(user.GetUUID())
-	newResetToken.SetExpiredAt(int(time.Now().AddDate(0, 0, receiver.config.GetExpirationResetInDays()).Unix()))
+	newResetToken.SetExpiresAt(int(time.Now().AddDate(0, 0, receiver.config.GetExpirationResetInDays()).Unix()))
 	newResetToken.SetCreatedAt(int(time.Now().Unix()))
 
 	err := receiver.resetTokenRepository.CreateResetToken(newResetToken)
@@ -65,13 +65,10 @@ func (receiver *BaseResetTokenService) SendNewResetTokenByUserEmail(email string
 	return nil
 }
 
-func (receiver *BaseResetTokenService) ResetPasswordByTokenAndNewPassword(token string, newPassword string) error {
-	resetToken := receiver.resetTokenRepository.GetResetTokenByToken(token)
-
-	if resetToken == nil {
-		return errors.New("token not found")
-	}
-
+func (receiver *BaseResetTokenService) ResetPasswordByUserUUIDAndNewPassword(
+	userUUID string,
+	newPassword string,
+) error {
 	hashedPassword, err := receiver.userService.HashPassword(newPassword)
 
 	if err != nil {
@@ -79,16 +76,10 @@ func (receiver *BaseResetTokenService) ResetPasswordByTokenAndNewPassword(token 
 	}
 
 	err = receiver.userRepository.UpdatePasswordByUUIDAndPasswordAndUpdatedAt(
-		resetToken.GetUserUUID(),
+		userUUID,
 		hashedPassword,
 		int(time.Now().Unix()),
 	)
-
-	if err != nil {
-		return err
-	}
-
-	err = receiver.resetTokenRepository.DeleteResetToken(token)
 
 	if err != nil {
 		return err

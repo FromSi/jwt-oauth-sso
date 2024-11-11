@@ -43,7 +43,7 @@ func NewSuccessRegisterResponse(
 			AccessToken:      accessTokenToJWT,
 			RefreshToken:     device.GetRefreshToken(),
 			AccessExpiresIn:  int(accessToken.ExpirationTime.Unix()),
-			RefreshExpiresIn: device.GetExpiredAt(),
+			RefreshExpiresIn: device.GetExpiresAt(),
 		},
 	}, err
 }

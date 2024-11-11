@@ -38,6 +38,10 @@ func NewGormUserByUser(user User) *GormUser {
 	}
 }
 
+func (receiver *GormUser) TableName() string {
+	return "users"
+}
+
 func (receiver *GormUser) GetUUID() string {
 	return receiver.UUID
 }

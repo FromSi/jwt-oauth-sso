@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"gorm.io/gorm"
+	"time"
 )
 
 const (
@@ -14,7 +15,7 @@ const (
 type GormResetToken struct {
 	Token     string `gorm:"not null;uniqueIndex:idx_token_useruuid"`
 	UserUUID  string `gorm:"not null;uniqueIndex:idx_token_useruuid"`
-	ExpiredAt int    `gorm:"not null"`
+	ExpiresAt int    `gorm:"not null"`
 	CreatedAt int    `gorm:"not null"`
 }
 
@@ -22,7 +23,7 @@ func NewGormResetToken() *GormResetToken {
 	return &GormResetToken{
 		Token:     GormResetTokenTokenDefault,
 		UserUUID:  GormResetTokenUserUUIDDefault,
-		ExpiredAt: GormResetTokenExpiredAtDefault,
+		ExpiresAt: GormResetTokenExpiredAtDefault,
 		CreatedAt: GormResetTokenCreatedAtDefault,
 	}
 }
@@ -31,9 +32,13 @@ func NewGormResetTokenByResetToken(resetToken ResetToken) *GormResetToken {
 	return &GormResetToken{
 		Token:     resetToken.GetToken(),
 		UserUUID:  resetToken.GetUserUUID(),
-		ExpiredAt: resetToken.GetExpiredAt(),
+		ExpiresAt: resetToken.GetExpiresAt(),
 		CreatedAt: resetToken.GetCreatedAt(),
 	}
+}
+
+func (receiver *GormResetToken) TableName() string {
+	return "reset_tokens"
 }
 
 func (receiver *GormResetToken) GetToken() string {
@@ -44,8 +49,8 @@ func (receiver *GormResetToken) GetUserUUID() string {
 	return receiver.UserUUID
 }
 
-func (receiver *GormResetToken) GetExpiredAt() int {
-	return receiver.ExpiredAt
+func (receiver *GormResetToken) GetExpiresAt() int {
+	return receiver.ExpiresAt
 }
 
 func (receiver *GormResetToken) GetCreatedAt() int {
@@ -60,8 +65,8 @@ func (receiver *GormResetToken) SetUserUUID(value string) {
 	receiver.UserUUID = value
 }
 
-func (receiver *GormResetToken) SetExpiredAt(value int) {
-	receiver.ExpiredAt = value
+func (receiver *GormResetToken) SetExpiresAt(value int) {
+	receiver.ExpiresAt = value
 }
 
 func (receiver *GormResetToken) SetCreatedAt(value int) {
@@ -94,13 +99,13 @@ func (receiver *GormResetTokenRepository) HasToken(token string) bool {
 	return exists
 }
 
-func (receiver *GormResetTokenRepository) GetResetTokenByToken(token string) ResetToken {
+func (receiver *GormResetTokenRepository) GetActiveResetTokenByToken(token string) ResetToken {
 	var gormResetToken GormResetToken
 
-	result := receiver.
-		db.
+	result := receiver.db.
 		Model(&GormResetToken{}).
-		First(&gormResetToken, &GormResetToken{Token: token})
+		Where("token = ? AND expires_at > ?", token, int(time.Now().Unix())).
+		First(&gormResetToken)
 
 	if result.RowsAffected == 0 {
 		return nil

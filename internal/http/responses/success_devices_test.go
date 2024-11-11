@@ -17,7 +17,7 @@ func Test_NewSuccessDevicesResponse(t *testing.T) {
 	gormDevice.SetUserAgent("3")
 	gormDevice.SetIp("4")
 	gormDevice.SetRefreshToken("5")
-	gormDevice.SetExpiredAt(6)
+	gormDevice.SetExpiresAt(6)
 	gormDevice.SetCreatedAt(7)
 	gormDevice.SetUpdatedAt(8)
 
@@ -31,7 +31,7 @@ func Test_NewSuccessDevicesResponse(t *testing.T) {
 
 	assert.Nil(t, err)
 
-	expected := `{"data":[{"uuid":"1","userUUID":"2","userAgent":"3","ip":"4","expiredAt":6,"createdAt":7,"updatedAt":8}]}`
+	expected := `{"data":[{"uuid":"1","userUUID":"2","userAgent":"3","ip":"4","expiresAt":6,"createdAt":7,"updatedAt":8}]}`
 
 	assert.Equal(t, string(responseToJson), expected)
 }

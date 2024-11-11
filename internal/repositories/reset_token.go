@@ -3,7 +3,7 @@ package repositories
 //go:generate mockgen -destination=../mocks/repositories/mock_query_reset_token_repository.go -package=repositories_mocks github.com/fromsi/jwt-oauth-sso/internal/repositories QueryResetTokenRepository
 type QueryResetTokenRepository interface {
 	HasToken(string) bool
-	GetResetTokenByToken(string) ResetToken
+	GetActiveResetTokenByToken(string) ResetToken
 }
 
 //go:generate mockgen -destination=../mocks/repositories/mock_mutable_reset_token_repository.go -package=repositories_mocks github.com/fromsi/jwt-oauth-sso/internal/repositories MutableResetTokenRepository
@@ -22,7 +22,7 @@ type ResetTokenRepository interface {
 type QueryResetToken interface {
 	GetToken() string
 	GetUserUUID() string
-	GetExpiredAt() int
+	GetExpiresAt() int
 	GetCreatedAt() int
 }
 
@@ -30,7 +30,7 @@ type QueryResetToken interface {
 type MutableResetToken interface {
 	SetToken(string)
 	SetUserUUID(string)
-	SetExpiredAt(int)
+	SetExpiresAt(int)
 	SetCreatedAt(int)
 }
 

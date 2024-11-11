@@ -19,7 +19,7 @@ func Test_NewGormDevice(t *testing.T) {
 	assert.Equal(t, gormDevice.UserAgent, GormDeviceUserAgentDefault)
 	assert.Equal(t, gormDevice.Ip, GormDeviceIpDefault)
 	assert.Equal(t, gormDevice.RefreshToken, GormDeviceRefreshTokenDefault)
-	assert.Equal(t, gormDevice.ExpiredAt, GormDeviceExpiredAtDefault)
+	assert.Equal(t, gormDevice.ExpiresAt, GormDeviceExpiresAtDefault)
 	assert.Equal(t, gormDevice.CreatedAt, GormDeviceCreatedAtDefault)
 	assert.Equal(t, gormDevice.UpdatedAt, GormDeviceUpdatedAtDefault)
 }
@@ -35,7 +35,7 @@ func Test_NewGormDeviceByDevice(t *testing.T) {
 	assert.Equal(t, gormDevice.UserAgent, GormDeviceUserAgentDefault)
 	assert.Equal(t, gormDevice.Ip, GormDeviceIpDefault)
 	assert.Equal(t, gormDevice.RefreshToken, GormDeviceRefreshTokenDefault)
-	assert.Equal(t, gormDevice.ExpiredAt, GormDeviceExpiredAtDefault)
+	assert.Equal(t, gormDevice.ExpiresAt, GormDeviceExpiresAtDefault)
 	assert.Equal(t, gormDevice.CreatedAt, GormDeviceCreatedAtDefault)
 	assert.Equal(t, gormDevice.UpdatedAt, GormDeviceUpdatedAtDefault)
 }
@@ -101,9 +101,9 @@ func TestGormDeviceByDevice_GetRefreshToken(t *testing.T) {
 func TestGormDeviceByDevice_GetExpiredAt(t *testing.T) {
 	gormDevice := NewGormDevice()
 
-	gormDevice.ExpiredAt = 1
+	gormDevice.ExpiresAt = 1
 
-	assert.Equal(t, gormDevice.GetExpiredAt(), 1)
+	assert.Equal(t, gormDevice.GetExpiresAt(), 1)
 }
 
 func TestGormDeviceByDevice_GetCreatedAt(t *testing.T) {
@@ -165,9 +165,9 @@ func TestGormDeviceByDevice_SetRefreshToken(t *testing.T) {
 func TestGormDeviceByDevice_SetExpiredAt(t *testing.T) {
 	gormDevice := NewGormDevice()
 
-	gormDevice.SetExpiredAt(1)
+	gormDevice.SetExpiresAt(1)
 
-	assert.Equal(t, gormDevice.ExpiredAt, 1)
+	assert.Equal(t, gormDevice.ExpiresAt, 1)
 }
 
 func TestGormDeviceByDevice_SetCreatedAt(t *testing.T) {
@@ -229,7 +229,7 @@ func TestGormDeviceRepository_CreateDevice_And_GetDevicesByUserUUID(t *testing.T
 	gormDevice.SetUserAgent("3")
 	gormDevice.SetIp("4")
 	gormDevice.SetRefreshToken("5")
-	gormDevice.SetExpiredAt(6)
+	gormDevice.SetExpiresAt(6)
 	gormDevice.SetCreatedAt(7)
 	gormDevice.SetUpdatedAt(8)
 
@@ -245,7 +245,7 @@ func TestGormDeviceRepository_CreateDevice_And_GetDevicesByUserUUID(t *testing.T
 	assert.Equal(t, gormDevices[0].GetUserUUID(), gormDevice.GetUserUUID())
 	assert.Equal(t, gormDevices[0].GetUserAgent(), gormDevice.GetUserAgent())
 	assert.Equal(t, gormDevices[0].GetIp(), gormDevice.GetIp())
-	assert.Equal(t, gormDevices[0].GetExpiredAt(), gormDevice.GetExpiredAt())
+	assert.Equal(t, gormDevices[0].GetExpiresAt(), gormDevice.GetExpiresAt())
 	assert.Equal(t, gormDevices[0].GetCreatedAt(), gormDevice.GetCreatedAt())
 	assert.Equal(t, gormDevices[0].GetUpdatedAt(), gormDevice.GetUpdatedAt())
 }
@@ -265,7 +265,7 @@ func TestGormDeviceRepository_CreateDevice_And_GetDeviceByUserUUIDAndIpAndUserAg
 	gormDevice.SetUserAgent("3")
 	gormDevice.SetIp("4")
 	gormDevice.SetRefreshToken("5")
-	gormDevice.SetExpiredAt(6)
+	gormDevice.SetExpiresAt(6)
 	gormDevice.SetCreatedAt(7)
 	gormDevice.SetUpdatedAt(8)
 
@@ -290,7 +290,7 @@ func TestGormDeviceRepository_CreateDevice_And_GetDeviceByUserUUIDAndIpAndUserAg
 	assert.Equal(t, gormDeviceResult.GetUserUUID(), gormDevice.GetUserUUID())
 	assert.Equal(t, gormDeviceResult.GetUserAgent(), gormDevice.GetUserAgent())
 	assert.Equal(t, gormDeviceResult.GetIp(), gormDevice.GetIp())
-	assert.Equal(t, gormDeviceResult.GetExpiredAt(), gormDevice.GetExpiredAt())
+	assert.Equal(t, gormDeviceResult.GetExpiresAt(), gormDevice.GetExpiresAt())
 	assert.Equal(t, gormDeviceResult.GetCreatedAt(), gormDevice.GetCreatedAt())
 	assert.Equal(t, gormDeviceResult.GetUpdatedAt(), gormDevice.GetUpdatedAt())
 }
@@ -310,7 +310,7 @@ func TestGormDeviceRepository_CreateDevice_And_GetDeviceByRefreshToken(t *testin
 	gormDevice.SetUserAgent("3")
 	gormDevice.SetIp("4")
 	gormDevice.SetRefreshToken("5")
-	gormDevice.SetExpiredAt(6)
+	gormDevice.SetExpiresAt(6)
 	gormDevice.SetCreatedAt(7)
 	gormDevice.SetUpdatedAt(8)
 
@@ -332,7 +332,7 @@ func TestGormDeviceRepository_CreateDevice_And_GetDeviceByRefreshToken(t *testin
 	assert.Equal(t, gormDeviceResult.GetUserUUID(), gormDevice.GetUserUUID())
 	assert.Equal(t, gormDeviceResult.GetUserAgent(), gormDevice.GetUserAgent())
 	assert.Equal(t, gormDeviceResult.GetIp(), gormDevice.GetIp())
-	assert.Equal(t, gormDeviceResult.GetExpiredAt(), gormDevice.GetExpiredAt())
+	assert.Equal(t, gormDeviceResult.GetExpiresAt(), gormDevice.GetExpiresAt())
 	assert.Equal(t, gormDeviceResult.GetCreatedAt(), gormDevice.GetCreatedAt())
 	assert.Equal(t, gormDeviceResult.GetUpdatedAt(), gormDevice.GetUpdatedAt())
 }

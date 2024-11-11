@@ -13,7 +13,7 @@ const (
 	GormDeviceUserAgentDefault    = ""
 	GormDeviceIpDefault           = ""
 	GormDeviceRefreshTokenDefault = ""
-	GormDeviceExpiredAtDefault    = 0
+	GormDeviceExpiresAtDefault    = 0
 	GormDeviceCreatedAtDefault    = 0
 	GormDeviceUpdatedAtDefault    = 0
 )
@@ -24,7 +24,7 @@ type GormDevice struct {
 	UserAgent    string `gorm:"not null"`
 	Ip           string `gorm:"not null"`
 	RefreshToken string `gorm:"not null"`
-	ExpiredAt    int    `gorm:"not null"`
+	ExpiresAt    int    `gorm:"not null"`
 	CreatedAt    int    `gorm:"not null"`
 	UpdatedAt    int    `gorm:"not null"`
 }
@@ -36,7 +36,7 @@ func NewGormDevice() *GormDevice {
 		UserAgent:    GormDeviceUserAgentDefault,
 		Ip:           GormDeviceIpDefault,
 		RefreshToken: GormDeviceRefreshTokenDefault,
-		ExpiredAt:    GormDeviceExpiredAtDefault,
+		ExpiresAt:    GormDeviceExpiresAtDefault,
 		CreatedAt:    GormDeviceCreatedAtDefault,
 		UpdatedAt:    GormDeviceUpdatedAtDefault,
 	}
@@ -49,10 +49,14 @@ func NewGormDeviceByDevice(device Device) *GormDevice {
 		UserAgent:    device.GetUserAgent(),
 		Ip:           device.GetIp(),
 		RefreshToken: device.GetRefreshToken(),
-		ExpiredAt:    device.GetExpiredAt(),
+		ExpiresAt:    device.GetExpiresAt(),
 		CreatedAt:    device.GetCreatedAt(),
 		UpdatedAt:    device.GetUpdatedAt(),
 	}
+}
+
+func (receiver *GormDevice) TableName() string {
+	return "devices"
 }
 
 func (receiver *GormDevice) GenerateAccessToken(
@@ -87,8 +91,8 @@ func (receiver *GormDevice) GetRefreshToken() string {
 	return receiver.RefreshToken
 }
 
-func (receiver *GormDevice) GetExpiredAt() int {
-	return receiver.ExpiredAt
+func (receiver *GormDevice) GetExpiresAt() int {
+	return receiver.ExpiresAt
 }
 
 func (receiver *GormDevice) GetCreatedAt() int {
@@ -119,8 +123,8 @@ func (receiver *GormDevice) SetRefreshToken(value string) {
 	receiver.RefreshToken = value
 }
 
-func (receiver *GormDevice) SetExpiredAt(value int) {
-	receiver.ExpiredAt = value
+func (receiver *GormDevice) SetExpiresAt(value int) {
+	receiver.ExpiresAt = value
 }
 
 func (receiver *GormDevice) SetCreatedAt(value int) {

@@ -53,18 +53,18 @@ func (mr *MockQueryResetTokenMockRecorder) GetCreatedAt() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCreatedAt", reflect.TypeOf((*MockQueryResetToken)(nil).GetCreatedAt))
 }
 
-// GetExpiredAt mocks base method.
-func (m *MockQueryResetToken) GetExpiredAt() int {
+// GetExpiresAt mocks base method.
+func (m *MockQueryResetToken) GetExpiresAt() int {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetExpiredAt")
+	ret := m.ctrl.Call(m, "GetExpiresAt")
 	ret0, _ := ret[0].(int)
 	return ret0
 }
 
-// GetExpiredAt indicates an expected call of GetExpiredAt.
-func (mr *MockQueryResetTokenMockRecorder) GetExpiredAt() *gomock.Call {
+// GetExpiresAt indicates an expected call of GetExpiresAt.
+func (mr *MockQueryResetTokenMockRecorder) GetExpiresAt() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetExpiredAt", reflect.TypeOf((*MockQueryResetToken)(nil).GetExpiredAt))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetExpiresAt", reflect.TypeOf((*MockQueryResetToken)(nil).GetExpiresAt))
 }
 
 // GetToken mocks base method.

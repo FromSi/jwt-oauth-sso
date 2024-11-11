@@ -51,7 +51,7 @@ func (receiver *BaseDeviceService) GetDeviceByUserUUIDAndIpAndUserAgent(
 		AddDate(0, 0, receiver.config.GetExpirationRefreshInDays()).
 		Unix()
 
-	device.SetExpiredAt(int(expiredAt))
+	device.SetExpiresAt(int(expiredAt))
 
 	err := receiver.deviceRepository.UpdateDevice(device)
 
@@ -83,7 +83,7 @@ func (receiver *BaseDeviceService) GetNewDeviceByUserUUIDAndIpAndUserAgent(
 		AddDate(0, 0, receiver.config.GetExpirationRefreshInDays()).
 		Unix()
 
-	device.SetExpiredAt(int(expiredAt))
+	device.SetExpiresAt(int(expiredAt))
 
 	err := receiver.deviceRepository.CreateDevice(device)
 
@@ -108,7 +108,7 @@ func (receiver *BaseDeviceService) ResetDevice(
 		AddDate(0, 0, receiver.config.GetExpirationRefreshInDays()).
 		Unix()
 
-	deviceForUpdate.SetExpiredAt(int(expiredAt))
+	deviceForUpdate.SetExpiresAt(int(expiredAt))
 
 	err := receiver.deviceRepository.UpdateDevice(deviceForUpdate)
 

@@ -70,18 +70,18 @@ func (mr *MockQueryDeviceMockRecorder) GetCreatedAt() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCreatedAt", reflect.TypeOf((*MockQueryDevice)(nil).GetCreatedAt))
 }
 
-// GetExpiredAt mocks base method.
-func (m *MockQueryDevice) GetExpiredAt() int {
+// GetExpiresAt mocks base method.
+func (m *MockQueryDevice) GetExpiresAt() int {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetExpiredAt")
+	ret := m.ctrl.Call(m, "GetExpiresAt")
 	ret0, _ := ret[0].(int)
 	return ret0
 }
 
-// GetExpiredAt indicates an expected call of GetExpiredAt.
-func (mr *MockQueryDeviceMockRecorder) GetExpiredAt() *gomock.Call {
+// GetExpiresAt indicates an expected call of GetExpiresAt.
+func (mr *MockQueryDeviceMockRecorder) GetExpiresAt() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetExpiredAt", reflect.TypeOf((*MockQueryDevice)(nil).GetExpiredAt))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetExpiresAt", reflect.TypeOf((*MockQueryDevice)(nil).GetExpiresAt))
 }
 
 // GetIp mocks base method.

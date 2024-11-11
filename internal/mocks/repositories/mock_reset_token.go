@@ -53,18 +53,18 @@ func (mr *MockResetTokenMockRecorder) GetCreatedAt() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCreatedAt", reflect.TypeOf((*MockResetToken)(nil).GetCreatedAt))
 }
 
-// GetExpiredAt mocks base method.
-func (m *MockResetToken) GetExpiredAt() int {
+// GetExpiresAt mocks base method.
+func (m *MockResetToken) GetExpiresAt() int {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetExpiredAt")
+	ret := m.ctrl.Call(m, "GetExpiresAt")
 	ret0, _ := ret[0].(int)
 	return ret0
 }
 
-// GetExpiredAt indicates an expected call of GetExpiredAt.
-func (mr *MockResetTokenMockRecorder) GetExpiredAt() *gomock.Call {
+// GetExpiresAt indicates an expected call of GetExpiresAt.
+func (mr *MockResetTokenMockRecorder) GetExpiresAt() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetExpiredAt", reflect.TypeOf((*MockResetToken)(nil).GetExpiredAt))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetExpiresAt", reflect.TypeOf((*MockResetToken)(nil).GetExpiresAt))
 }
 
 // GetToken mocks base method.
@@ -107,16 +107,16 @@ func (mr *MockResetTokenMockRecorder) SetCreatedAt(arg0 any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetCreatedAt", reflect.TypeOf((*MockResetToken)(nil).SetCreatedAt), arg0)
 }
 
-// SetExpiredAt mocks base method.
-func (m *MockResetToken) SetExpiredAt(arg0 int) {
+// SetExpiresAt mocks base method.
+func (m *MockResetToken) SetExpiresAt(arg0 int) {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "SetExpiredAt", arg0)
+	m.ctrl.Call(m, "SetExpiresAt", arg0)
 }
 
-// SetExpiredAt indicates an expected call of SetExpiredAt.
-func (mr *MockResetTokenMockRecorder) SetExpiredAt(arg0 any) *gomock.Call {
+// SetExpiresAt indicates an expected call of SetExpiresAt.
+func (mr *MockResetTokenMockRecorder) SetExpiresAt(arg0 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetExpiredAt", reflect.TypeOf((*MockResetToken)(nil).SetExpiredAt), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetExpiresAt", reflect.TypeOf((*MockResetToken)(nil).SetExpiresAt), arg0)
 }
 
 // SetToken mocks base method.

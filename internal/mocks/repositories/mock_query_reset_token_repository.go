@@ -40,18 +40,18 @@ func (m *MockQueryResetTokenRepository) EXPECT() *MockQueryResetTokenRepositoryM
 	return m.recorder
 }
 
-// GetResetTokenByToken mocks base method.
-func (m *MockQueryResetTokenRepository) GetResetTokenByToken(arg0 string) repositories.ResetToken {
+// GetActiveResetTokenByToken mocks base method.
+func (m *MockQueryResetTokenRepository) GetActiveResetTokenByToken(arg0 string) repositories.ResetToken {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetResetTokenByToken", arg0)
+	ret := m.ctrl.Call(m, "GetActiveResetTokenByToken", arg0)
 	ret0, _ := ret[0].(repositories.ResetToken)
 	return ret0
 }
 
-// GetResetTokenByToken indicates an expected call of GetResetTokenByToken.
-func (mr *MockQueryResetTokenRepositoryMockRecorder) GetResetTokenByToken(arg0 any) *gomock.Call {
+// GetActiveResetTokenByToken indicates an expected call of GetActiveResetTokenByToken.
+func (mr *MockQueryResetTokenRepositoryMockRecorder) GetActiveResetTokenByToken(arg0 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetResetTokenByToken", reflect.TypeOf((*MockQueryResetTokenRepository)(nil).GetResetTokenByToken), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetActiveResetTokenByToken", reflect.TypeOf((*MockQueryResetTokenRepository)(nil).GetActiveResetTokenByToken), arg0)
 }
 
 // HasToken mocks base method.

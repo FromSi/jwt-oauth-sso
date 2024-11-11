@@ -35,7 +35,7 @@ type QueryDevice interface {
 	GetUserAgent() string
 	GetIp() string
 	GetRefreshToken() string
-	GetExpiredAt() int
+	GetExpiresAt() int
 	GetCreatedAt() int
 	GetUpdatedAt() int
 }
@@ -47,7 +47,7 @@ type MutableDevice interface {
 	SetUserAgent(string)
 	SetIp(string)
 	SetRefreshToken(string)
-	SetExpiredAt(int)
+	SetExpiresAt(int)
 	SetCreatedAt(int)
 	SetUpdatedAt(int)
 }

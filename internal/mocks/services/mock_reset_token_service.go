@@ -53,18 +53,18 @@ func (mr *MockResetTokenServiceMockRecorder) GenerateToken() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateToken", reflect.TypeOf((*MockResetTokenService)(nil).GenerateToken))
 }
 
-// ResetPasswordByTokenAndNewPassword mocks base method.
-func (m *MockResetTokenService) ResetPasswordByTokenAndNewPassword(arg0, arg1 string) error {
+// ResetPasswordByUserUUIDAndNewPassword mocks base method.
+func (m *MockResetTokenService) ResetPasswordByUserUUIDAndNewPassword(arg0, arg1 string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ResetPasswordByTokenAndNewPassword", arg0, arg1)
+	ret := m.ctrl.Call(m, "ResetPasswordByUserUUIDAndNewPassword", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// ResetPasswordByTokenAndNewPassword indicates an expected call of ResetPasswordByTokenAndNewPassword.
-func (mr *MockResetTokenServiceMockRecorder) ResetPasswordByTokenAndNewPassword(arg0, arg1 any) *gomock.Call {
+// ResetPasswordByUserUUIDAndNewPassword indicates an expected call of ResetPasswordByUserUUIDAndNewPassword.
+func (mr *MockResetTokenServiceMockRecorder) ResetPasswordByUserUUIDAndNewPassword(arg0, arg1 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ResetPasswordByTokenAndNewPassword", reflect.TypeOf((*MockResetTokenService)(nil).ResetPasswordByTokenAndNewPassword), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ResetPasswordByUserUUIDAndNewPassword", reflect.TypeOf((*MockResetTokenService)(nil).ResetPasswordByUserUUIDAndNewPassword), arg0, arg1)
 }
 
 // ResetPasswordByUserUUIDAndOldPasswordAndNewPassword mocks base method.

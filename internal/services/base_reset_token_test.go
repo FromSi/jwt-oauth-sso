@@ -120,7 +120,7 @@ func TestBaseResetTokenService_SendNewResetTokenByUserEmail(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestBaseResetTokenService_ResetPasswordByTokenAndNewPassword(t *testing.T) {
+func TestBaseResetTokenService_ResetPasswordByUserUUIDAndNewPassword(t *testing.T) {
 	mockController := gomock.NewController(t)
 	defer mockController.Finish()
 
@@ -133,13 +133,13 @@ func TestBaseResetTokenService_ResetPasswordByTokenAndNewPassword(t *testing.T) 
 	mockResetToken := repositories.NewGormResetToken()
 	mockResetTokenRepository.
 		EXPECT().
-		GetResetTokenByToken(gomock.Eq("1")).
+		GetActiveResetTokenByToken(gomock.Eq("1")).
 		Return(mockResetToken).
 		AnyTimes()
 
 	mockResetTokenRepository.
 		EXPECT().
-		GetResetTokenByToken(gomock.Eq("2")).
+		GetActiveResetTokenByToken(gomock.Eq("2")).
 		Return(nil).
 		AnyTimes()
 
@@ -161,12 +161,6 @@ func TestBaseResetTokenService_ResetPasswordByTokenAndNewPassword(t *testing.T) 
 		Return(nil).
 		AnyTimes()
 
-	mockResetTokenRepository.
-		EXPECT().
-		DeleteResetToken(gomock.Any()).
-		Return(nil).
-		AnyTimes()
-
 	baseResetTokenService := NewBaseResetTokenService(
 		config,
 		mockUserService,
@@ -177,28 +171,21 @@ func TestBaseResetTokenService_ResetPasswordByTokenAndNewPassword(t *testing.T) 
 
 	tests := []struct {
 		name         string
-		token        string
+		userUUID     string
 		password     string
 		expectError  bool
 		errorMessage string
 	}{
 		{
 			name:         "Valid token and password",
-			token:        "1",
+			userUUID:     "1",
 			password:     "1",
 			expectError:  false,
 			errorMessage: "",
 		},
 		{
-			name:         "Token not found",
-			token:        "2",
-			password:     "1",
-			expectError:  true,
-			errorMessage: "token not found",
-		},
-		{
 			name:         "Invalid password for hashing",
-			token:        "1",
+			userUUID:     "1",
 			password:     "2",
 			expectError:  true,
 			errorMessage: "invalid-password",
@@ -208,7 +195,7 @@ func TestBaseResetTokenService_ResetPasswordByTokenAndNewPassword(t *testing.T) 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := baseResetTokenService.
-				ResetPasswordByTokenAndNewPassword(tt.token, tt.password)
+				ResetPasswordByUserUUIDAndNewPassword(tt.userUUID, tt.password)
 
 			if tt.expectError {
 				assert.Error(t, err)

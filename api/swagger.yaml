@@ -332,7 +332,7 @@ paths:
                         - userUUID
                         - userAgent
                         - ip
-                        - expiredAt
+                        - expiresAt
                         - createdAt
                         - updatedAt
                       properties:
@@ -352,7 +352,7 @@ paths:
                           type: string
                           format: ipv4_or_ipv6
                           example: '1.1.1.1'
-                        expiredAt:
+                        expiresAt:
                           type: integer
                           format: unix
                           example: 1516300000
