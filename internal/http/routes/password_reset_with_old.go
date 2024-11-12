@@ -65,7 +65,7 @@ func (receiver PasswordResetWithOldRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	err = receiver.userService.CheckPasswordByHashAndPassword(
+	err = receiver.userService.CheckHashedPasswordAndNativePassword(
 		user.GetPassword(),
 		request.Body.OldPassword,
 	)
@@ -79,7 +79,7 @@ func (receiver PasswordResetWithOldRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	err = receiver.userService.UpdatePasswordByUUIDAndPassword(
+	err = receiver.userService.UpdatePasswordByUUIDAndHashedPassword(
 		user.GetUUID(),
 		request.Body.NewPassword,
 	)

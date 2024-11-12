@@ -68,28 +68,12 @@ func (mr *MockDeviceServiceMockRecorder) GenerateUUID() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateUUID", reflect.TypeOf((*MockDeviceService)(nil).GenerateUUID))
 }
 
-// GetDeviceByUserUUIDAndIpAndUserAgent mocks base method.
-func (m *MockDeviceService) GetDeviceByUserUUIDAndIpAndUserAgent(arg0, arg1, arg2 string) (repositories.Device, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetDeviceByUserUUIDAndIpAndUserAgent", arg0, arg1, arg2)
-	ret0, _ := ret[0].(repositories.Device)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetDeviceByUserUUIDAndIpAndUserAgent indicates an expected call of GetDeviceByUserUUIDAndIpAndUserAgent.
-func (mr *MockDeviceServiceMockRecorder) GetDeviceByUserUUIDAndIpAndUserAgent(arg0, arg1, arg2 any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDeviceByUserUUIDAndIpAndUserAgent", reflect.TypeOf((*MockDeviceService)(nil).GetDeviceByUserUUIDAndIpAndUserAgent), arg0, arg1, arg2)
-}
-
 // GetNewDeviceByUserUUIDAndIpAndUserAgent mocks base method.
-func (m *MockDeviceService) GetNewDeviceByUserUUIDAndIpAndUserAgent(arg0, arg1, arg2 string) (repositories.Device, error) {
+func (m *MockDeviceService) GetNewDeviceByUserUUIDAndIpAndUserAgent(arg0, arg1, arg2 string) repositories.Device {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetNewDeviceByUserUUIDAndIpAndUserAgent", arg0, arg1, arg2)
 	ret0, _ := ret[0].(repositories.Device)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	return ret0
 }
 
 // GetNewDeviceByUserUUIDAndIpAndUserAgent indicates an expected call of GetNewDeviceByUserUUIDAndIpAndUserAgent.
@@ -98,17 +82,30 @@ func (mr *MockDeviceServiceMockRecorder) GetNewDeviceByUserUUIDAndIpAndUserAgent
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNewDeviceByUserUUIDAndIpAndUserAgent", reflect.TypeOf((*MockDeviceService)(nil).GetNewDeviceByUserUUIDAndIpAndUserAgent), arg0, arg1, arg2)
 }
 
-// ResetDevice mocks base method.
-func (m *MockDeviceService) ResetDevice(arg0 repositories.Device) (repositories.Device, error) {
+// GetNewRefreshDetailsByDevice mocks base method.
+func (m *MockDeviceService) GetNewRefreshDetailsByDevice(arg0 repositories.Device) repositories.Device {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ResetDevice", arg0)
+	ret := m.ctrl.Call(m, "GetNewRefreshDetailsByDevice", arg0)
 	ret0, _ := ret[0].(repositories.Device)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	return ret0
 }
 
-// ResetDevice indicates an expected call of ResetDevice.
-func (mr *MockDeviceServiceMockRecorder) ResetDevice(arg0 any) *gomock.Call {
+// GetNewRefreshDetailsByDevice indicates an expected call of GetNewRefreshDetailsByDevice.
+func (mr *MockDeviceServiceMockRecorder) GetNewRefreshDetailsByDevice(arg0 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ResetDevice", reflect.TypeOf((*MockDeviceService)(nil).ResetDevice), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNewRefreshDetailsByDevice", reflect.TypeOf((*MockDeviceService)(nil).GetNewRefreshDetailsByDevice), arg0)
+}
+
+// GetOldDeviceByUserUUIDAndIpAndUserAgent mocks base method.
+func (m *MockDeviceService) GetOldDeviceByUserUUIDAndIpAndUserAgent(arg0, arg1, arg2 string) repositories.Device {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetOldDeviceByUserUUIDAndIpAndUserAgent", arg0, arg1, arg2)
+	ret0, _ := ret[0].(repositories.Device)
+	return ret0
+}
+
+// GetOldDeviceByUserUUIDAndIpAndUserAgent indicates an expected call of GetOldDeviceByUserUUIDAndIpAndUserAgent.
+func (mr *MockDeviceServiceMockRecorder) GetOldDeviceByUserUUIDAndIpAndUserAgent(arg0, arg1, arg2 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOldDeviceByUserUUIDAndIpAndUserAgent", reflect.TypeOf((*MockDeviceService)(nil).GetOldDeviceByUserUUIDAndIpAndUserAgent), arg0, arg1, arg2)
 }

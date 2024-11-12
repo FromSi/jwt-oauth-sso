@@ -60,9 +60,18 @@ func TestBaseUserService_HashPassword(t *testing.T) {
 	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte("1"))
 
 	assert.Nil(t, err)
+
+	hashedPassword, err = baseUserService.HashPassword("2")
+
+	assert.Nil(t, err)
+	assert.NotEmpty(t, hashedPassword)
+
+	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte("2"))
+
+	assert.Nil(t, err)
 }
 
-func TestBaseUserService_CheckPasswordByHashAndPassword(t *testing.T) {
+func TestBaseUserService_CheckHashedPasswordAndNativePassword(t *testing.T) {
 	mockController := gomock.NewController(t)
 	defer mockController.Finish()
 
@@ -74,16 +83,16 @@ func TestBaseUserService_CheckPasswordByHashAndPassword(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotEmpty(t, hashedPassword)
 
-	err = baseUserService.CheckPasswordByHashAndPassword(hashedPassword, "1")
+	err = baseUserService.CheckHashedPasswordAndNativePassword(hashedPassword, "1")
 
 	assert.Nil(t, err)
 
-	err = baseUserService.CheckPasswordByHashAndPassword(hashedPassword, "2")
+	err = baseUserService.CheckHashedPasswordAndNativePassword(hashedPassword, "2")
 
 	assert.NotNil(t, err)
 }
 
-func TestBaseUserService_CreateUserByUUIDAndEmailAndPassword(t *testing.T) {
+func TestBaseUserService_CreateUserByUUIDAndEmailAndHashedPassword(t *testing.T) {
 	mockController := gomock.NewController(t)
 	defer mockController.Finish()
 
@@ -93,27 +102,31 @@ func TestBaseUserService_CreateUserByUUIDAndEmailAndPassword(t *testing.T) {
 	user := repositories.NewGormUser()
 
 	user.SetUUID("1")
-	user.SetEmail("2")
-	user.SetPassword("3")
+	user.SetEmail("1")
+	user.SetPassword("1")
 
 	mockUserRepository.
 		EXPECT().
 		CreateUser(gomock.Any()).
 		DoAndReturn(func(user repositories.User) error {
 			assert.Equal(t, "1", user.GetUUID())
-			assert.Equal(t, "2", user.GetEmail())
-			assert.NotEqual(t, "3", user.GetPassword())
+			assert.Equal(t, "1", user.GetEmail())
+			assert.Equal(t, "1", user.GetPassword())
 
 			return nil
 		}).
 		AnyTimes()
 
-	err := baseUserService.CreateUserByUUIDAndEmailAndPassword("1", "2", "3")
+	err := baseUserService.CreateUserByUUIDAndEmailAndHashedPassword(
+		user.GetUUID(),
+		user.GetEmail(),
+		user.GetPassword(),
+	)
 
 	assert.Nil(t, err)
 }
 
-func TestBaseUserService_UpdatePasswordByUUIDAndPassword(t *testing.T) {
+func TestBaseUserService_UpdatePasswordByUUIDAndHashedPassword(t *testing.T) {
 	mockController := gomock.NewController(t)
 	defer mockController.Finish()
 
@@ -132,11 +145,11 @@ func TestBaseUserService_UpdatePasswordByUUIDAndPassword(t *testing.T) {
 		Return(errors.New("error")).
 		AnyTimes()
 
-	err := baseUserService.UpdatePasswordByUUIDAndPassword("1", "2")
+	err := baseUserService.UpdatePasswordByUUIDAndHashedPassword("1", "2")
 
 	assert.Nil(t, err)
 
-	err = baseUserService.UpdatePasswordByUUIDAndPassword("0", "0")
+	err = baseUserService.UpdatePasswordByUUIDAndHashedPassword("0", "0")
 
 	assert.NotNil(t, err)
 }

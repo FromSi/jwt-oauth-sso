@@ -52,9 +52,9 @@ func (receiver RegisterRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	userExists := receiver.userRepository.HasUserByEmail(request.Body.Email)
+	user := receiver.userRepository.GetUserByEmail(request.Body.Email)
 
-	if userExists {
+	if user != nil {
 		err := responses.NewErrorConflictResponse(
 			errors.New("user already exists with this email"),
 		)
@@ -66,10 +66,18 @@ func (receiver RegisterRoute) Handle(context *gin.Context) {
 
 	userUUID := receiver.userService.GenerateUUID()
 
-	err := receiver.userService.CreateUserByUUIDAndEmailAndPassword(
+	hashedPassword, err := receiver.userService.HashPassword(request.Body.Password)
+
+	if err != nil {
+		context.JSON(http.StatusConflict, responses.NewErrorConflictResponse(err))
+
+		return
+	}
+
+	err = receiver.userService.CreateUserByUUIDAndEmailAndHashedPassword(
 		userUUID,
 		request.Body.Email,
-		request.Body.Password,
+		hashedPassword,
 	)
 
 	if err != nil {
@@ -78,11 +86,26 @@ func (receiver RegisterRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	device, err := receiver.deviceService.GetNewDeviceByUserUUIDAndIpAndUserAgent(
+	device := receiver.deviceService.GetNewDeviceByUserUUIDAndIpAndUserAgent(
 		userUUID,
 		request.IP,
 		request.UserAgent,
 	)
+
+	err = receiver.deviceRepository.CreateDevice(device)
+
+	if err != nil {
+		context.JSON(
+			http.StatusInternalServerError,
+			responses.NewErrorInternalServerResponse(err),
+		)
+
+		return
+	}
+
+	device = receiver.deviceService.GetNewRefreshDetailsByDevice(device)
+
+	err = receiver.deviceRepository.UpdateDevice(device)
 
 	if err != nil {
 		context.JSON(

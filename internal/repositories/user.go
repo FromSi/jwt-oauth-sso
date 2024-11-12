@@ -2,8 +2,6 @@ package repositories
 
 //go:generate mockgen -destination=../../mocks/repositories/mock_query_user_repository.go -package=repositories_mocks github.com/fromsi/jwt-oauth-sso/internal/repositories QueryUserRepository
 type QueryUserRepository interface {
-	HasUserByEmail(string) bool
-	HasUserByUUIDAndPassword(string, string) bool
 	GetUserByEmail(string) User
 	GetUserByUUID(string) User
 }

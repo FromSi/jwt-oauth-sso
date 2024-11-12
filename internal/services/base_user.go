@@ -31,17 +31,18 @@ func (receiver *BaseUserService) HashPassword(password string) (string, error) {
 	return string(hashedPassword), nil
 }
 
-func (receiver *BaseUserService) CheckPasswordByHashAndPassword(hashedPassword string, password string) error {
-	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+func (receiver *BaseUserService) CheckHashedPasswordAndNativePassword(
+	hashedPassword string,
+	nativePassword string,
+) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(nativePassword))
 }
 
-func (receiver *BaseUserService) CreateUserByUUIDAndEmailAndPassword(uuid string, email string, password string) error {
-	hashedPassword, err := receiver.HashPassword(password)
-
-	if err != nil {
-		return err
-	}
-
+func (receiver *BaseUserService) CreateUserByUUIDAndEmailAndHashedPassword(
+	uuid string,
+	email string,
+	hashedPassword string,
+) error {
 	user := repositories.NewGormUser()
 
 	user.SetUUID(uuid)
@@ -50,7 +51,7 @@ func (receiver *BaseUserService) CreateUserByUUIDAndEmailAndPassword(uuid string
 	user.SetCreatedAt(int(time.Now().Unix()))
 	user.SetUpdatedAt(int(time.Now().Unix()))
 
-	err = receiver.userRepository.CreateUser(user)
+	err := receiver.userRepository.CreateUser(user)
 
 	if err != nil {
 		return err
@@ -59,14 +60,11 @@ func (receiver *BaseUserService) CreateUserByUUIDAndEmailAndPassword(uuid string
 	return nil
 }
 
-func (receiver *BaseUserService) UpdatePasswordByUUIDAndPassword(uuid string, password string) error {
-	hashedPassword, err := receiver.HashPassword(password)
-
-	if err != nil {
-		return err
-	}
-
-	err = receiver.userRepository.UpdatePasswordByUUIDAndPasswordAndUpdatedAt(
+func (receiver *BaseUserService) UpdatePasswordByUUIDAndHashedPassword(
+	uuid string,
+	hashedPassword string,
+) error {
+	err := receiver.userRepository.UpdatePasswordByUUIDAndPasswordAndUpdatedAt(
 		uuid,
 		hashedPassword,
 		int(time.Now().Unix()),

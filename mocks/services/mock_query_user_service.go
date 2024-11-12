@@ -39,18 +39,18 @@ func (m *MockQueryUserService) EXPECT() *MockQueryUserServiceMockRecorder {
 	return m.recorder
 }
 
-// CheckPasswordByHashAndPassword mocks base method.
-func (m *MockQueryUserService) CheckPasswordByHashAndPassword(arg0, arg1 string) error {
+// CheckHashedPasswordAndNativePassword mocks base method.
+func (m *MockQueryUserService) CheckHashedPasswordAndNativePassword(arg0, arg1 string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CheckPasswordByHashAndPassword", arg0, arg1)
+	ret := m.ctrl.Call(m, "CheckHashedPasswordAndNativePassword", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// CheckPasswordByHashAndPassword indicates an expected call of CheckPasswordByHashAndPassword.
-func (mr *MockQueryUserServiceMockRecorder) CheckPasswordByHashAndPassword(arg0, arg1 any) *gomock.Call {
+// CheckHashedPasswordAndNativePassword indicates an expected call of CheckHashedPasswordAndNativePassword.
+func (mr *MockQueryUserServiceMockRecorder) CheckHashedPasswordAndNativePassword(arg0, arg1 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckPasswordByHashAndPassword", reflect.TypeOf((*MockQueryUserService)(nil).CheckPasswordByHashAndPassword), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckHashedPasswordAndNativePassword", reflect.TypeOf((*MockQueryUserService)(nil).CheckHashedPasswordAndNativePassword), arg0, arg1)
 }
 
 // GenerateUUID mocks base method.

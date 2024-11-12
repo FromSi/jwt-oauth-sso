@@ -63,7 +63,7 @@ func (receiver LoginRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	err := receiver.userService.CheckPasswordByHashAndPassword(
+	err := receiver.userService.CheckHashedPasswordAndNativePassword(
 		user.GetPassword(),
 		request.Body.Password,
 	)
@@ -77,28 +77,34 @@ func (receiver LoginRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	device, err := receiver.deviceService.GetDeviceByUserUUIDAndIpAndUserAgent(
+	device := receiver.deviceService.GetOldDeviceByUserUUIDAndIpAndUserAgent(
 		user.GetUUID(),
 		request.IP,
 		request.UserAgent,
 	)
 
-	if err != nil {
-		context.JSON(
-			http.StatusInternalServerError,
-			responses.NewErrorInternalServerResponse(err),
-		)
-
-		return
-	}
-
 	if device == nil {
-		device, err = receiver.deviceService.GetNewDeviceByUserUUIDAndIpAndUserAgent(
+		device = receiver.deviceService.GetNewDeviceByUserUUIDAndIpAndUserAgent(
 			user.GetUUID(),
 			request.IP,
 			request.UserAgent,
 		)
+
+		err = receiver.deviceRepository.CreateDevice(device)
+
+		if err != nil {
+			context.JSON(
+				http.StatusInternalServerError,
+				responses.NewErrorInternalServerResponse(err),
+			)
+
+			return
+		}
 	}
+
+	device = receiver.deviceService.GetNewRefreshDetailsByDevice(device)
+
+	err = receiver.deviceRepository.UpdateDevice(device)
 
 	if err != nil {
 		context.JSON(

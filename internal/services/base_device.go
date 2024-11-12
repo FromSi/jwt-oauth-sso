@@ -30,43 +30,21 @@ func (receiver *BaseDeviceService) GenerateRefreshToken() string {
 	return uuid.New().String()
 }
 
-func (receiver *BaseDeviceService) GetDeviceByUserUUIDAndIpAndUserAgent(
+func (receiver *BaseDeviceService) GetOldDeviceByUserUUIDAndIpAndUserAgent(
 	userUUID string,
 	ip string,
 	userAgent string,
-) (repositories.Device, error) {
-	timeNow := time.Now()
-	device := receiver.
+) repositories.Device {
+	return receiver.
 		deviceRepository.
 		GetDeviceByUserUUIDAndIpAndUserAgent(userUUID, ip, userAgent)
-
-	if device == nil {
-		return nil, nil
-	}
-
-	device.SetRefreshToken(receiver.GenerateRefreshToken())
-	device.SetUpdatedAt(int(timeNow.Unix()))
-
-	expiresAt := timeNow.
-		AddDate(0, 0, receiver.config.GetExpirationRefreshInDays()).
-		Unix()
-
-	device.SetExpiresAt(int(expiresAt))
-
-	err := receiver.deviceRepository.UpdateDevice(device)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return device, nil
 }
 
 func (receiver *BaseDeviceService) GetNewDeviceByUserUUIDAndIpAndUserAgent(
 	userUUID string,
 	ip string,
 	userAgent string,
-) (repositories.Device, error) {
+) repositories.Device {
 	timeNow := time.Now()
 	device := repositories.NewGormDevice()
 
@@ -74,9 +52,19 @@ func (receiver *BaseDeviceService) GetNewDeviceByUserUUIDAndIpAndUserAgent(
 	device.SetUserUUID(userUUID)
 	device.SetIp(ip)
 	device.SetUserAgent(userAgent)
-	device.SetRefreshToken(receiver.GenerateRefreshToken())
 
 	device.SetCreatedAt(int(timeNow.Unix()))
+	device.SetUpdatedAt(int(timeNow.Unix()))
+
+	return device
+}
+
+func (receiver *BaseDeviceService) GetNewRefreshDetailsByDevice(
+	device repositories.Device,
+) repositories.Device {
+	timeNow := time.Now()
+
+	device.SetRefreshToken(receiver.GenerateRefreshToken())
 	device.SetUpdatedAt(int(timeNow.Unix()))
 
 	expiresAt := timeNow.
@@ -85,36 +73,5 @@ func (receiver *BaseDeviceService) GetNewDeviceByUserUUIDAndIpAndUserAgent(
 
 	device.SetExpiresAt(int(expiresAt))
 
-	err := receiver.deviceRepository.CreateDevice(device)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return device, nil
-}
-
-func (receiver *BaseDeviceService) ResetDevice(
-	device repositories.Device,
-) (repositories.Device, error) {
-	timeNow := time.Now()
-
-	deviceForUpdate := repositories.NewGormDeviceByDevice(device)
-
-	deviceForUpdate.SetRefreshToken(receiver.GenerateRefreshToken())
-	deviceForUpdate.SetUpdatedAt(int(timeNow.Unix()))
-
-	expiresAt := timeNow.
-		AddDate(0, 0, receiver.config.GetExpirationRefreshInDays()).
-		Unix()
-
-	deviceForUpdate.SetExpiresAt(int(expiresAt))
-
-	err := receiver.deviceRepository.UpdateDevice(deviceForUpdate)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return deviceForUpdate, nil
+	return device
 }

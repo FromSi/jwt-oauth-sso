@@ -1,7 +1,6 @@
 package services
 
 import (
-	"errors"
 	"github.com/fromsi/jwt-oauth-sso/internal/configs"
 	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
 	"github.com/google/uuid"
@@ -36,13 +35,7 @@ func (receiver *BaseResetTokenService) GenerateToken() string {
 	return uuid.New().String()
 }
 
-func (receiver *BaseResetTokenService) SendNewResetTokenByUserEmail(email string) error {
-	user := receiver.userRepository.GetUserByEmail(email)
-
-	if user == nil {
-		return errors.New("user not found")
-	}
-
+func (receiver *BaseResetTokenService) SendNewResetTokenByUser(user repositories.User) error {
 	newResetToken := repositories.NewGormResetToken()
 
 	newResetToken.SetToken(receiver.GenerateToken())
@@ -56,60 +49,7 @@ func (receiver *BaseResetTokenService) SendNewResetTokenByUserEmail(email string
 		return err
 	}
 
-	err = receiver.notificationService.SendTextByUser(user, "your reset token is: "+newResetToken.GetToken())
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (receiver *BaseResetTokenService) ResetPasswordByUserUUIDAndNewPassword(
-	userUUID string,
-	newPassword string,
-) error {
-	hashedPassword, err := receiver.userService.HashPassword(newPassword)
-
-	if err != nil {
-		return err
-	}
-
-	err = receiver.userRepository.UpdatePasswordByUUIDAndPasswordAndUpdatedAt(
-		userUUID,
-		hashedPassword,
-		int(time.Now().Unix()),
-	)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (receiver *BaseResetTokenService) ResetPasswordByUserUUIDAndOldPasswordAndNewPassword(
-	userUUID string,
-	oldPassword string,
-	newPassword string,
-) error {
-	userExists := receiver.userRepository.HasUserByUUIDAndPassword(userUUID, oldPassword)
-
-	if !userExists {
-		return errors.New("user not found")
-	}
-
-	hashedPassword, err := receiver.userService.HashPassword(newPassword)
-
-	if err != nil {
-		return err
-	}
-
-	err = receiver.userRepository.UpdatePasswordByUUIDAndPasswordAndUpdatedAt(
-		userUUID,
-		hashedPassword,
-		int(time.Now().Unix()),
-	)
+	err = receiver.notificationService.SendTextByUser(user, "your reset token: "+newResetToken.GetToken())
 
 	if err != nil {
 		return err

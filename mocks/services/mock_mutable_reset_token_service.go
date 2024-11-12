@@ -12,6 +12,7 @@ package services_mocks
 import (
 	reflect "reflect"
 
+	repositories "github.com/fromsi/jwt-oauth-sso/internal/repositories"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -39,44 +40,16 @@ func (m *MockMutableResetTokenService) EXPECT() *MockMutableResetTokenServiceMoc
 	return m.recorder
 }
 
-// ResetPasswordByUserUUIDAndNewPassword mocks base method.
-func (m *MockMutableResetTokenService) ResetPasswordByUserUUIDAndNewPassword(arg0, arg1 string) error {
+// SendNewResetTokenByUser mocks base method.
+func (m *MockMutableResetTokenService) SendNewResetTokenByUser(arg0 repositories.User) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ResetPasswordByUserUUIDAndNewPassword", arg0, arg1)
+	ret := m.ctrl.Call(m, "SendNewResetTokenByUser", arg0)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// ResetPasswordByUserUUIDAndNewPassword indicates an expected call of ResetPasswordByUserUUIDAndNewPassword.
-func (mr *MockMutableResetTokenServiceMockRecorder) ResetPasswordByUserUUIDAndNewPassword(arg0, arg1 any) *gomock.Call {
+// SendNewResetTokenByUser indicates an expected call of SendNewResetTokenByUser.
+func (mr *MockMutableResetTokenServiceMockRecorder) SendNewResetTokenByUser(arg0 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ResetPasswordByUserUUIDAndNewPassword", reflect.TypeOf((*MockMutableResetTokenService)(nil).ResetPasswordByUserUUIDAndNewPassword), arg0, arg1)
-}
-
-// ResetPasswordByUserUUIDAndOldPasswordAndNewPassword mocks base method.
-func (m *MockMutableResetTokenService) ResetPasswordByUserUUIDAndOldPasswordAndNewPassword(arg0, arg1, arg2 string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ResetPasswordByUserUUIDAndOldPasswordAndNewPassword", arg0, arg1, arg2)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// ResetPasswordByUserUUIDAndOldPasswordAndNewPassword indicates an expected call of ResetPasswordByUserUUIDAndOldPasswordAndNewPassword.
-func (mr *MockMutableResetTokenServiceMockRecorder) ResetPasswordByUserUUIDAndOldPasswordAndNewPassword(arg0, arg1, arg2 any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ResetPasswordByUserUUIDAndOldPasswordAndNewPassword", reflect.TypeOf((*MockMutableResetTokenService)(nil).ResetPasswordByUserUUIDAndOldPasswordAndNewPassword), arg0, arg1, arg2)
-}
-
-// SendNewResetTokenByUserEmail mocks base method.
-func (m *MockMutableResetTokenService) SendNewResetTokenByUserEmail(arg0 string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SendNewResetTokenByUserEmail", arg0)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// SendNewResetTokenByUserEmail indicates an expected call of SendNewResetTokenByUserEmail.
-func (mr *MockMutableResetTokenServiceMockRecorder) SendNewResetTokenByUserEmail(arg0 any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendNewResetTokenByUserEmail", reflect.TypeOf((*MockMutableResetTokenService)(nil).SendNewResetTokenByUserEmail), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendNewResetTokenByUser", reflect.TypeOf((*MockMutableResetTokenService)(nil).SendNewResetTokenByUser), arg0)
 }

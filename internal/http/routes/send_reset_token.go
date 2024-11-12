@@ -42,9 +42,9 @@ func (receiver SendResetTokenRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	userExists := receiver.userRepository.HasUserByEmail(request.Body.Email)
+	user := receiver.userRepository.GetUserByEmail(request.Body.Email)
 
-	if !userExists {
+	if user == nil {
 		err := responses.NewErrorConflictResponse(
 			errors.New("user not found with this email"),
 		)
@@ -54,7 +54,7 @@ func (receiver SendResetTokenRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	err := receiver.resetTokenService.SendNewResetTokenByUserEmail(request.Body.Email)
+	err := receiver.resetTokenService.SendNewResetTokenByUser(user)
 
 	if err != nil {
 		context.JSON(http.StatusConflict, responses.NewErrorConflictResponse(err))

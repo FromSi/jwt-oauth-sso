@@ -59,7 +59,9 @@ func (receiver RefreshRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	device, err := receiver.deviceService.ResetDevice(device)
+	device = receiver.deviceService.GetNewRefreshDetailsByDevice(device)
+
+	err := receiver.deviceRepository.UpdateDevice(device)
 
 	if err != nil {
 		context.JSON(

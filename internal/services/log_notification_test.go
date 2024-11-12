@@ -29,5 +29,15 @@ func TestLogNotificationService_SendTextByUser(t *testing.T) {
 
 	assert.Nil(t, err)
 
-	assert.Equal(t, buf.String(), "user 1 text 1\n")
+	assert.Equal(t, buf.String(), "user: 1 | text: 1\n")
+
+	buf.Reset()
+
+	user.SetUUID("2")
+
+	err = logNotificationService.SendTextByUser(user, "2")
+
+	assert.Nil(t, err)
+
+	assert.Equal(t, buf.String(), "user: 2 | text: 2\n")
 }

@@ -39,30 +39,30 @@ func (m *MockMutableUserService) EXPECT() *MockMutableUserServiceMockRecorder {
 	return m.recorder
 }
 
-// CreateUserByUUIDAndEmailAndPassword mocks base method.
-func (m *MockMutableUserService) CreateUserByUUIDAndEmailAndPassword(arg0, arg1, arg2 string) error {
+// CreateUserByUUIDAndEmailAndHashedPassword mocks base method.
+func (m *MockMutableUserService) CreateUserByUUIDAndEmailAndHashedPassword(arg0, arg1, arg2 string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateUserByUUIDAndEmailAndPassword", arg0, arg1, arg2)
+	ret := m.ctrl.Call(m, "CreateUserByUUIDAndEmailAndHashedPassword", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// CreateUserByUUIDAndEmailAndPassword indicates an expected call of CreateUserByUUIDAndEmailAndPassword.
-func (mr *MockMutableUserServiceMockRecorder) CreateUserByUUIDAndEmailAndPassword(arg0, arg1, arg2 any) *gomock.Call {
+// CreateUserByUUIDAndEmailAndHashedPassword indicates an expected call of CreateUserByUUIDAndEmailAndHashedPassword.
+func (mr *MockMutableUserServiceMockRecorder) CreateUserByUUIDAndEmailAndHashedPassword(arg0, arg1, arg2 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUserByUUIDAndEmailAndPassword", reflect.TypeOf((*MockMutableUserService)(nil).CreateUserByUUIDAndEmailAndPassword), arg0, arg1, arg2)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUserByUUIDAndEmailAndHashedPassword", reflect.TypeOf((*MockMutableUserService)(nil).CreateUserByUUIDAndEmailAndHashedPassword), arg0, arg1, arg2)
 }
 
-// UpdatePasswordByUUIDAndPassword mocks base method.
-func (m *MockMutableUserService) UpdatePasswordByUUIDAndPassword(arg0, arg1 string) error {
+// UpdatePasswordByUUIDAndHashedPassword mocks base method.
+func (m *MockMutableUserService) UpdatePasswordByUUIDAndHashedPassword(arg0, arg1 string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdatePasswordByUUIDAndPassword", arg0, arg1)
+	ret := m.ctrl.Call(m, "UpdatePasswordByUUIDAndHashedPassword", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// UpdatePasswordByUUIDAndPassword indicates an expected call of UpdatePasswordByUUIDAndPassword.
-func (mr *MockMutableUserServiceMockRecorder) UpdatePasswordByUUIDAndPassword(arg0, arg1 any) *gomock.Call {
+// UpdatePasswordByUUIDAndHashedPassword indicates an expected call of UpdatePasswordByUUIDAndHashedPassword.
+func (mr *MockMutableUserServiceMockRecorder) UpdatePasswordByUUIDAndHashedPassword(arg0, arg1 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePasswordByUUIDAndPassword", reflect.TypeOf((*MockMutableUserService)(nil).UpdatePasswordByUUIDAndPassword), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePasswordByUUIDAndHashedPassword", reflect.TypeOf((*MockMutableUserService)(nil).UpdatePasswordByUUIDAndHashedPassword), arg0, arg1)
 }
