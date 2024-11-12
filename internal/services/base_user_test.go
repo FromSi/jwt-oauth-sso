@@ -38,11 +38,11 @@ func TestBaseUserService_GenerateUUID(t *testing.T) {
 
 	_, err := uuid.Parse(uuidOne)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	_, err = uuid.Parse(uuidTwo)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 }
 
 func TestBaseUserService_HashPassword(t *testing.T) {
@@ -54,21 +54,21 @@ func TestBaseUserService_HashPassword(t *testing.T) {
 
 	hashedPassword, err := baseUserService.HashPassword("1")
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.NotEmpty(t, hashedPassword)
 
 	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte("1"))
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	hashedPassword, err = baseUserService.HashPassword("2")
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.NotEmpty(t, hashedPassword)
 
 	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte("2"))
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 }
 
 func TestBaseUserService_CheckHashedPasswordAndNativePassword(t *testing.T) {
@@ -80,16 +80,16 @@ func TestBaseUserService_CheckHashedPasswordAndNativePassword(t *testing.T) {
 
 	hashedPassword, err := baseUserService.HashPassword("1")
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.NotEmpty(t, hashedPassword)
 
 	err = baseUserService.CheckHashedPasswordAndNativePassword(hashedPassword, "1")
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	err = baseUserService.CheckHashedPasswordAndNativePassword(hashedPassword, "2")
 
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 }
 
 func TestBaseUserService_CreateUserByUUIDAndEmailAndHashedPassword(t *testing.T) {
@@ -123,7 +123,7 @@ func TestBaseUserService_CreateUserByUUIDAndEmailAndHashedPassword(t *testing.T)
 		user.GetPassword(),
 	)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 }
 
 func TestBaseUserService_UpdatePasswordByUUIDAndHashedPassword(t *testing.T) {
@@ -147,9 +147,9 @@ func TestBaseUserService_UpdatePasswordByUUIDAndHashedPassword(t *testing.T) {
 
 	err := baseUserService.UpdatePasswordByUUIDAndHashedPassword("1", "2")
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	err = baseUserService.UpdatePasswordByUUIDAndHashedPassword("0", "0")
 
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 }

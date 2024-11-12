@@ -27,7 +27,7 @@ func TestLogNotificationService_SendTextByUser(t *testing.T) {
 
 	err := logNotificationService.SendTextByUser(user, "1")
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	assert.Equal(t, buf.String(), "user: 1 | text: 1\n")
 
@@ -37,7 +37,7 @@ func TestLogNotificationService_SendTextByUser(t *testing.T) {
 
 	err = logNotificationService.SendTextByUser(user, "2")
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	assert.Equal(t, buf.String(), "user: 2 | text: 2\n")
 }

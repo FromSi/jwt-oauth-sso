@@ -50,7 +50,7 @@ func TestGormDeviceByDevice_GenerateAccessToken(t *testing.T) {
 
 	accessToken, err := gormDevice.GenerateAccessToken(config)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.NotNil(t, accessToken)
 }
 
@@ -249,17 +249,17 @@ func TestGormDeviceByDevice_SetUpdatedAt(t *testing.T) {
 func Test_NewGormDeviceRepository(t *testing.T) {
 	db, err := gorm.Open(sqlite.Open("file::memory:?mode=ro"), &gorm.Config{})
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.NotNil(t, db)
 
 	gormDeviceRepository, err := NewGormDeviceRepository(db)
 
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 	assert.Nil(t, gormDeviceRepository)
 
 	db, err = gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.NotNil(t, db)
 
 	stmt := &gorm.Statement{DB: db}
@@ -277,12 +277,12 @@ func Test_NewGormDeviceRepository(t *testing.T) {
 
 	gormDeviceRepository, err = NewGormDeviceRepository(db)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.NotNil(t, gormDeviceRepository)
 
 	err = stmt.Parse(&GormDevice{})
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	db.
 		Raw(
@@ -310,7 +310,7 @@ func TestGormDeviceRepository_CreateDevice_And_GetDeviceByUserUUIDAndIpAndUserAg
 
 	err := gormDeviceRepository.CreateDevice(gormDevice)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	gormDeviceResult := gormDeviceRepository.
 		GetDeviceByUserUUIDAndIpAndUserAgent("0", "0", "0")
@@ -344,7 +344,7 @@ func TestGormDeviceRepository_CreateDevice_And_GetDeviceByRefreshToken(t *testin
 
 	err := gormDeviceRepository.CreateDevice(gormDevice)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	gormDeviceResult := gormDeviceRepository.GetDeviceByRefreshToken("0")
 
@@ -375,7 +375,7 @@ func TestGormDeviceRepository_CreateDevice_And_GetDevicesByUserUUID_And_UpdateDe
 
 	err := gormDeviceRepository.CreateDevice(gormDeviceOne)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	gormDeviceTwo := NewGormDevice()
 
@@ -385,7 +385,7 @@ func TestGormDeviceRepository_CreateDevice_And_GetDevicesByUserUUID_And_UpdateDe
 
 	err = gormDeviceRepository.CreateDevice(gormDeviceTwo)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	gormDevices := gormDeviceRepository.GetDevicesByUserUUID(gormDeviceOne.GetUserUUID())
 
@@ -404,7 +404,7 @@ func TestGormDeviceRepository_CreateDevice_And_GetDevicesByUserUUID_And_UpdateDe
 
 	err = gormDeviceRepository.UpdateDevice(gormDeviceOne)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	gormDevices = gormDeviceRepository.GetDevicesByUserUUID(gormDeviceOne.GetUserUUID())
 
@@ -434,7 +434,7 @@ func TestGormDeviceRepository_CreateDevice_And_GetDevicesByUserUUID_And_DeleteDe
 
 	err := gormDeviceRepository.CreateDevice(gormDeviceOne)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	gormDeviceTwo := NewGormDevice()
 
@@ -443,7 +443,7 @@ func TestGormDeviceRepository_CreateDevice_And_GetDevicesByUserUUID_And_DeleteDe
 
 	err = gormDeviceRepository.CreateDevice(gormDeviceTwo)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	gormDevices := gormDeviceRepository.GetDevicesByUserUUID(gormDeviceOne.GetUserUUID())
 
@@ -455,7 +455,7 @@ func TestGormDeviceRepository_CreateDevice_And_GetDevicesByUserUUID_And_DeleteDe
 
 	err = gormDeviceRepository.DeleteDeviceByUUID(gormDeviceOne.GetUUID())
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	gormDevices = gormDeviceRepository.GetDevicesByUserUUID(gormDeviceOne.GetUserUUID())
 
@@ -481,7 +481,7 @@ func TestGormDeviceRepository_CreateDevice_And_DeleteDeviceByUUIDAndUserUUID(t *
 
 	err := gormDeviceRepository.CreateDevice(gormDeviceOne)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	gormDeviceTwo := NewGormDevice()
 
@@ -490,7 +490,7 @@ func TestGormDeviceRepository_CreateDevice_And_DeleteDeviceByUUIDAndUserUUID(t *
 
 	err = gormDeviceRepository.CreateDevice(gormDeviceTwo)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	gormDevices := gormDeviceRepository.GetDevicesByUserUUID(gormDeviceOne.GetUserUUID())
 
@@ -503,7 +503,7 @@ func TestGormDeviceRepository_CreateDevice_And_DeleteDeviceByUUIDAndUserUUID(t *
 	err = gormDeviceRepository.
 		DeleteDeviceByUUIDAndUserUUID(gormDeviceOne.GetUUID(), gormDeviceOne.GetUserUUID())
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	gormDevices = gormDeviceRepository.GetDevicesByUserUUID(gormDeviceOne.GetUserUUID())
 
@@ -529,14 +529,14 @@ func TestGormDeviceRepository_CreateDevice_And_DeleteAllDevicesByUserUUID(t *tes
 
 	err := gormDeviceRepository.CreateDevice(gormDeviceOne)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	gormDeviceOne.SetUUID("11")
 	gormDeviceOne.SetUserUUID("1")
 
 	err = gormDeviceRepository.CreateDevice(gormDeviceOne)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	gormDeviceTwo := NewGormDevice()
 
@@ -545,7 +545,7 @@ func TestGormDeviceRepository_CreateDevice_And_DeleteAllDevicesByUserUUID(t *tes
 
 	err = gormDeviceRepository.CreateDevice(gormDeviceTwo)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	gormDevices := gormDeviceRepository.GetDevicesByUserUUID(gormDeviceOne.GetUserUUID())
 
@@ -557,7 +557,7 @@ func TestGormDeviceRepository_CreateDevice_And_DeleteAllDevicesByUserUUID(t *tes
 
 	err = gormDeviceRepository.DeleteAllDevicesByUserUUID(gormDeviceOne.GetUserUUID())
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	gormDevices = gormDeviceRepository.GetDevicesByUserUUID(gormDeviceOne.GetUserUUID())
 

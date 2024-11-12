@@ -13,7 +13,7 @@ func Test_NewSuccessRefreshResponse(t *testing.T) {
 	gormDevice := repositories.NewGormDevice()
 	response, err := NewSuccessRefreshResponse(config, gormDevice)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.NotNil(t, response)
 
 	response.Data.AccessToken = "1"
@@ -23,7 +23,7 @@ func Test_NewSuccessRefreshResponse(t *testing.T) {
 
 	responseToJson, err := json.Marshal(response)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	expected := `{"data":{"authType":"bearer","accessToken":"1","refreshToken":"2","accessExpiresIn":3,"refreshExpiresIn":4}}`
 

@@ -22,7 +22,7 @@ func Test_NewErrorBadRequestResponse(t *testing.T) {
 
 	responseToJson, err := json.Marshal(response)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	expected := `{"errors":{"field":["1","2"]}}`
 
@@ -30,13 +30,12 @@ func Test_NewErrorBadRequestResponse(t *testing.T) {
 }
 
 func Test_NewErrorBadRequestResponseByError(t *testing.T) {
-	err := errors.New("some other error")
-	response := NewErrorBadRequestResponseByError(err)
+	response := NewErrorBadRequestResponseByError(errors.New("error"))
 
 	assert.Contains(t, response.Errors, "error")
-	assert.Equal(t, response.Errors["error"][0], "some other error")
+	assert.Equal(t, response.Errors["error"][0], "error")
 
-	err = validator.New().Struct(struct {
+	err := validator.New().Struct(struct {
 		Email string `validate:"required,email"`
 	}{})
 

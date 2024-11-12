@@ -156,17 +156,17 @@ func TestGormUser_SetUpdatedAt(t *testing.T) {
 func Test_NewGormUserRepository(t *testing.T) {
 	db, err := gorm.Open(sqlite.Open("file::memory:?mode=ro"), &gorm.Config{})
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.NotNil(t, db)
 
 	gormUserRepository, err := NewGormUserRepository(db)
 
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 	assert.Nil(t, gormUserRepository)
 
 	db, err = gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.NotNil(t, db)
 
 	stmt := &gorm.Statement{DB: db}
@@ -184,12 +184,12 @@ func Test_NewGormUserRepository(t *testing.T) {
 
 	gormUserRepository, err = NewGormUserRepository(db)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.NotNil(t, gormUserRepository)
 
 	err = stmt.Parse(&GormUser{})
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	db.
 		Raw(
@@ -215,7 +215,7 @@ func TestGormUserRepository_CreateUser_And_GetUserByEmail(t *testing.T) {
 
 	err := gormUserRepository.CreateUser(gormUser)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	gormUserForRepository := gormUserRepository.GetUserByEmail(gormUser.GetEmail())
 
@@ -241,7 +241,7 @@ func TestGormUserRepository_CreateUser_And_GetUserByUUID(t *testing.T) {
 
 	err := gormUserRepository.CreateUser(gormUser)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	gormUserForRepository := gormUserRepository.GetUserByUUID(gormUser.GetUUID())
 
@@ -269,7 +269,7 @@ func TestGormUserRepository_CreateUser_And_UpdatePasswordByUUIDAndPasswordAndUpd
 
 	err := gormUserRepository.CreateUser(gormUserOne)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	gormUserTwo := NewGormUser()
 
@@ -279,7 +279,7 @@ func TestGormUserRepository_CreateUser_And_UpdatePasswordByUUIDAndPasswordAndUpd
 
 	err = gormUserRepository.CreateUser(gormUserTwo)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	gormUserForRepository := gormUserRepository.GetUserByUUID(gormUserOne.GetUUID())
 
@@ -304,7 +304,7 @@ func TestGormUserRepository_CreateUser_And_UpdatePasswordByUUIDAndPasswordAndUpd
 		gormUserOne.GetUpdatedAt(),
 	)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	gormUserForRepository = gormUserRepository.GetUserByUUID(gormUserOne.GetUUID())
 

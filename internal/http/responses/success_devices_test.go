@@ -29,7 +29,7 @@ func Test_NewSuccessDevicesResponse(t *testing.T) {
 
 	responseToJson, err := json.Marshal(response)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	expected := `{"data":[{"uuid":"1","userUUID":"2","userAgent":"3","ip":"4","expiresAt":6,"createdAt":7,"updatedAt":8}]}`
 

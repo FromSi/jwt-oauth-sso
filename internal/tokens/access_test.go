@@ -47,7 +47,7 @@ func Test_NewAccessTokenByJWT(t *testing.T) {
 		currentTime,
 	)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.NotNil(t, token)
 
 	tokenToJWT, err := token.GetJWT()

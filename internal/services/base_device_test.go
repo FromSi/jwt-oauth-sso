@@ -41,11 +41,11 @@ func TestBaseDeviceService_GenerateUUID(t *testing.T) {
 
 	_, err := uuid.Parse(uuidOne)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	_, err = uuid.Parse(uuidTwo)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 }
 
 func TestBaseDeviceService_GenerateRefreshToken(t *testing.T) {
@@ -67,11 +67,11 @@ func TestBaseDeviceService_GenerateRefreshToken(t *testing.T) {
 
 	_, err := uuid.Parse(uuidOne)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	_, err = uuid.Parse(uuidTwo)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 }
 
 func TestBaseDeviceService_GetOldDeviceByUserUUIDAndIpAndUserAgent(t *testing.T) {

@@ -8,15 +8,15 @@ import (
 )
 
 func Test_NewErrorInternalServerResponse(t *testing.T) {
-	response := NewErrorInternalServerResponse(errors.New("value"))
+	response := NewErrorInternalServerResponse(errors.New("error"))
 
 	assert.NotNil(t, response)
 
 	responseToJson, err := json.Marshal(response)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
-	expected := `{"message":"value"}`
+	expected := `{"message":"error"}`
 
 	assert.Equal(t, string(responseToJson), expected)
 }

@@ -60,11 +60,11 @@ func TestBaseResetTokenService_GenerateToken(t *testing.T) {
 
 	_, err := uuid.Parse(uuidOne)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	_, err = uuid.Parse(uuidTwo)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 }
 
 func TestBaseResetTokenService_SendNewResetTokenByUser(t *testing.T) {
