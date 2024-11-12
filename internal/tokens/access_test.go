@@ -48,17 +48,17 @@ func Test_NewAccessTokenByJWT(t *testing.T) {
 	)
 
 	assert.NoError(t, err)
-	assert.NotNil(t, token)
+	assert.NotEmpty(t, token)
 
 	tokenToJWT, err := token.GetJWT()
 
 	assert.NoError(t, err)
-	assert.NotNil(t, tokenToJWT)
+	assert.NotEmpty(t, tokenToJWT)
 
 	tokenByJWT, err := NewAccessTokenByJWT(config, tokenToJWT)
 
 	assert.NoError(t, err)
-	assert.NotNil(t, tokenByJWT)
+	assert.NotEmpty(t, tokenByJWT)
 
 	assert.Equal(t, tokenByJWT.Issuer, token.Issuer)
 	assert.Equal(t, tokenByJWT.Audience, token.Audience)
@@ -76,12 +76,12 @@ func Test_NewAccessTokenByJWT(t *testing.T) {
 	tokenToJWT, err = token.GetJWT()
 
 	assert.NoError(t, err)
-	assert.NotNil(t, tokenToJWT)
+	assert.NotEmpty(t, tokenToJWT)
 
 	tokenByJWT, err = NewAccessTokenByJWT(config, tokenToJWT)
 
 	assert.Error(t, err)
-	assert.Nil(t, tokenByJWT)
+	assert.Empty(t, tokenByJWT)
 
 	token.ExpirationTime = time.
 		Now().
@@ -91,20 +91,20 @@ func Test_NewAccessTokenByJWT(t *testing.T) {
 	tokenToJWT, err = token.GetJWT()
 
 	assert.NoError(t, err)
-	assert.NotNil(t, tokenToJWT)
+	assert.NotEmpty(t, tokenToJWT)
 
 	tokenByJWT, err = NewAccessTokenByJWT(config, tokenToJWT)
 
 	assert.Error(t, err)
-	assert.Nil(t, tokenByJWT)
+	assert.Empty(t, tokenByJWT)
 
 	tokenByJWT, err = NewAccessTokenByJWT(config, "0")
 
 	assert.Error(t, err)
-	assert.Nil(t, tokenByJWT)
+	assert.Empty(t, tokenByJWT)
 
 	tokenByJWT, err = NewAccessTokenByJWT(config, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIn0.0-0-0-0-0-0")
 
 	assert.Error(t, err)
-	assert.Nil(t, tokenByJWT)
+	assert.Empty(t, tokenByJWT)
 }

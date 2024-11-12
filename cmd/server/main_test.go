@@ -7,5 +7,5 @@ import (
 )
 
 func Test_CreateApp(t *testing.T) {
-	assert.Nil(t, fx.ValidateApp(CreateApp()))
+	assert.Empty(t, fx.ValidateApp(CreateApp()))
 }

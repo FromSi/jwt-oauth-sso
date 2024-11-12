@@ -81,12 +81,12 @@ func Test_NewRegisterRequest_And_NewRegisterRequestBody(t *testing.T) {
 			request, errResponse := NewRegisterRequest(c)
 
 			if tt.error {
-				assert.NotNil(t, errResponse)
-				assert.Nil(t, request)
+				assert.NotEmpty(t, errResponse)
+				assert.Empty(t, request)
 			} else {
-				assert.Nil(t, errResponse)
-				assert.NotNil(t, request)
-				assert.NotNil(t, request.Body)
+				assert.Empty(t, errResponse)
+				assert.NotEmpty(t, request)
+				assert.NotEmpty(t, request.Body)
 				assert.NotEmpty(t, request.Body.Email)
 				assert.NotEmpty(t, request.Body.Password)
 				assert.Equal(t, tt.ip, request.IP)

@@ -15,7 +15,7 @@ func Test_NewErrorBadRequestResponse(t *testing.T) {
 
 	response := NewErrorBadRequestResponse(data)
 
-	assert.NotNil(t, response)
+	assert.NotEmpty(t, response)
 
 	assert.Equal(t, response.Errors["field"][0], "1")
 	assert.Equal(t, response.Errors["field"][1], "2")

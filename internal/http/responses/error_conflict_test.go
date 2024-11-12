@@ -10,7 +10,7 @@ import (
 func Test_NewErrorConflictResponse(t *testing.T) {
 	response := NewErrorConflictResponse(errors.New("error"))
 
-	assert.NotNil(t, response)
+	assert.NotEmpty(t, response)
 
 	responseToJson, err := json.Marshal(response)
 

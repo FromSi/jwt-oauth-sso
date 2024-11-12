@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"github.com/fromsi/jwt-oauth-sso/internal/configs"
 	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
 	repositories_mocks2 "github.com/fromsi/jwt-oauth-sso/mocks/repositories"
@@ -29,7 +30,7 @@ func Test_NewBaseResetTokenService(t *testing.T) {
 		mockNotificationService,
 	)
 
-	assert.NotNil(t, baseResetTokenService)
+	assert.NotEmpty(t, baseResetTokenService)
 }
 
 func TestBaseResetTokenService_GenerateToken(t *testing.T) {
@@ -77,12 +78,42 @@ func TestBaseResetTokenService_SendNewResetTokenByUser(t *testing.T) {
 	mockResetTokenRepository := repositories_mocks2.NewMockResetTokenRepository(mockController)
 	mockNotificationService := services_mocks2.NewMockNotificationService(mockController)
 
-	user := repositories.NewGormUser()
+	userOne := repositories.NewGormUser()
+
+	userOne.SetUUID("1")
+
+	userTwo := repositories.NewGormUser()
+
+	userTwo.SetUUID("2")
+
+	userThree := repositories.NewGormUser()
+
+	userThree.SetUUID("3")
+
+	mockResetTokenRepository.
+		EXPECT().
+		CreateResetToken(gomock.Any()).
+		DoAndReturn(func(user repositories.ResetToken) error {
+			isEqualUUID := user.GetUserUUID() == userTwo.GetUUID()
+
+			if isEqualUUID {
+				return errors.New("error")
+			}
+
+			return nil
+		}).
+		AnyTimes()
 
 	mockResetTokenRepository.
 		EXPECT().
 		CreateResetToken(gomock.Any()).
 		Return(nil).
+		AnyTimes()
+
+	mockNotificationService.
+		EXPECT().
+		SendTextByUser(gomock.Eq(userThree), gomock.Any()).
+		Return(errors.New("error")).
 		AnyTimes()
 
 	mockNotificationService.
@@ -99,7 +130,15 @@ func TestBaseResetTokenService_SendNewResetTokenByUser(t *testing.T) {
 		mockNotificationService,
 	)
 
-	err := baseResetTokenService.SendNewResetTokenByUser(user)
+	err := baseResetTokenService.SendNewResetTokenByUser(userOne)
 
 	assert.NoError(t, err)
+
+	err = baseResetTokenService.SendNewResetTokenByUser(userTwo)
+
+	assert.Error(t, err)
+
+	err = baseResetTokenService.SendNewResetTokenByUser(userThree)
+
+	assert.Error(t, err)
 }

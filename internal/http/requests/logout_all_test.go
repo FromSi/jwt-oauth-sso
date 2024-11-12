@@ -35,7 +35,7 @@ func Test_NewLogoutAllRequest_And_NewLogoutAllRequestBody(t *testing.T) {
 			request := NewLogoutAllRequest(c)
 
 			if tt.error {
-				assert.Nil(t, request)
+				assert.Empty(t, request)
 			} else {
 				assert.NotNil(t, request)
 				assert.NotNil(t, request.Body)

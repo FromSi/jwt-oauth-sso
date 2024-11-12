@@ -8,7 +8,7 @@ import (
 func Test_NewBaseConfig(t *testing.T) {
 	config := NewBaseConfig()
 
-	assert.NotNil(t, config)
+	assert.NotEmpty(t, config)
 }
 
 func TestBaseConfig_GetName(t *testing.T) {

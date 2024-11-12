@@ -74,10 +74,10 @@ func Test_NewBearerAuthRequestHeader(t *testing.T) {
 
 			if tt.error {
 				assert.Error(t, err)
-				assert.Nil(t, request)
+				assert.Empty(t, request)
 			} else {
 				assert.NoError(t, err)
-				assert.NotNil(t, request)
+				assert.NotEmpty(t, request)
 			}
 		})
 	}

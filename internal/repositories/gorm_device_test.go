@@ -51,7 +51,7 @@ func TestGormDeviceByDevice_GenerateAccessToken(t *testing.T) {
 	accessToken, err := gormDevice.GenerateAccessToken(config)
 
 	assert.NoError(t, err)
-	assert.NotNil(t, accessToken)
+	assert.NotEmpty(t, accessToken)
 }
 
 func TestGormDeviceByDevice_GetUUID(t *testing.T) {
@@ -250,17 +250,17 @@ func Test_NewGormDeviceRepository(t *testing.T) {
 	db, err := gorm.Open(sqlite.Open("file::memory:?mode=ro"), &gorm.Config{})
 
 	assert.NoError(t, err)
-	assert.NotNil(t, db)
+	assert.NotEmpty(t, db)
 
 	gormDeviceRepository, err := NewGormDeviceRepository(db)
 
 	assert.Error(t, err)
-	assert.Nil(t, gormDeviceRepository)
+	assert.Empty(t, gormDeviceRepository)
 
 	db, err = gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
 
 	assert.NoError(t, err)
-	assert.NotNil(t, db)
+	assert.NotEmpty(t, db)
 
 	stmt := &gorm.Statement{DB: db}
 
@@ -278,7 +278,7 @@ func Test_NewGormDeviceRepository(t *testing.T) {
 	gormDeviceRepository, err = NewGormDeviceRepository(db)
 
 	assert.NoError(t, err)
-	assert.NotNil(t, gormDeviceRepository)
+	assert.NotEmpty(t, gormDeviceRepository)
 
 	err = stmt.Parse(&GormDevice{})
 
@@ -315,7 +315,7 @@ func TestGormDeviceRepository_CreateDevice_And_GetDeviceByUserUUIDAndIpAndUserAg
 	gormDeviceResult := gormDeviceRepository.
 		GetDeviceByUserUUIDAndIpAndUserAgent("0", "0", "0")
 
-	assert.Nil(t, gormDeviceResult)
+	assert.Empty(t, gormDeviceResult)
 
 	gormDeviceResult = gormDeviceRepository.GetDeviceByUserUUIDAndIpAndUserAgent(
 		gormDevice.GetUserUUID(),
@@ -323,7 +323,7 @@ func TestGormDeviceRepository_CreateDevice_And_GetDeviceByUserUUIDAndIpAndUserAg
 		gormDevice.GetUserAgent(),
 	)
 
-	assert.NotNil(t, gormDeviceResult)
+	assert.NotEmpty(t, gormDeviceResult)
 
 	assert.Equal(t, gormDeviceResult.GetUserUUID(), gormDevice.GetUserUUID())
 	assert.Equal(t, gormDeviceResult.GetUserAgent(), gormDevice.GetUserAgent())
@@ -348,13 +348,13 @@ func TestGormDeviceRepository_CreateDevice_And_GetDeviceByRefreshToken(t *testin
 
 	gormDeviceResult := gormDeviceRepository.GetDeviceByRefreshToken("0")
 
-	assert.Nil(t, gormDeviceResult)
+	assert.Empty(t, gormDeviceResult)
 
 	gormDeviceResult = gormDeviceRepository.GetDeviceByRefreshToken(
 		gormDevice.GetRefreshToken(),
 	)
 
-	assert.NotNil(t, gormDeviceResult)
+	assert.NotEmpty(t, gormDeviceResult)
 
 	assert.Equal(t, gormDeviceResult.GetRefreshToken(), gormDevice.GetRefreshToken())
 }

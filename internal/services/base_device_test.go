@@ -19,7 +19,7 @@ func Test_NewBaseDeviceService(t *testing.T) {
 
 	baseDeviceService := NewBaseDeviceService(config, mockDeviceRepository)
 
-	assert.NotNil(t, baseDeviceService)
+	assert.NotEmpty(t, baseDeviceService)
 }
 
 func TestBaseDeviceService_GenerateUUID(t *testing.T) {
@@ -116,7 +116,7 @@ func TestBaseDeviceService_GetOldDeviceByUserUUIDAndIpAndUserAgent(t *testing.T)
 			deviceOne.GetUserAgent(),
 		)
 
-	assert.NotNil(t, device)
+	assert.NotEmpty(t, device)
 
 	assert.Equal(t, deviceOne.GetUserUUID(), device.GetUserUUID())
 	assert.Equal(t, deviceOne.GetIp(), device.GetIp())
@@ -129,7 +129,7 @@ func TestBaseDeviceService_GetOldDeviceByUserUUIDAndIpAndUserAgent(t *testing.T)
 			"0",
 		)
 
-	assert.Nil(t, device)
+	assert.Empty(t, device)
 }
 
 func TestBaseDeviceService_GetNewDeviceByUserUUIDAndIpAndUserAgent(t *testing.T) {
@@ -160,7 +160,7 @@ func TestBaseDeviceService_GetNewDeviceByUserUUIDAndIpAndUserAgent(t *testing.T)
 			deviceOne.GetUserAgent(),
 		)
 
-	assert.NotNil(t, device)
+	assert.NotEmpty(t, device)
 
 	assert.Equal(t, deviceOne.GetUserUUID(), device.GetUserUUID())
 	assert.Equal(t, deviceOne.GetIp(), device.GetIp())
@@ -173,9 +173,33 @@ func TestBaseDeviceService_GetNewDeviceByUserUUIDAndIpAndUserAgent(t *testing.T)
 			deviceTwo.GetUserAgent(),
 		)
 
-	assert.NotNil(t, device)
+	assert.NotEmpty(t, device)
 
 	assert.Equal(t, deviceTwo.GetUserUUID(), device.GetUserUUID())
 	assert.Equal(t, deviceTwo.GetIp(), device.GetIp())
 	assert.Equal(t, deviceTwo.GetUserAgent(), device.GetUserAgent())
+}
+
+func TestBaseDeviceService_GetNewRefreshDetailsByDevice(t *testing.T) {
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
+
+	config := configs.NewBaseConfig()
+	mockDeviceRepository := repositories_mocks.NewMockDeviceRepository(mockController)
+
+	device := repositories.NewGormDevice()
+
+	device.SetRefreshToken("1")
+	device.SetUpdatedAt(1)
+	device.SetExpiresAt(1)
+
+	baseDeviceService := NewBaseDeviceService(config, mockDeviceRepository)
+
+	deviceUpdated := baseDeviceService.GetNewRefreshDetailsByDevice(device)
+
+	assert.NotEmpty(t, deviceUpdated)
+
+	assert.Equal(t, deviceUpdated.GetRefreshToken(), device.GetRefreshToken())
+	assert.Equal(t, deviceUpdated.GetUpdatedAt(), device.GetUpdatedAt())
+	assert.Equal(t, deviceUpdated.GetExpiresAt(), device.GetExpiresAt())
 }

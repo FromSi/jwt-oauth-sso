@@ -56,9 +56,9 @@ func Test_Password(t *testing.T) {
 }
 
 func Test_BindPassword(t *testing.T) {
-	assert.Nil(t, BindPassword())
+	assert.Empty(t, BindPassword())
 
 	binding.Validator = &EmptyValidator{}
 
-	assert.Nil(t, BindPassword())
+	assert.Empty(t, BindPassword())
 }

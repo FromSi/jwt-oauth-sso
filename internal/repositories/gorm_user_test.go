@@ -157,17 +157,17 @@ func Test_NewGormUserRepository(t *testing.T) {
 	db, err := gorm.Open(sqlite.Open("file::memory:?mode=ro"), &gorm.Config{})
 
 	assert.NoError(t, err)
-	assert.NotNil(t, db)
+	assert.NotEmpty(t, db)
 
 	gormUserRepository, err := NewGormUserRepository(db)
 
 	assert.Error(t, err)
-	assert.Nil(t, gormUserRepository)
+	assert.Empty(t, gormUserRepository)
 
 	db, err = gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
 
 	assert.NoError(t, err)
-	assert.NotNil(t, db)
+	assert.NotEmpty(t, db)
 
 	stmt := &gorm.Statement{DB: db}
 
@@ -185,7 +185,7 @@ func Test_NewGormUserRepository(t *testing.T) {
 	gormUserRepository, err = NewGormUserRepository(db)
 
 	assert.NoError(t, err)
-	assert.NotNil(t, gormUserRepository)
+	assert.NotEmpty(t, gormUserRepository)
 
 	err = stmt.Parse(&GormUser{})
 
@@ -219,12 +219,12 @@ func TestGormUserRepository_CreateUser_And_GetUserByEmail(t *testing.T) {
 
 	gormUserForRepository := gormUserRepository.GetUserByEmail(gormUser.GetEmail())
 
-	assert.NotNil(t, gormUserForRepository)
+	assert.NotEmpty(t, gormUserForRepository)
 	assert.Equal(t, gormUserForRepository.GetEmail(), gormUser.GetEmail())
 
 	gormUserForRepository = gormUserRepository.GetUserByEmail("0")
 
-	assert.Nil(t, gormUserForRepository)
+	assert.Empty(t, gormUserForRepository)
 }
 
 func TestGormUserRepository_CreateUser_And_GetUserByUUID(t *testing.T) {
@@ -245,12 +245,12 @@ func TestGormUserRepository_CreateUser_And_GetUserByUUID(t *testing.T) {
 
 	gormUserForRepository := gormUserRepository.GetUserByUUID(gormUser.GetUUID())
 
-	assert.NotNil(t, gormUserForRepository)
+	assert.NotEmpty(t, gormUserForRepository)
 	assert.Equal(t, gormUserForRepository.GetUUID(), gormUser.GetUUID())
 
 	gormUserForRepository = gormUserRepository.GetUserByUUID("0")
 
-	assert.Nil(t, gormUserForRepository)
+	assert.Empty(t, gormUserForRepository)
 }
 
 func TestGormUserRepository_CreateUser_And_UpdatePasswordByUUIDAndPasswordAndUpdatedAt(t *testing.T) {
@@ -283,14 +283,14 @@ func TestGormUserRepository_CreateUser_And_UpdatePasswordByUUIDAndPasswordAndUpd
 
 	gormUserForRepository := gormUserRepository.GetUserByUUID(gormUserOne.GetUUID())
 
-	assert.NotNil(t, gormUserForRepository)
+	assert.NotEmpty(t, gormUserForRepository)
 
 	assert.Equal(t, gormUserForRepository.GetPassword(), gormUserOne.GetPassword())
 	assert.Equal(t, gormUserForRepository.GetUpdatedAt(), gormUserOne.GetUpdatedAt())
 
 	gormUserForRepository = gormUserRepository.GetUserByUUID(gormUserTwo.GetUUID())
 
-	assert.NotNil(t, gormUserForRepository)
+	assert.NotEmpty(t, gormUserForRepository)
 
 	assert.Equal(t, gormUserForRepository.GetPassword(), gormUserTwo.GetPassword())
 	assert.Equal(t, gormUserForRepository.GetUpdatedAt(), gormUserTwo.GetUpdatedAt())
@@ -308,14 +308,14 @@ func TestGormUserRepository_CreateUser_And_UpdatePasswordByUUIDAndPasswordAndUpd
 
 	gormUserForRepository = gormUserRepository.GetUserByUUID(gormUserOne.GetUUID())
 
-	assert.NotNil(t, gormUserForRepository)
+	assert.NotEmpty(t, gormUserForRepository)
 
 	assert.Equal(t, gormUserForRepository.GetPassword(), gormUserOne.GetPassword())
 	assert.Equal(t, gormUserForRepository.GetUpdatedAt(), gormUserOne.GetUpdatedAt())
 
 	gormUserForRepository = gormUserRepository.GetUserByUUID(gormUserTwo.GetUUID())
 
-	assert.NotNil(t, gormUserForRepository)
+	assert.NotEmpty(t, gormUserForRepository)
 
 	assert.Equal(t, gormUserForRepository.GetPassword(), gormUserTwo.GetPassword())
 	assert.Equal(t, gormUserForRepository.GetUpdatedAt(), gormUserTwo.GetUpdatedAt())

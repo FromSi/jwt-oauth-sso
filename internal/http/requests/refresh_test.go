@@ -45,12 +45,12 @@ func Test_NewRefreshRequest_And_NewRefreshRequestBody(t *testing.T) {
 			request, errResponse := NewRefreshRequest(c)
 
 			if tt.error {
-				assert.NotNil(t, errResponse)
-				assert.Nil(t, request)
+				assert.NotEmpty(t, errResponse)
+				assert.Empty(t, request)
 			} else {
-				assert.Nil(t, errResponse)
-				assert.NotNil(t, request)
-				assert.NotNil(t, request.Body)
+				assert.Empty(t, errResponse)
+				assert.NotEmpty(t, request)
+				assert.NotEmpty(t, request.Body)
 			}
 		})
 	}

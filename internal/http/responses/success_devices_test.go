@@ -10,22 +10,22 @@ import (
 func Test_NewSuccessDevicesResponse(t *testing.T) {
 	var devices []repositories.Device
 
-	gormDevice := repositories.NewGormDevice()
+	device := repositories.NewGormDevice()
 
-	gormDevice.SetUUID("1")
-	gormDevice.SetUserUUID("2")
-	gormDevice.SetUserAgent("3")
-	gormDevice.SetIp("4")
-	gormDevice.SetRefreshToken("5")
-	gormDevice.SetExpiresAt(6)
-	gormDevice.SetCreatedAt(7)
-	gormDevice.SetUpdatedAt(8)
+	device.SetUUID("1")
+	device.SetUserUUID("2")
+	device.SetUserAgent("3")
+	device.SetIp("4")
+	device.SetRefreshToken("5")
+	device.SetExpiresAt(6)
+	device.SetCreatedAt(7)
+	device.SetUpdatedAt(8)
 
-	devices = append(devices, gormDevice)
+	devices = append(devices, device)
 
 	response := NewSuccessDevicesResponse(devices)
 
-	assert.NotNil(t, response)
+	assert.NotEmpty(t, response)
 
 	responseToJson, err := json.Marshal(response)
 

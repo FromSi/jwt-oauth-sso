@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 	"golang.org/x/crypto/bcrypt"
+	"strings"
 	"testing"
 )
 
@@ -18,7 +19,7 @@ func Test_NewBaseUserService(t *testing.T) {
 	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
 	baseUserService := NewBaseUserService(mockUserRepository)
 
-	assert.NotNil(t, baseUserService)
+	assert.NotEmpty(t, baseUserService)
 }
 
 func TestBaseUserService_GenerateUUID(t *testing.T) {
@@ -69,6 +70,17 @@ func TestBaseUserService_HashPassword(t *testing.T) {
 	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte("2"))
 
 	assert.NoError(t, err)
+
+	var passwordBuilder strings.Builder
+
+	for i := 0; i < 100; i++ {
+		passwordBuilder.WriteString("1")
+	}
+
+	hashedPassword, err = baseUserService.HashPassword(passwordBuilder.String())
+
+	assert.Error(t, err)
+	assert.Empty(t, hashedPassword)
 }
 
 func TestBaseUserService_CheckHashedPasswordAndNativePassword(t *testing.T) {
@@ -99,31 +111,49 @@ func TestBaseUserService_CreateUserByUUIDAndEmailAndHashedPassword(t *testing.T)
 	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
 	baseUserService := NewBaseUserService(mockUserRepository)
 
-	user := repositories.NewGormUser()
+	userOne := repositories.NewGormUser()
 
-	user.SetUUID("1")
-	user.SetEmail("1")
-	user.SetPassword("1")
+	userOne.SetUUID("1")
+	userOne.SetEmail("1")
+	userOne.SetPassword("1")
+
+	userTwo := repositories.NewGormUser()
+
+	userTwo.SetUUID("2")
+	userTwo.SetEmail("2")
+	userTwo.SetPassword("2")
 
 	mockUserRepository.
 		EXPECT().
 		CreateUser(gomock.Any()).
 		DoAndReturn(func(user repositories.User) error {
-			assert.Equal(t, "1", user.GetUUID())
-			assert.Equal(t, "1", user.GetEmail())
-			assert.Equal(t, "1", user.GetPassword())
+			isEqualUUID := user.GetUUID() == userTwo.GetUUID()
+			isEqualEmail := user.GetEmail() == userTwo.GetEmail()
+			isEqualPassword := user.GetPassword() == userTwo.GetPassword()
+
+			if isEqualUUID && isEqualEmail && isEqualPassword {
+				return errors.New("error")
+			}
 
 			return nil
 		}).
 		AnyTimes()
 
 	err := baseUserService.CreateUserByUUIDAndEmailAndHashedPassword(
-		user.GetUUID(),
-		user.GetEmail(),
-		user.GetPassword(),
+		userOne.GetUUID(),
+		userOne.GetEmail(),
+		userOne.GetPassword(),
 	)
 
 	assert.NoError(t, err)
+
+	err = baseUserService.CreateUserByUUIDAndEmailAndHashedPassword(
+		userTwo.GetUUID(),
+		userTwo.GetEmail(),
+		userTwo.GetPassword(),
+	)
+
+	assert.Error(t, err)
 }
 
 func TestBaseUserService_UpdatePasswordByUUIDAndHashedPassword(t *testing.T) {

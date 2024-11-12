@@ -45,12 +45,12 @@ func Test_NewSendResetTokenRequest_And_NewSendResetTokenRequestBody(t *testing.T
 			request, errResponse := NewSendResetTokenRequest(c)
 
 			if tt.error {
-				assert.NotNil(t, errResponse)
-				assert.Nil(t, request)
+				assert.NotEmpty(t, errResponse)
+				assert.Empty(t, request)
 			} else {
-				assert.Nil(t, errResponse)
-				assert.NotNil(t, request)
-				assert.NotNil(t, request.Body)
+				assert.Empty(t, errResponse)
+				assert.NotEmpty(t, request)
+				assert.NotEmpty(t, request.Body)
 				assert.NotEmpty(t, request.Body.Email)
 			}
 		})

@@ -10,7 +10,7 @@ import (
 func Test_NewErrorInternalServerResponse(t *testing.T) {
 	response := NewErrorInternalServerResponse(errors.New("error"))
 
-	assert.NotNil(t, response)
+	assert.NotEmpty(t, response)
 
 	responseToJson, err := json.Marshal(response)
 

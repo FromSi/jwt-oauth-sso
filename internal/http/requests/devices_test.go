@@ -35,7 +35,7 @@ func Test_NewDevicesRequest_And_NewDevicesRequestBody(t *testing.T) {
 			request := NewDevicesRequest(c)
 
 			if tt.error {
-				assert.Nil(t, request)
+				assert.Empty(t, request)
 			} else {
 				assert.NotNil(t, request)
 				assert.NotNil(t, request.Body)
