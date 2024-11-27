@@ -2,7 +2,6 @@ package routes
 
 import (
 	"errors"
-	"github.com/fromsi/jwt-oauth-sso/internal/configs"
 	"github.com/fromsi/jwt-oauth-sso/internal/http/requests"
 	"github.com/fromsi/jwt-oauth-sso/internal/http/responses"
 	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
@@ -12,7 +11,6 @@ import (
 )
 
 type RegisterRoute struct {
-	config           configs.Config
 	userRepository   repositories.UserRepository
 	deviceRepository repositories.DeviceRepository
 	userService      services.UserService
@@ -20,14 +18,12 @@ type RegisterRoute struct {
 }
 
 func NewRegisterRoute(
-	config configs.Config,
 	userRepository repositories.UserRepository,
 	deviceRepository repositories.DeviceRepository,
 	userService services.UserService,
 	deviceService services.DeviceService,
 ) *RegisterRoute {
 	return &RegisterRoute{
-		config:           config,
 		userRepository:   userRepository,
 		deviceRepository: deviceRepository,
 		userService:      userService,
@@ -86,11 +82,20 @@ func (receiver RegisterRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	device := receiver.deviceService.GetNewDeviceByUserUUIDAndIpAndUserAgent(
+	device, err := receiver.deviceService.GetNewDeviceByUserUUIDAndIpAndUserAgent(
 		userUUID,
 		request.IP,
 		request.UserAgent,
 	)
+
+	if err != nil {
+		context.JSON(
+			http.StatusInternalServerError,
+			responses.NewErrorInternalServerResponse(err),
+		)
+
+		return
+	}
 
 	err = receiver.deviceRepository.CreateDevice(device)
 
@@ -103,7 +108,16 @@ func (receiver RegisterRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	device = receiver.deviceService.GetNewRefreshDetailsByDevice(device)
+	device, err = receiver.deviceService.GetNewRefreshDetailsByDevice(device)
+
+	if err != nil {
+		context.JSON(
+			http.StatusInternalServerError,
+			responses.NewErrorInternalServerResponse(err),
+		)
+
+		return
+	}
 
 	err = receiver.deviceRepository.UpdateDevice(device)
 
@@ -116,7 +130,7 @@ func (receiver RegisterRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	response, err := responses.NewSuccessRegisterResponse(receiver.config, device)
+	response, err := responses.NewSuccessRegisterResponse(device)
 
 	if err != nil {
 		context.JSON(

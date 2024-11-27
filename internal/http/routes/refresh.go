@@ -2,7 +2,6 @@ package routes
 
 import (
 	"errors"
-	"github.com/fromsi/jwt-oauth-sso/internal/configs"
 	"github.com/fromsi/jwt-oauth-sso/internal/http/requests"
 	"github.com/fromsi/jwt-oauth-sso/internal/http/responses"
 	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
@@ -12,18 +11,15 @@ import (
 )
 
 type RefreshRoute struct {
-	config           configs.Config
 	deviceService    services.DeviceService
 	deviceRepository repositories.DeviceRepository
 }
 
 func NewRefreshRoute(
-	config configs.Config,
 	deviceService services.DeviceService,
 	deviceRepository repositories.DeviceRepository,
 ) *RefreshRoute {
 	return &RefreshRoute{
-		config:           config,
 		deviceService:    deviceService,
 		deviceRepository: deviceRepository,
 	}
@@ -59,9 +55,7 @@ func (receiver RefreshRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	device = receiver.deviceService.GetNewRefreshDetailsByDevice(device)
-
-	err := receiver.deviceRepository.UpdateDevice(device)
+	device, err := receiver.deviceService.GetNewRefreshDetailsByDevice(device)
 
 	if err != nil {
 		context.JSON(
@@ -72,7 +66,18 @@ func (receiver RefreshRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	response, err := responses.NewSuccessRefreshResponse(receiver.config, device)
+	err = receiver.deviceRepository.UpdateDevice(device)
+
+	if err != nil {
+		context.JSON(
+			http.StatusInternalServerError,
+			responses.NewErrorInternalServerResponse(err),
+		)
+
+		return
+	}
+
+	response, err := responses.NewSuccessRefreshResponse(device)
 
 	if err != nil {
 		context.JSON(

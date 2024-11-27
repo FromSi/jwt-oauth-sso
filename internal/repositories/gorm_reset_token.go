@@ -5,36 +5,11 @@ import (
 	"time"
 )
 
-const (
-	GormResetTokenTokenDefault     = ""
-	GormResetTokenUserUUIDDefault  = ""
-	GormResetTokenExpiresAtDefault = 1
-	GormResetTokenCreatedAtDefault = 1
-)
-
 type GormResetToken struct {
 	Token     string `gorm:"not null;uniqueIndex:idx_token_useruuid"`
 	UserUUID  string `gorm:"not null;uniqueIndex:idx_token_useruuid"`
 	ExpiresAt int    `gorm:"not null"`
 	CreatedAt int    `gorm:"not null"`
-}
-
-func NewGormResetToken() *GormResetToken {
-	return &GormResetToken{
-		Token:     GormResetTokenTokenDefault,
-		UserUUID:  GormResetTokenUserUUIDDefault,
-		ExpiresAt: GormResetTokenExpiresAtDefault,
-		CreatedAt: GormResetTokenCreatedAtDefault,
-	}
-}
-
-func NewGormResetTokenByResetToken(resetToken ResetToken) *GormResetToken {
-	return &GormResetToken{
-		Token:     resetToken.GetToken(),
-		UserUUID:  resetToken.GetUserUUID(),
-		ExpiresAt: resetToken.GetExpiresAt(),
-		CreatedAt: resetToken.GetCreatedAt(),
-	}
 }
 
 func (receiver *GormResetToken) TableName() string {
@@ -74,17 +49,24 @@ func (receiver *GormResetToken) SetCreatedAt(value int) {
 }
 
 type GormResetTokenRepository struct {
-	db *gorm.DB
+	db                *gorm.DB
+	resetTokenBuilder ResetTokenBuilder
 }
 
-func NewGormResetTokenRepository(db *gorm.DB) (*GormResetTokenRepository, error) {
+func NewGormResetTokenRepository(
+	db *gorm.DB,
+	resetTokenBuilder ResetTokenBuilder,
+) (*GormResetTokenRepository, error) {
 	err := db.AutoMigrate(&GormResetToken{})
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &GormResetTokenRepository{db: db}, nil
+	return &GormResetTokenRepository{
+		db:                db,
+		resetTokenBuilder: resetTokenBuilder,
+	}, nil
 }
 
 func (receiver *GormResetTokenRepository) GetActiveResetTokenByToken(token string) ResetToken {
@@ -103,12 +85,19 @@ func (receiver *GormResetTokenRepository) GetActiveResetTokenByToken(token strin
 }
 
 func (receiver *GormResetTokenRepository) CreateResetToken(resetToken ResetToken) error {
-	gormResetToken := NewGormResetTokenByResetToken(resetToken)
+	gormResetToken, err := receiver.
+		resetTokenBuilder.
+		NewFromResetToken(resetToken).
+		BuildToGorm()
+
+	if err != nil {
+		return err
+	}
 
 	return receiver.
 		db.
 		Model(&GormResetToken{}).
-		Create(NewGormResetTokenByResetToken(gormResetToken)).
+		Create(gormResetToken).
 		Error
 }
 

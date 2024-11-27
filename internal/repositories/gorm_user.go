@@ -2,40 +2,12 @@ package repositories
 
 import "gorm.io/gorm"
 
-const (
-	GormUserUUIDDefault      = ""
-	GormUserEmailDefault     = ""
-	GormUserPasswordDefault  = ""
-	GormUserCreatedAtDefault = 0
-	GormUserUpdatedAtDefault = 0
-)
-
 type GormUser struct {
 	UUID      string `gorm:"unique;not null"`
 	Email     string `gorm:"not null"`
 	Password  string `gorm:"not null"`
 	CreatedAt int    `gorm:"not null"`
 	UpdatedAt int    `gorm:"not null"`
-}
-
-func NewGormUser() *GormUser {
-	return &GormUser{
-		UUID:      GormUserUUIDDefault,
-		Email:     GormUserEmailDefault,
-		Password:  GormUserPasswordDefault,
-		CreatedAt: GormUserCreatedAtDefault,
-		UpdatedAt: GormUserUpdatedAtDefault,
-	}
-}
-
-func NewGormUserByUser(user User) *GormUser {
-	return &GormUser{
-		UUID:      user.GetUUID(),
-		Email:     user.GetEmail(),
-		Password:  user.GetPassword(),
-		CreatedAt: user.GetCreatedAt(),
-		UpdatedAt: user.GetUpdatedAt(),
-	}
 }
 
 func (receiver *GormUser) TableName() string {
@@ -83,17 +55,24 @@ func (receiver *GormUser) SetUpdatedAt(value int) {
 }
 
 type GormUserRepository struct {
-	db *gorm.DB
+	db          *gorm.DB
+	userBuilder UserBuilder
 }
 
-func NewGormUserRepository(db *gorm.DB) (*GormUserRepository, error) {
+func NewGormUserRepository(
+	db *gorm.DB,
+	userBuilder UserBuilder,
+) (*GormUserRepository, error) {
 	err := db.AutoMigrate(&GormUser{})
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &GormUserRepository{db: db}, nil
+	return &GormUserRepository{
+		db:          db,
+		userBuilder: userBuilder,
+	}, nil
 }
 
 func (receiver *GormUserRepository) GetUserByEmail(email string) User {
@@ -127,12 +106,19 @@ func (receiver *GormUserRepository) GetUserByUUID(uuid string) User {
 }
 
 func (receiver *GormUserRepository) CreateUser(user User) error {
-	gormUser := NewGormUserByUser(user)
+	gormUser, err := receiver.
+		userBuilder.
+		NewFromUser(user).
+		BuildToGorm()
+
+	if err != nil {
+		return err
+	}
 
 	return receiver.
 		db.
 		Model(&GormUser{}).
-		Create(NewGormUserByUser(gormUser)).
+		Create(gormUser).
 		Error
 }
 

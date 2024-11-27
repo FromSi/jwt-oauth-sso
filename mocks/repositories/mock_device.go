@@ -12,7 +12,6 @@ package repositories_mocks
 import (
 	reflect "reflect"
 
-	configs "github.com/fromsi/jwt-oauth-sso/internal/configs"
 	tokens "github.com/fromsi/jwt-oauth-sso/internal/tokens"
 	gomock "go.uber.org/mock/gomock"
 )
@@ -42,18 +41,18 @@ func (m *MockDevice) EXPECT() *MockDeviceMockRecorder {
 }
 
 // GenerateAccessToken mocks base method.
-func (m *MockDevice) GenerateAccessToken(arg0 configs.TokenConfig) (*tokens.AccessToken, error) {
+func (m *MockDevice) GenerateAccessToken() (tokens.AccessToken, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateAccessToken", arg0)
-	ret0, _ := ret[0].(*tokens.AccessToken)
+	ret := m.ctrl.Call(m, "GenerateAccessToken")
+	ret0, _ := ret[0].(tokens.AccessToken)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GenerateAccessToken indicates an expected call of GenerateAccessToken.
-func (mr *MockDeviceMockRecorder) GenerateAccessToken(arg0 any) *gomock.Call {
+func (mr *MockDeviceMockRecorder) GenerateAccessToken() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateAccessToken", reflect.TypeOf((*MockDevice)(nil).GenerateAccessToken), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateAccessToken", reflect.TypeOf((*MockDevice)(nil).GenerateAccessToken))
 }
 
 // GetCreatedAt mocks base method.
@@ -96,6 +95,20 @@ func (m *MockDevice) GetIp() string {
 func (mr *MockDeviceMockRecorder) GetIp() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetIp", reflect.TypeOf((*MockDevice)(nil).GetIp))
+}
+
+// GetIssuedAt mocks base method.
+func (m *MockDevice) GetIssuedAt() int {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetIssuedAt")
+	ret0, _ := ret[0].(int)
+	return ret0
+}
+
+// GetIssuedAt indicates an expected call of GetIssuedAt.
+func (mr *MockDeviceMockRecorder) GetIssuedAt() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetIssuedAt", reflect.TypeOf((*MockDevice)(nil).GetIssuedAt))
 }
 
 // GetRefreshToken mocks base method.
@@ -202,6 +215,18 @@ func (m *MockDevice) SetIp(arg0 string) {
 func (mr *MockDeviceMockRecorder) SetIp(arg0 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetIp", reflect.TypeOf((*MockDevice)(nil).SetIp), arg0)
+}
+
+// SetIssuedAt mocks base method.
+func (m *MockDevice) SetIssuedAt(arg0 int) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "SetIssuedAt", arg0)
+}
+
+// SetIssuedAt indicates an expected call of SetIssuedAt.
+func (mr *MockDeviceMockRecorder) SetIssuedAt(arg0 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetIssuedAt", reflect.TypeOf((*MockDevice)(nil).SetIssuedAt), arg0)
 }
 
 // SetRefreshToken mocks base method.

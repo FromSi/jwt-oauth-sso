@@ -1,74 +1,37 @@
 package repositories
 
 import (
-	"github.com/fromsi/jwt-oauth-sso/internal/configs"
 	"github.com/fromsi/jwt-oauth-sso/internal/tokens"
 	"gorm.io/gorm"
-	"time"
-)
-
-const (
-	GormDeviceUUIDDefault         = ""
-	GormDeviceUserUUIDDefault     = ""
-	GormDeviceUserAgentDefault    = ""
-	GormDeviceIpDefault           = ""
-	GormDeviceRefreshTokenDefault = ""
-	GormDeviceExpiresAtDefault    = 0
-	GormDeviceCreatedAtDefault    = 0
-	GormDeviceUpdatedAtDefault    = 0
 )
 
 type GormDevice struct {
-	UUID         string `gorm:"unique;not null"`
-	UserUUID     string `gorm:"not null"`
-	UserAgent    string `gorm:"not null"`
-	Ip           string `gorm:"not null"`
-	RefreshToken string `gorm:"not null"`
-	ExpiresAt    int    `gorm:"not null"`
-	CreatedAt    int    `gorm:"not null"`
-	UpdatedAt    int    `gorm:"not null"`
-}
-
-func NewGormDevice() *GormDevice {
-	return &GormDevice{
-		UUID:         GormDeviceUUIDDefault,
-		UserUUID:     GormDeviceUserUUIDDefault,
-		UserAgent:    GormDeviceUserAgentDefault,
-		Ip:           GormDeviceIpDefault,
-		RefreshToken: GormDeviceRefreshTokenDefault,
-		ExpiresAt:    GormDeviceExpiresAtDefault,
-		CreatedAt:    GormDeviceCreatedAtDefault,
-		UpdatedAt:    GormDeviceUpdatedAtDefault,
-	}
-}
-
-func NewGormDeviceByDevice(device Device) *GormDevice {
-	return &GormDevice{
-		UUID:         device.GetUUID(),
-		UserUUID:     device.GetUserUUID(),
-		UserAgent:    device.GetUserAgent(),
-		Ip:           device.GetIp(),
-		RefreshToken: device.GetRefreshToken(),
-		ExpiresAt:    device.GetExpiresAt(),
-		CreatedAt:    device.GetCreatedAt(),
-		UpdatedAt:    device.GetUpdatedAt(),
-	}
+	UUID               string `gorm:"unique;not null"`
+	UserUUID           string `gorm:"not null"`
+	UserAgent          string `gorm:"not null"`
+	Ip                 string `gorm:"not null"`
+	RefreshToken       string `gorm:"not null"`
+	IssuedAt           int    `gorm:"not null"`
+	ExpiresAt          int    `gorm:"not null"`
+	CreatedAt          int    `gorm:"not null"`
+	UpdatedAt          int    `gorm:"not null"`
+	accessTokenBuilder tokens.AccessTokenBuilder
 }
 
 func (receiver *GormDevice) TableName() string {
 	return "devices"
 }
 
-func (receiver *GormDevice) GenerateAccessToken(
-	config configs.TokenConfig,
-) (*tokens.AccessToken, error) {
-	return tokens.NewAccessToken(
-		config,
-		receiver.UserUUID,
-		receiver.UUID,
-		receiver.UserAgent,
-		time.Now(),
-	)
+func (receiver *GormDevice) GenerateAccessToken() (tokens.AccessToken, error) {
+	return receiver.
+		accessTokenBuilder.
+		New().
+		SetSubject(receiver.UserUUID).
+		SetDeviceUUID(receiver.UUID).
+		SetDeviceUserAgent(receiver.UserAgent).
+		SetIssuedAt(receiver.IssuedAt).
+		SetExpirationTime(receiver.ExpiresAt).
+		Build()
 }
 
 func (receiver *GormDevice) GetUUID() string {
@@ -89,6 +52,10 @@ func (receiver *GormDevice) GetIp() string {
 
 func (receiver *GormDevice) GetRefreshToken() string {
 	return receiver.RefreshToken
+}
+
+func (receiver *GormDevice) GetIssuedAt() int {
+	return receiver.IssuedAt
 }
 
 func (receiver *GormDevice) GetExpiresAt() int {
@@ -123,6 +90,10 @@ func (receiver *GormDevice) SetRefreshToken(value string) {
 	receiver.RefreshToken = value
 }
 
+func (receiver *GormDevice) SetIssuedAt(value int) {
+	receiver.IssuedAt = value
+}
+
 func (receiver *GormDevice) SetExpiresAt(value int) {
 	receiver.ExpiresAt = value
 }
@@ -136,17 +107,24 @@ func (receiver *GormDevice) SetUpdatedAt(value int) {
 }
 
 type GormDeviceRepository struct {
-	db *gorm.DB
+	db            *gorm.DB
+	deviceBuilder DeviceBuilder
 }
 
-func NewGormDeviceRepository(db *gorm.DB) (*GormDeviceRepository, error) {
+func NewGormDeviceRepository(
+	db *gorm.DB,
+	deviceBuilder DeviceBuilder,
+) (*GormDeviceRepository, error) {
 	err := db.AutoMigrate(&GormDevice{})
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &GormDeviceRepository{db: db}, nil
+	return &GormDeviceRepository{
+		db:            db,
+		deviceBuilder: deviceBuilder,
+	}, nil
 }
 
 func (receiver *GormDeviceRepository) GetDevicesByUserUUID(userUUID string) []Device {
@@ -201,23 +179,37 @@ func (receiver *GormDeviceRepository) GetDeviceByRefreshToken(refreshToken strin
 }
 
 func (receiver *GormDeviceRepository) CreateDevice(device Device) error {
-	gormDevice := NewGormDeviceByDevice(device)
+	gormDevice, err := receiver.
+		deviceBuilder.
+		NewFromDevice(device).
+		BuildToGorm()
+
+	if err != nil {
+		return err
+	}
 
 	return receiver.
 		db.
 		Model(&GormDevice{}).
-		Create(NewGormDeviceByDevice(gormDevice)).
+		Create(gormDevice).
 		Error
 }
 
 func (receiver *GormDeviceRepository) UpdateDevice(device Device) error {
-	gormDevice := NewGormDeviceByDevice(device)
+	gormDevice, err := receiver.
+		deviceBuilder.
+		NewFromDevice(device).
+		BuildToGorm()
+
+	if err != nil {
+		return err
+	}
 
 	return receiver.
 		db.
 		Model(&GormDevice{}).
 		Where(&GormDevice{UUID: device.GetUUID()}).
-		UpdateColumns(NewGormDeviceByDevice(gormDevice)).
+		UpdateColumns(gormDevice).
 		Error
 }
 

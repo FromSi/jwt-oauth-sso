@@ -12,7 +12,6 @@ package repositories_mocks
 import (
 	reflect "reflect"
 
-	configs "github.com/fromsi/jwt-oauth-sso/internal/configs"
 	tokens "github.com/fromsi/jwt-oauth-sso/internal/tokens"
 	gomock "go.uber.org/mock/gomock"
 )
@@ -42,18 +41,18 @@ func (m *MockQueryDevice) EXPECT() *MockQueryDeviceMockRecorder {
 }
 
 // GenerateAccessToken mocks base method.
-func (m *MockQueryDevice) GenerateAccessToken(arg0 configs.TokenConfig) (*tokens.AccessToken, error) {
+func (m *MockQueryDevice) GenerateAccessToken() (tokens.AccessToken, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateAccessToken", arg0)
-	ret0, _ := ret[0].(*tokens.AccessToken)
+	ret := m.ctrl.Call(m, "GenerateAccessToken")
+	ret0, _ := ret[0].(tokens.AccessToken)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GenerateAccessToken indicates an expected call of GenerateAccessToken.
-func (mr *MockQueryDeviceMockRecorder) GenerateAccessToken(arg0 any) *gomock.Call {
+func (mr *MockQueryDeviceMockRecorder) GenerateAccessToken() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateAccessToken", reflect.TypeOf((*MockQueryDevice)(nil).GenerateAccessToken), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateAccessToken", reflect.TypeOf((*MockQueryDevice)(nil).GenerateAccessToken))
 }
 
 // GetCreatedAt mocks base method.
@@ -96,6 +95,20 @@ func (m *MockQueryDevice) GetIp() string {
 func (mr *MockQueryDeviceMockRecorder) GetIp() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetIp", reflect.TypeOf((*MockQueryDevice)(nil).GetIp))
+}
+
+// GetIssuedAt mocks base method.
+func (m *MockQueryDevice) GetIssuedAt() int {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetIssuedAt")
+	ret0, _ := ret[0].(int)
+	return ret0
+}
+
+// GetIssuedAt indicates an expected call of GetIssuedAt.
+func (mr *MockQueryDeviceMockRecorder) GetIssuedAt() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetIssuedAt", reflect.TypeOf((*MockQueryDevice)(nil).GetIssuedAt))
 }
 
 // GetRefreshToken mocks base method.

@@ -26,16 +26,14 @@ func Test_NewErrorBadRequestResponse(t *testing.T) {
 
 	expected := `{"errors":{"field":["1","2"]}}`
 
-	assert.Equal(t, string(responseToJson), expected)
-}
+	assert.Equal(t, expected, string(responseToJson))
 
-func Test_NewErrorBadRequestResponseByError(t *testing.T) {
-	response := NewErrorBadRequestResponseByError(errors.New("error"))
+	response = NewErrorBadRequestResponseByError(errors.New("error"))
 
 	assert.Contains(t, response.Errors, "error")
 	assert.Equal(t, response.Errors["error"][0], "error")
 
-	err := validator.New().Struct(struct {
+	err = validator.New().Struct(struct {
 		Email string `validate:"required,email"`
 	}{})
 
@@ -46,5 +44,5 @@ func Test_NewErrorBadRequestResponseByError(t *testing.T) {
 	response = NewErrorBadRequestResponseByError(err)
 
 	assert.Contains(t, response.Errors, "email")
-	assert.Equal(t, response.Errors["email"][0], "validation failed on required")
+	assert.Equal(t, "validation failed on required", response.Errors["email"][0])
 }

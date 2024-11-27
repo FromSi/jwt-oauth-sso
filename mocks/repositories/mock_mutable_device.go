@@ -75,6 +75,18 @@ func (mr *MockMutableDeviceMockRecorder) SetIp(arg0 any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetIp", reflect.TypeOf((*MockMutableDevice)(nil).SetIp), arg0)
 }
 
+// SetIssuedAt mocks base method.
+func (m *MockMutableDevice) SetIssuedAt(arg0 int) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "SetIssuedAt", arg0)
+}
+
+// SetIssuedAt indicates an expected call of SetIssuedAt.
+func (mr *MockMutableDeviceMockRecorder) SetIssuedAt(arg0 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetIssuedAt", reflect.TypeOf((*MockMutableDevice)(nil).SetIssuedAt), arg0)
+}
+
 // SetRefreshToken mocks base method.
 func (m *MockMutableDevice) SetRefreshToken(arg0 string) {
 	m.ctrl.T.Helper()

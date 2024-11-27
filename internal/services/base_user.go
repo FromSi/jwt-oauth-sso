@@ -9,11 +9,16 @@ import (
 
 type BaseUserService struct {
 	userRepository repositories.UserRepository
+	userBuilder    repositories.UserBuilder
 }
 
-func NewBaseUserService(userRepository repositories.UserRepository) *BaseUserService {
+func NewBaseUserService(
+	userRepository repositories.UserRepository,
+	userBuilder repositories.UserBuilder,
+) *BaseUserService {
 	return &BaseUserService{
 		userRepository: userRepository,
+		userBuilder:    userBuilder,
 	}
 }
 
@@ -43,15 +48,20 @@ func (receiver *BaseUserService) CreateUserByUUIDAndEmailAndHashedPassword(
 	email string,
 	hashedPassword string,
 ) error {
-	user := repositories.NewGormUser()
+	newUser, err := receiver.userBuilder.
+		New().
+		SetUUID(uuid).
+		SetEmail(email).
+		SetPassword(hashedPassword).
+		SetCreatedAt(int(time.Now().Unix())).
+		SetUpdatedAt(int(time.Now().Unix())).
+		Build()
 
-	user.SetUUID(uuid)
-	user.SetEmail(email)
-	user.SetPassword(hashedPassword)
-	user.SetCreatedAt(int(time.Now().Unix()))
-	user.SetUpdatedAt(int(time.Now().Unix()))
+	if err != nil {
+		return err
+	}
 
-	err := receiver.userRepository.CreateUser(user)
+	err = receiver.userRepository.CreateUser(newUser)
 
 	if err != nil {
 		return err

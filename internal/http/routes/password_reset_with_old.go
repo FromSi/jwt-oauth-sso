@@ -2,30 +2,30 @@ package routes
 
 import (
 	"errors"
-	"github.com/fromsi/jwt-oauth-sso/internal/configs"
 	"github.com/fromsi/jwt-oauth-sso/internal/http/requests"
 	"github.com/fromsi/jwt-oauth-sso/internal/http/responses"
 	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
 	"github.com/fromsi/jwt-oauth-sso/internal/services"
+	"github.com/fromsi/jwt-oauth-sso/internal/tokens"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type PasswordResetWithOldRoute struct {
-	config         configs.TokenConfig
-	userRepository repositories.UserRepository
-	userService    services.UserService
+	userRepository     repositories.UserRepository
+	userService        services.UserService
+	accessTokenBuilder tokens.AccessTokenBuilder
 }
 
 func NewPasswordResetWithOldRoute(
-	config configs.TokenConfig,
 	userRepository repositories.UserRepository,
 	userService services.UserService,
+	accessTokenBuilder tokens.AccessTokenBuilder,
 ) *PasswordResetWithOldRoute {
 	return &PasswordResetWithOldRoute{
-		config:         config,
-		userRepository: userRepository,
-		userService:    userService,
+		userRepository:     userRepository,
+		userService:        userService,
+		accessTokenBuilder: accessTokenBuilder,
 	}
 }
 
@@ -38,7 +38,7 @@ func (receiver PasswordResetWithOldRoute) Pattern() string {
 }
 
 func (receiver PasswordResetWithOldRoute) Handle(context *gin.Context) {
-	headers, err := requests.NewBearerAuthRequestHeader(context, receiver.config)
+	headers, err := requests.NewBearerAuthRequestHeader(context, receiver.accessTokenBuilder)
 
 	if err != nil {
 		context.Status(http.StatusUnauthorized)
@@ -54,7 +54,7 @@ func (receiver PasswordResetWithOldRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	user := receiver.userRepository.GetUserByUUID(headers.AccessToken.Subject)
+	user := receiver.userRepository.GetUserByUUID(headers.AccessToken.GetSubject())
 
 	if user == nil {
 		context.JSON(

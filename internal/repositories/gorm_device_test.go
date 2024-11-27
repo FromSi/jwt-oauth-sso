@@ -1,249 +1,260 @@
 package repositories
 
 import (
-	"github.com/fromsi/jwt-oauth-sso/internal/configs"
+	tokens_mocks "github.com/fromsi/jwt-oauth-sso/mocks/tokens"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/mock/gomock"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"testing"
 )
 
-func Test_NewGormDevice(t *testing.T) {
-	gormDevice := NewGormDevice()
+func TestGormDevice_GenerateAccessToken(t *testing.T) {
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
 
-	assert.NotNil(t, gormDevice)
+	mockAccessTokenBuilder := tokens_mocks.NewMockAccessTokenBuilder(mockController)
+	mockAccessToken := tokens_mocks.NewMockAccessToken(mockController)
 
-	assert.Equal(t, gormDevice.UUID, GormDeviceUUIDDefault)
-	assert.Equal(t, gormDevice.UserUUID, GormDeviceUserUUIDDefault)
-	assert.Equal(t, gormDevice.UserAgent, GormDeviceUserAgentDefault)
-	assert.Equal(t, gormDevice.Ip, GormDeviceIpDefault)
-	assert.Equal(t, gormDevice.RefreshToken, GormDeviceRefreshTokenDefault)
-	assert.Equal(t, gormDevice.ExpiresAt, GormDeviceExpiresAtDefault)
-	assert.Equal(t, gormDevice.CreatedAt, GormDeviceCreatedAtDefault)
-	assert.Equal(t, gormDevice.UpdatedAt, GormDeviceUpdatedAtDefault)
-}
+	mockAccessTokenBuilder.EXPECT().New().Return(mockAccessTokenBuilder).AnyTimes()
+	mockAccessTokenBuilder.EXPECT().SetSubject(gomock.Any()).Return(mockAccessTokenBuilder).AnyTimes()
+	mockAccessTokenBuilder.EXPECT().SetDeviceUUID(gomock.Any()).Return(mockAccessTokenBuilder).AnyTimes()
+	mockAccessTokenBuilder.EXPECT().SetDeviceUserAgent(gomock.Any()).Return(mockAccessTokenBuilder).AnyTimes()
+	mockAccessTokenBuilder.EXPECT().SetIssuedAt(gomock.Any()).Return(mockAccessTokenBuilder).AnyTimes()
+	mockAccessTokenBuilder.EXPECT().SetExpirationTime(gomock.Any()).Return(mockAccessTokenBuilder).AnyTimes()
+	mockAccessTokenBuilder.EXPECT().Build().Return(mockAccessToken, nil).AnyTimes()
 
-func Test_NewGormDeviceByDevice(t *testing.T) {
-	gormDeviceTemp := NewGormDevice()
-	gormDevice := NewGormDeviceByDevice(gormDeviceTemp)
+	gormDevice := GormDevice{
+		accessTokenBuilder: mockAccessTokenBuilder,
+	}
 
-	assert.NotNil(t, gormDevice)
-
-	assert.Equal(t, gormDevice.UUID, GormDeviceUUIDDefault)
-	assert.Equal(t, gormDevice.UserUUID, GormDeviceUserUUIDDefault)
-	assert.Equal(t, gormDevice.UserAgent, GormDeviceUserAgentDefault)
-	assert.Equal(t, gormDevice.Ip, GormDeviceIpDefault)
-	assert.Equal(t, gormDevice.RefreshToken, GormDeviceRefreshTokenDefault)
-	assert.Equal(t, gormDevice.ExpiresAt, GormDeviceExpiresAtDefault)
-	assert.Equal(t, gormDevice.CreatedAt, GormDeviceCreatedAtDefault)
-	assert.Equal(t, gormDevice.UpdatedAt, GormDeviceUpdatedAtDefault)
-}
-
-func TestGormDeviceByDevice_GenerateAccessToken(t *testing.T) {
-	gormDevice := NewGormDevice()
-	config := configs.NewBaseConfig()
-
-	gormDevice.SetUUID("1")
-	gormDevice.SetUserUUID("1")
-	gormDevice.SetUserAgent("1")
-
-	accessToken, err := gormDevice.GenerateAccessToken(config)
+	accessToken, err := gormDevice.GenerateAccessToken()
 
 	assert.NoError(t, err)
 	assert.NotEmpty(t, accessToken)
 }
 
-func TestGormDeviceByDevice_GetUUID(t *testing.T) {
-	gormDevice := NewGormDevice()
+func TestGormDevice_TableName(t *testing.T) {
+	gormDevice := GormDevice{}
+
+	assert.Equal(t, gormDevice.TableName(), "devices")
+}
+
+func TestGormDevice_GetUUID(t *testing.T) {
+	gormDevice := GormDevice{}
 
 	gormDevice.UUID = "1"
 
-	assert.Equal(t, gormDevice.GetUUID(), "1")
+	assert.Equal(t, "1", gormDevice.GetUUID())
 
 	gormDevice.UUID = "2"
 
-	assert.Equal(t, gormDevice.GetUUID(), "2")
+	assert.Equal(t, "2", gormDevice.GetUUID())
 }
 
-func TestGormDeviceByDevice_GetUserUUID(t *testing.T) {
-	gormDevice := NewGormDevice()
+func TestGormDevice_GetUserUUID(t *testing.T) {
+	gormDevice := GormDevice{}
 
 	gormDevice.UserUUID = "1"
 
-	assert.Equal(t, gormDevice.GetUserUUID(), "1")
+	assert.Equal(t, "1", gormDevice.GetUserUUID())
 
 	gormDevice.UserUUID = "2"
 
-	assert.Equal(t, gormDevice.GetUserUUID(), "2")
+	assert.Equal(t, "2", gormDevice.GetUserUUID())
 }
 
-func TestGormDeviceByDevice_GetUserAgent(t *testing.T) {
-	gormDevice := NewGormDevice()
+func TestGormDevice_GetUserAgent(t *testing.T) {
+	gormDevice := GormDevice{}
 
 	gormDevice.UserAgent = "1"
 
-	assert.Equal(t, gormDevice.GetUserAgent(), "1")
+	assert.Equal(t, "1", gormDevice.GetUserAgent())
 
 	gormDevice.UserAgent = "2"
 
-	assert.Equal(t, gormDevice.GetUserAgent(), "2")
+	assert.Equal(t, "2", gormDevice.GetUserAgent())
 }
 
-func TestGormDeviceByDevice_GetIp(t *testing.T) {
-	gormDevice := NewGormDevice()
+func TestGormDevice_GetIp(t *testing.T) {
+	gormDevice := GormDevice{}
 
 	gormDevice.Ip = "1"
 
-	assert.Equal(t, gormDevice.GetIp(), "1")
+	assert.Equal(t, "1", gormDevice.GetIp())
 
 	gormDevice.Ip = "2"
 
-	assert.Equal(t, gormDevice.GetIp(), "2")
+	assert.Equal(t, "2", gormDevice.GetIp())
 }
 
-func TestGormDeviceByDevice_GetRefreshToken(t *testing.T) {
-	gormDevice := NewGormDevice()
+func TestGormDevice_GetRefreshToken(t *testing.T) {
+	gormDevice := GormDevice{}
 
 	gormDevice.RefreshToken = "1"
 
-	assert.Equal(t, gormDevice.GetRefreshToken(), "1")
+	assert.Equal(t, "1", gormDevice.GetRefreshToken())
 
 	gormDevice.RefreshToken = "2"
 
-	assert.Equal(t, gormDevice.GetRefreshToken(), "2")
+	assert.Equal(t, "2", gormDevice.GetRefreshToken())
 }
 
-func TestGormDeviceByDevice_GetExpiresAt(t *testing.T) {
-	gormDevice := NewGormDevice()
+func TestGormDevice_GetIssuedAt(t *testing.T) {
+	gormDevice := GormDevice{}
+
+	gormDevice.IssuedAt = 1
+
+	assert.Equal(t, 1, gormDevice.GetIssuedAt())
+
+	gormDevice.IssuedAt = 2
+
+	assert.Equal(t, 2, gormDevice.GetIssuedAt())
+}
+
+func TestGormDevice_GetExpiresAt(t *testing.T) {
+	gormDevice := GormDevice{}
 
 	gormDevice.ExpiresAt = 1
 
-	assert.Equal(t, gormDevice.GetExpiresAt(), 1)
+	assert.Equal(t, 1, gormDevice.GetExpiresAt())
 
 	gormDevice.ExpiresAt = 2
 
-	assert.Equal(t, gormDevice.GetExpiresAt(), 2)
+	assert.Equal(t, 2, gormDevice.GetExpiresAt())
 }
 
-func TestGormDeviceByDevice_GetCreatedAt(t *testing.T) {
-	gormDevice := NewGormDevice()
+func TestGormDevice_GetCreatedAt(t *testing.T) {
+	gormDevice := GormDevice{}
 
 	gormDevice.CreatedAt = 1
 
-	assert.Equal(t, gormDevice.GetCreatedAt(), 1)
+	assert.Equal(t, 1, gormDevice.GetCreatedAt())
 
 	gormDevice.CreatedAt = 2
 
-	assert.Equal(t, gormDevice.GetCreatedAt(), 2)
+	assert.Equal(t, 2, gormDevice.GetCreatedAt())
 }
 
-func TestGormDeviceByDevice_GetUpdatedAt(t *testing.T) {
-	gormDevice := NewGormDevice()
+func TestGormDevice_GetUpdatedAt(t *testing.T) {
+	gormDevice := GormDevice{}
 
 	gormDevice.UpdatedAt = 1
 
-	assert.Equal(t, gormDevice.GetUpdatedAt(), 1)
+	assert.Equal(t, 1, gormDevice.GetUpdatedAt())
 
 	gormDevice.UpdatedAt = 2
 
-	assert.Equal(t, gormDevice.GetUpdatedAt(), 2)
+	assert.Equal(t, 2, gormDevice.GetUpdatedAt())
 }
 
-func TestGormDeviceByDevice_SetUUID(t *testing.T) {
-	gormDevice := NewGormDevice()
+func TestGormDevice_SetUUID(t *testing.T) {
+	gormDevice := GormDevice{}
 
 	gormDevice.SetUUID("1")
 
-	assert.Equal(t, gormDevice.UUID, "1")
+	assert.Equal(t, "1", gormDevice.UUID)
 
 	gormDevice.SetUUID("2")
 
-	assert.Equal(t, gormDevice.UUID, "2")
+	assert.Equal(t, "2", gormDevice.UUID)
 }
 
-func TestGormDeviceByDevice_SetUserUUID(t *testing.T) {
-	gormDevice := NewGormDevice()
+func TestGormDevice_SetUserUUID(t *testing.T) {
+	gormDevice := GormDevice{}
 
 	gormDevice.SetUserUUID("1")
 
-	assert.Equal(t, gormDevice.UserUUID, "1")
+	assert.Equal(t, "1", gormDevice.UserUUID)
 
 	gormDevice.SetUserUUID("2")
 
-	assert.Equal(t, gormDevice.UserUUID, "2")
+	assert.Equal(t, "2", gormDevice.UserUUID)
 }
 
-func TestGormDeviceByDevice_SetUserAgent(t *testing.T) {
-	gormDevice := NewGormDevice()
+func TestGormDevice_SetUserAgent(t *testing.T) {
+	gormDevice := GormDevice{}
 
 	gormDevice.SetUserAgent("1")
 
-	assert.Equal(t, gormDevice.UserAgent, "1")
+	assert.Equal(t, "1", gormDevice.UserAgent)
 
 	gormDevice.SetUserAgent("2")
 
-	assert.Equal(t, gormDevice.UserAgent, "2")
+	assert.Equal(t, "2", gormDevice.UserAgent)
 }
 
-func TestGormDeviceByDevice_SetIp(t *testing.T) {
-	gormDevice := NewGormDevice()
+func TestGormDevice_SetIp(t *testing.T) {
+	gormDevice := GormDevice{}
 
 	gormDevice.SetIp("1")
 
-	assert.Equal(t, gormDevice.Ip, "1")
+	assert.Equal(t, "1", gormDevice.Ip)
 
 	gormDevice.SetIp("2")
 
-	assert.Equal(t, gormDevice.Ip, "2")
+	assert.Equal(t, "2", gormDevice.Ip)
 }
 
-func TestGormDeviceByDevice_SetRefreshToken(t *testing.T) {
-	gormDevice := NewGormDevice()
+func TestGormDevice_SetRefreshToken(t *testing.T) {
+	gormDevice := GormDevice{}
 
 	gormDevice.SetRefreshToken("1")
 
-	assert.Equal(t, gormDevice.RefreshToken, "1")
+	assert.Equal(t, "1", gormDevice.RefreshToken)
 
 	gormDevice.SetRefreshToken("2")
 
-	assert.Equal(t, gormDevice.RefreshToken, "2")
+	assert.Equal(t, "2", gormDevice.RefreshToken)
 }
 
-func TestGormDeviceByDevice_SetExpiresAt(t *testing.T) {
-	gormDevice := NewGormDevice()
+func TestGormDevice_SetIssuedAt(t *testing.T) {
+	gormDevice := GormDevice{}
+
+	gormDevice.SetIssuedAt(1)
+
+	assert.Equal(t, 1, gormDevice.IssuedAt)
+
+	gormDevice.SetIssuedAt(2)
+
+	assert.Equal(t, 2, gormDevice.IssuedAt)
+}
+
+func TestGormDevice_SetExpiresAt(t *testing.T) {
+	gormDevice := GormDevice{}
 
 	gormDevice.SetExpiresAt(1)
 
-	assert.Equal(t, gormDevice.ExpiresAt, 1)
+	assert.Equal(t, 1, gormDevice.ExpiresAt)
 
 	gormDevice.SetExpiresAt(2)
 
-	assert.Equal(t, gormDevice.ExpiresAt, 2)
+	assert.Equal(t, 2, gormDevice.ExpiresAt)
 }
 
-func TestGormDeviceByDevice_SetCreatedAt(t *testing.T) {
-	gormDevice := NewGormDevice()
+func TestGormDevice_SetCreatedAt(t *testing.T) {
+	gormDevice := GormDevice{}
 
 	gormDevice.SetCreatedAt(1)
 
-	assert.Equal(t, gormDevice.CreatedAt, 1)
+	assert.Equal(t, 1, gormDevice.CreatedAt)
 
 	gormDevice.SetCreatedAt(2)
 
-	assert.Equal(t, gormDevice.CreatedAt, 2)
+	assert.Equal(t, 2, gormDevice.CreatedAt)
 }
 
-func TestGormDeviceByDevice_SetUpdatedAt(t *testing.T) {
-	gormDevice := NewGormDevice()
+func TestGormDevice_SetUpdatedAt(t *testing.T) {
+	gormDevice := GormDevice{}
 
 	gormDevice.SetUpdatedAt(1)
 
-	assert.Equal(t, gormDevice.UpdatedAt, 1)
+	assert.Equal(t, 1, gormDevice.UpdatedAt)
 
 	gormDevice.SetUpdatedAt(2)
 
-	assert.Equal(t, gormDevice.UpdatedAt, 2)
+	assert.Equal(t, 2, gormDevice.UpdatedAt)
 }
 
 func Test_NewGormDeviceRepository(t *testing.T) {
@@ -252,7 +263,14 @@ func Test_NewGormDeviceRepository(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, db)
 
-	gormDeviceRepository, err := NewGormDeviceRepository(db)
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
+
+	mockAccessTokenBuilder := tokens_mocks.NewMockAccessTokenBuilder(mockController)
+
+	deviceBuilder := NewBaseDeviceBuilder(mockAccessTokenBuilder)
+
+	gormDeviceRepository, err := NewGormDeviceRepository(db, deviceBuilder)
 
 	assert.Error(t, err)
 	assert.Empty(t, gormDeviceRepository)
@@ -273,9 +291,9 @@ func Test_NewGormDeviceRepository(t *testing.T) {
 		).
 		Scan(&tableCount)
 
-	assert.Equal(t, tableCount, 0)
+	assert.Equal(t, 0, tableCount)
 
-	gormDeviceRepository, err = NewGormDeviceRepository(db)
+	gormDeviceRepository, err = NewGormDeviceRepository(db, deviceBuilder)
 
 	assert.NoError(t, err)
 	assert.NotEmpty(t, gormDeviceRepository)
@@ -291,7 +309,7 @@ func Test_NewGormDeviceRepository(t *testing.T) {
 		).
 		Scan(&tableCount)
 
-	assert.Equal(t, tableCount, 1)
+	assert.Equal(t, 1, tableCount)
 }
 
 func TestGormDeviceRepository_CreateDevice_And_GetDeviceByUserUUIDAndIpAndUserAgent(t *testing.T) {
@@ -300,17 +318,36 @@ func TestGormDeviceRepository_CreateDevice_And_GetDeviceByUserUUIDAndIpAndUserAg
 		&gorm.Config{Logger: logger.Default.LogMode(logger.Silent)},
 	)
 
-	gormDeviceRepository, _ := NewGormDeviceRepository(db)
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
 
-	gormDevice := NewGormDevice()
+	mockAccessTokenBuilder := tokens_mocks.NewMockAccessTokenBuilder(mockController)
 
-	gormDevice.SetUserUUID("1")
-	gormDevice.SetUserAgent("1")
-	gormDevice.SetIp("1")
+	deviceBuilder := NewBaseDeviceBuilder(mockAccessTokenBuilder)
 
-	err := gormDeviceRepository.CreateDevice(gormDevice)
+	gormDeviceRepository, err := NewGormDeviceRepository(db, deviceBuilder)
 
 	assert.NoError(t, err)
+	assert.NotEmpty(t, gormDeviceRepository)
+
+	gormDevice, err := deviceBuilder.
+		New().
+		SetUUID("1").
+		SetUserUUID("1").
+		SetUserAgent("1").
+		SetIp("1").
+		BuildToGorm()
+
+	assert.NoError(t, err)
+	assert.NotEmpty(t, gormDevice)
+
+	err = gormDeviceRepository.CreateDevice(gormDevice)
+
+	assert.NoError(t, err)
+
+	err = gormDeviceRepository.CreateDevice(&GormDevice{})
+
+	assert.Error(t, err)
 
 	gormDeviceResult := gormDeviceRepository.
 		GetDeviceByUserUUIDAndIpAndUserAgent("0", "0", "0")
@@ -325,9 +362,9 @@ func TestGormDeviceRepository_CreateDevice_And_GetDeviceByUserUUIDAndIpAndUserAg
 
 	assert.NotEmpty(t, gormDeviceResult)
 
-	assert.Equal(t, gormDeviceResult.GetUserUUID(), gormDevice.GetUserUUID())
-	assert.Equal(t, gormDeviceResult.GetUserAgent(), gormDevice.GetUserAgent())
-	assert.Equal(t, gormDeviceResult.GetIp(), gormDevice.GetIp())
+	assert.Equal(t, gormDevice.GetUserUUID(), gormDeviceResult.GetUserUUID())
+	assert.Equal(t, gormDevice.GetUserAgent(), gormDeviceResult.GetUserAgent())
+	assert.Equal(t, gormDevice.GetIp(), gormDeviceResult.GetIp())
 }
 
 func TestGormDeviceRepository_CreateDevice_And_GetDeviceByRefreshToken(t *testing.T) {
@@ -336,13 +373,28 @@ func TestGormDeviceRepository_CreateDevice_And_GetDeviceByRefreshToken(t *testin
 		&gorm.Config{Logger: logger.Default.LogMode(logger.Silent)},
 	)
 
-	gormDeviceRepository, _ := NewGormDeviceRepository(db)
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
 
-	gormDevice := NewGormDevice()
+	mockAccessTokenBuilder := tokens_mocks.NewMockAccessTokenBuilder(mockController)
 
-	gormDevice.SetRefreshToken("1")
+	deviceBuilder := NewBaseDeviceBuilder(mockAccessTokenBuilder)
 
-	err := gormDeviceRepository.CreateDevice(gormDevice)
+	gormDeviceRepository, err := NewGormDeviceRepository(db, deviceBuilder)
+
+	assert.NoError(t, err)
+	assert.NotEmpty(t, gormDeviceRepository)
+
+	gormDevice, err := deviceBuilder.
+		New().
+		SetUUID("1").
+		SetRefreshToken("1").
+		BuildToGorm()
+
+	assert.NoError(t, err)
+	assert.NotEmpty(t, gormDevice)
+
+	err = gormDeviceRepository.CreateDevice(gormDevice)
 
 	assert.NoError(t, err)
 
@@ -356,7 +408,7 @@ func TestGormDeviceRepository_CreateDevice_And_GetDeviceByRefreshToken(t *testin
 
 	assert.NotEmpty(t, gormDeviceResult)
 
-	assert.Equal(t, gormDeviceResult.GetRefreshToken(), gormDevice.GetRefreshToken())
+	assert.Equal(t, gormDevice.GetRefreshToken(), gormDeviceResult.GetRefreshToken())
 }
 
 func TestGormDeviceRepository_CreateDevice_And_GetDevicesByUserUUID_And_UpdateDevice(t *testing.T) {
@@ -365,23 +417,41 @@ func TestGormDeviceRepository_CreateDevice_And_GetDevicesByUserUUID_And_UpdateDe
 		&gorm.Config{Logger: logger.Default.LogMode(logger.Silent)},
 	)
 
-	gormDeviceRepository, _ := NewGormDeviceRepository(db)
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
 
-	gormDeviceOne := NewGormDevice()
+	mockAccessTokenBuilder := tokens_mocks.NewMockAccessTokenBuilder(mockController)
 
-	gormDeviceOne.SetUUID("1")
-	gormDeviceOne.SetUserUUID("1")
-	gormDeviceOne.SetUpdatedAt(1)
+	deviceBuilder := NewBaseDeviceBuilder(mockAccessTokenBuilder)
 
-	err := gormDeviceRepository.CreateDevice(gormDeviceOne)
+	gormDeviceRepository, err := NewGormDeviceRepository(db, deviceBuilder)
+
+	assert.NoError(t, err)
+	assert.NotEmpty(t, gormDeviceRepository)
+
+	gormDeviceOne, err := deviceBuilder.
+		New().
+		SetUUID("1").
+		SetUserUUID("1").
+		SetUpdatedAt(1).
+		BuildToGorm()
+
+	assert.NoError(t, err)
+	assert.NotEmpty(t, gormDeviceOne)
+
+	err = gormDeviceRepository.CreateDevice(gormDeviceOne)
 
 	assert.NoError(t, err)
 
-	gormDeviceTwo := NewGormDevice()
+	gormDeviceTwo, err := deviceBuilder.
+		New().
+		SetUUID("2").
+		SetUserUUID("2").
+		SetUpdatedAt(2).
+		BuildToGorm()
 
-	gormDeviceTwo.SetUUID("2")
-	gormDeviceTwo.SetUserUUID("2")
-	gormDeviceTwo.SetUpdatedAt(2)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, gormDeviceTwo)
 
 	err = gormDeviceRepository.CreateDevice(gormDeviceTwo)
 
@@ -389,15 +459,15 @@ func TestGormDeviceRepository_CreateDevice_And_GetDevicesByUserUUID_And_UpdateDe
 
 	gormDevices := gormDeviceRepository.GetDevicesByUserUUID(gormDeviceOne.GetUserUUID())
 
-	assert.Equal(t, len(gormDevices), 1)
-	assert.Equal(t, gormDevices[0].GetUserUUID(), gormDeviceOne.GetUserUUID())
-	assert.Equal(t, gormDevices[0].GetUpdatedAt(), gormDeviceOne.GetUpdatedAt())
+	assert.Equal(t, 1, len(gormDevices))
+	assert.Equal(t, gormDeviceOne.GetUserUUID(), gormDevices[0].GetUserUUID())
+	assert.Equal(t, gormDeviceOne.GetUpdatedAt(), gormDevices[0].GetUpdatedAt())
 
 	gormDevices = gormDeviceRepository.GetDevicesByUserUUID(gormDeviceTwo.GetUserUUID())
 
-	assert.Equal(t, len(gormDevices), 1)
-	assert.Equal(t, gormDevices[0].GetUserUUID(), gormDeviceTwo.GetUserUUID())
-	assert.Equal(t, gormDevices[0].GetUpdatedAt(), gormDeviceTwo.GetUpdatedAt())
+	assert.Equal(t, 1, len(gormDevices))
+	assert.Equal(t, gormDeviceTwo.GetUserUUID(), gormDevices[0].GetUserUUID())
+	assert.Equal(t, gormDeviceTwo.GetUpdatedAt(), gormDevices[0].GetUpdatedAt())
 
 	gormDeviceOne.SetUserUUID("3")
 	gormDeviceOne.SetUpdatedAt(3)
@@ -406,17 +476,21 @@ func TestGormDeviceRepository_CreateDevice_And_GetDevicesByUserUUID_And_UpdateDe
 
 	assert.NoError(t, err)
 
+	err = gormDeviceRepository.UpdateDevice(&GormDevice{})
+
+	assert.Error(t, err)
+
 	gormDevices = gormDeviceRepository.GetDevicesByUserUUID(gormDeviceOne.GetUserUUID())
 
-	assert.Equal(t, len(gormDevices), 1)
-	assert.Equal(t, gormDevices[0].GetUserUUID(), gormDeviceOne.GetUserUUID())
-	assert.Equal(t, gormDevices[0].GetUpdatedAt(), gormDeviceOne.GetUpdatedAt())
+	assert.Equal(t, 1, len(gormDevices))
+	assert.Equal(t, gormDeviceOne.GetUserUUID(), gormDevices[0].GetUserUUID())
+	assert.Equal(t, gormDeviceOne.GetUpdatedAt(), gormDevices[0].GetUpdatedAt())
 
 	gormDevices = gormDeviceRepository.GetDevicesByUserUUID(gormDeviceTwo.GetUserUUID())
 
-	assert.Equal(t, len(gormDevices), 1)
-	assert.Equal(t, gormDevices[0].GetUserUUID(), gormDeviceTwo.GetUserUUID())
-	assert.Equal(t, gormDevices[0].GetUpdatedAt(), gormDeviceTwo.GetUpdatedAt())
+	assert.Equal(t, 1, len(gormDevices))
+	assert.Equal(t, gormDeviceTwo.GetUserUUID(), gormDevices[0].GetUserUUID())
+	assert.Equal(t, gormDeviceTwo.GetUpdatedAt(), gormDevices[0].GetUpdatedAt())
 }
 
 func TestGormDeviceRepository_CreateDevice_And_GetDevicesByUserUUID_And_DeleteDeviceByUUID(t *testing.T) {
@@ -425,21 +499,39 @@ func TestGormDeviceRepository_CreateDevice_And_GetDevicesByUserUUID_And_DeleteDe
 		&gorm.Config{Logger: logger.Default.LogMode(logger.Silent)},
 	)
 
-	gormDeviceRepository, _ := NewGormDeviceRepository(db)
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
 
-	gormDeviceOne := NewGormDevice()
+	mockAccessTokenBuilder := tokens_mocks.NewMockAccessTokenBuilder(mockController)
 
-	gormDeviceOne.SetUUID("1")
-	gormDeviceOne.SetUserUUID("1")
+	deviceBuilder := NewBaseDeviceBuilder(mockAccessTokenBuilder)
 
-	err := gormDeviceRepository.CreateDevice(gormDeviceOne)
+	gormDeviceRepository, err := NewGormDeviceRepository(db, deviceBuilder)
+
+	assert.NoError(t, err)
+	assert.NotEmpty(t, gormDeviceRepository)
+
+	gormDeviceOne, err := deviceBuilder.
+		New().
+		SetUUID("1").
+		SetUserUUID("1").
+		BuildToGorm()
+
+	assert.NoError(t, err)
+	assert.NotEmpty(t, gormDeviceOne)
+
+	err = gormDeviceRepository.CreateDevice(gormDeviceOne)
 
 	assert.NoError(t, err)
 
-	gormDeviceTwo := NewGormDevice()
+	gormDeviceTwo, err := deviceBuilder.
+		New().
+		SetUUID("2").
+		SetUserUUID("2").
+		BuildToGorm()
 
-	gormDeviceTwo.SetUUID("2")
-	gormDeviceTwo.SetUserUUID("2")
+	assert.NoError(t, err)
+	assert.NotEmpty(t, gormDeviceTwo)
 
 	err = gormDeviceRepository.CreateDevice(gormDeviceTwo)
 
@@ -447,11 +539,11 @@ func TestGormDeviceRepository_CreateDevice_And_GetDevicesByUserUUID_And_DeleteDe
 
 	gormDevices := gormDeviceRepository.GetDevicesByUserUUID(gormDeviceOne.GetUserUUID())
 
-	assert.Equal(t, len(gormDevices), 1)
+	assert.Equal(t, 1, len(gormDevices))
 
 	gormDevices = gormDeviceRepository.GetDevicesByUserUUID(gormDeviceTwo.GetUserUUID())
 
-	assert.Equal(t, len(gormDevices), 1)
+	assert.Equal(t, 1, len(gormDevices))
 
 	err = gormDeviceRepository.DeleteDeviceByUUID(gormDeviceOne.GetUUID())
 
@@ -459,11 +551,11 @@ func TestGormDeviceRepository_CreateDevice_And_GetDevicesByUserUUID_And_DeleteDe
 
 	gormDevices = gormDeviceRepository.GetDevicesByUserUUID(gormDeviceOne.GetUserUUID())
 
-	assert.Equal(t, len(gormDevices), 0)
+	assert.Equal(t, 0, len(gormDevices))
 
 	gormDevices = gormDeviceRepository.GetDevicesByUserUUID(gormDeviceTwo.GetUserUUID())
 
-	assert.Equal(t, len(gormDevices), 1)
+	assert.Equal(t, 1, len(gormDevices))
 }
 
 func TestGormDeviceRepository_CreateDevice_And_DeleteDeviceByUUIDAndUserUUID(t *testing.T) {
@@ -472,21 +564,39 @@ func TestGormDeviceRepository_CreateDevice_And_DeleteDeviceByUUIDAndUserUUID(t *
 		&gorm.Config{Logger: logger.Default.LogMode(logger.Silent)},
 	)
 
-	gormDeviceRepository, _ := NewGormDeviceRepository(db)
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
 
-	gormDeviceOne := NewGormDevice()
+	mockAccessTokenBuilder := tokens_mocks.NewMockAccessTokenBuilder(mockController)
 
-	gormDeviceOne.SetUUID("1")
-	gormDeviceOne.SetUserUUID("1")
+	deviceBuilder := NewBaseDeviceBuilder(mockAccessTokenBuilder)
 
-	err := gormDeviceRepository.CreateDevice(gormDeviceOne)
+	gormDeviceRepository, err := NewGormDeviceRepository(db, deviceBuilder)
+
+	assert.NoError(t, err)
+	assert.NotEmpty(t, gormDeviceRepository)
+
+	gormDeviceOne, err := deviceBuilder.
+		New().
+		SetUUID("1").
+		SetUserUUID("1").
+		BuildToGorm()
+
+	assert.NoError(t, err)
+	assert.NotEmpty(t, gormDeviceOne)
+
+	err = gormDeviceRepository.CreateDevice(gormDeviceOne)
 
 	assert.NoError(t, err)
 
-	gormDeviceTwo := NewGormDevice()
+	gormDeviceTwo, err := deviceBuilder.
+		New().
+		SetUUID("2").
+		SetUserUUID("2").
+		BuildToGorm()
 
-	gormDeviceTwo.SetUUID("2")
-	gormDeviceTwo.SetUserUUID("2")
+	assert.NoError(t, err)
+	assert.NotEmpty(t, gormDeviceTwo)
 
 	err = gormDeviceRepository.CreateDevice(gormDeviceTwo)
 
@@ -494,11 +604,11 @@ func TestGormDeviceRepository_CreateDevice_And_DeleteDeviceByUUIDAndUserUUID(t *
 
 	gormDevices := gormDeviceRepository.GetDevicesByUserUUID(gormDeviceOne.GetUserUUID())
 
-	assert.Equal(t, len(gormDevices), 1)
+	assert.Equal(t, 1, len(gormDevices))
 
 	gormDevices = gormDeviceRepository.GetDevicesByUserUUID(gormDeviceTwo.GetUserUUID())
 
-	assert.Equal(t, len(gormDevices), 1)
+	assert.Equal(t, 1, len(gormDevices))
 
 	err = gormDeviceRepository.
 		DeleteDeviceByUUIDAndUserUUID(gormDeviceOne.GetUUID(), gormDeviceOne.GetUserUUID())
@@ -507,11 +617,11 @@ func TestGormDeviceRepository_CreateDevice_And_DeleteDeviceByUUIDAndUserUUID(t *
 
 	gormDevices = gormDeviceRepository.GetDevicesByUserUUID(gormDeviceOne.GetUserUUID())
 
-	assert.Equal(t, len(gormDevices), 0)
+	assert.Equal(t, 0, len(gormDevices))
 
 	gormDevices = gormDeviceRepository.GetDevicesByUserUUID(gormDeviceTwo.GetUserUUID())
 
-	assert.Equal(t, len(gormDevices), 1)
+	assert.Equal(t, 1, len(gormDevices))
 }
 
 func TestGormDeviceRepository_CreateDevice_And_DeleteAllDevicesByUserUUID(t *testing.T) {
@@ -520,40 +630,64 @@ func TestGormDeviceRepository_CreateDevice_And_DeleteAllDevicesByUserUUID(t *tes
 		&gorm.Config{Logger: logger.Default.LogMode(logger.Silent)},
 	)
 
-	gormDeviceRepository, _ := NewGormDeviceRepository(db)
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
 
-	gormDeviceOne := NewGormDevice()
+	mockAccessTokenBuilder := tokens_mocks.NewMockAccessTokenBuilder(mockController)
 
-	gormDeviceOne.SetUUID("1")
-	gormDeviceOne.SetUserUUID("1")
+	deviceBuilder := NewBaseDeviceBuilder(mockAccessTokenBuilder)
 
-	err := gormDeviceRepository.CreateDevice(gormDeviceOne)
+	gormDeviceRepository, err := NewGormDeviceRepository(db, deviceBuilder)
 
 	assert.NoError(t, err)
+	assert.NotEmpty(t, gormDeviceRepository)
 
-	gormDeviceOne.SetUUID("11")
-	gormDeviceOne.SetUserUUID("1")
+	gormDeviceOne, err := deviceBuilder.
+		New().
+		SetUUID("1").
+		SetUserUUID("1").
+		BuildToGorm()
+
+	assert.NoError(t, err)
+	assert.NotEmpty(t, gormDeviceOne)
 
 	err = gormDeviceRepository.CreateDevice(gormDeviceOne)
 
 	assert.NoError(t, err)
 
-	gormDeviceTwo := NewGormDevice()
+	gormDeviceTwo, err := deviceBuilder.
+		New().
+		SetUUID("2").
+		SetUserUUID("1").
+		BuildToGorm()
 
-	gormDeviceTwo.SetUUID("2")
-	gormDeviceTwo.SetUserUUID("2")
+	assert.NoError(t, err)
+	assert.NotEmpty(t, gormDeviceTwo)
 
 	err = gormDeviceRepository.CreateDevice(gormDeviceTwo)
 
 	assert.NoError(t, err)
 
+	gormDeviceThree, err := deviceBuilder.
+		New().
+		SetUUID("3").
+		SetUserUUID("3").
+		BuildToGorm()
+
+	assert.NoError(t, err)
+	assert.NotEmpty(t, gormDeviceThree)
+
+	err = gormDeviceRepository.CreateDevice(gormDeviceThree)
+
+	assert.NoError(t, err)
+
 	gormDevices := gormDeviceRepository.GetDevicesByUserUUID(gormDeviceOne.GetUserUUID())
 
-	assert.Equal(t, len(gormDevices), 2)
+	assert.Equal(t, 2, len(gormDevices))
 
-	gormDevices = gormDeviceRepository.GetDevicesByUserUUID(gormDeviceTwo.GetUserUUID())
+	gormDevices = gormDeviceRepository.GetDevicesByUserUUID(gormDeviceThree.GetUserUUID())
 
-	assert.Equal(t, len(gormDevices), 1)
+	assert.Equal(t, 1, len(gormDevices))
 
 	err = gormDeviceRepository.DeleteAllDevicesByUserUUID(gormDeviceOne.GetUserUUID())
 
@@ -561,9 +695,9 @@ func TestGormDeviceRepository_CreateDevice_And_DeleteAllDevicesByUserUUID(t *tes
 
 	gormDevices = gormDeviceRepository.GetDevicesByUserUUID(gormDeviceOne.GetUserUUID())
 
-	assert.Equal(t, len(gormDevices), 0)
+	assert.Equal(t, 0, len(gormDevices))
 
-	gormDevices = gormDeviceRepository.GetDevicesByUserUUID(gormDeviceTwo.GetUserUUID())
+	gormDevices = gormDeviceRepository.GetDevicesByUserUUID(gormDeviceThree.GetUserUUID())
 
-	assert.Equal(t, len(gormDevices), 1)
+	assert.Equal(t, 1, len(gormDevices))
 }

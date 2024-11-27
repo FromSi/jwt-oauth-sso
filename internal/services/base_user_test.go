@@ -2,7 +2,6 @@ package services
 
 import (
 	"errors"
-	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
 	"github.com/fromsi/jwt-oauth-sso/mocks/repositories"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -17,7 +16,9 @@ func Test_NewBaseUserService(t *testing.T) {
 	defer mockController.Finish()
 
 	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
-	baseUserService := NewBaseUserService(mockUserRepository)
+	mockUserBuilder := repositories_mocks.NewMockUserBuilder(mockController)
+
+	baseUserService := NewBaseUserService(mockUserRepository, mockUserBuilder)
 
 	assert.NotEmpty(t, baseUserService)
 }
@@ -27,7 +28,9 @@ func TestBaseUserService_GenerateUUID(t *testing.T) {
 	defer mockController.Finish()
 
 	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
-	baseUserService := NewBaseUserService(mockUserRepository)
+	mockUserBuilder := repositories_mocks.NewMockUserBuilder(mockController)
+
+	baseUserService := NewBaseUserService(mockUserRepository, mockUserBuilder)
 
 	uuidOne := baseUserService.GenerateUUID()
 	uuidTwo := baseUserService.GenerateUUID()
@@ -51,7 +54,9 @@ func TestBaseUserService_HashPassword(t *testing.T) {
 	defer mockController.Finish()
 
 	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
-	baseUserService := NewBaseUserService(mockUserRepository)
+	mockUserBuilder := repositories_mocks.NewMockUserBuilder(mockController)
+
+	baseUserService := NewBaseUserService(mockUserRepository, mockUserBuilder)
 
 	hashedPassword, err := baseUserService.HashPassword("1")
 
@@ -88,7 +93,9 @@ func TestBaseUserService_CheckHashedPasswordAndNativePassword(t *testing.T) {
 	defer mockController.Finish()
 
 	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
-	baseUserService := NewBaseUserService(mockUserRepository)
+	mockUserBuilder := repositories_mocks.NewMockUserBuilder(mockController)
+
+	baseUserService := NewBaseUserService(mockUserRepository, mockUserBuilder)
 
 	hashedPassword, err := baseUserService.HashPassword("1")
 
@@ -99,7 +106,12 @@ func TestBaseUserService_CheckHashedPasswordAndNativePassword(t *testing.T) {
 
 	assert.NoError(t, err)
 
-	err = baseUserService.CheckHashedPasswordAndNativePassword(hashedPassword, "2")
+	hashedPassword, err = baseUserService.HashPassword("2")
+
+	assert.NoError(t, err)
+	assert.NotEmpty(t, hashedPassword)
+
+	err = baseUserService.CheckHashedPasswordAndNativePassword(hashedPassword, "1")
 
 	assert.Error(t, err)
 }
@@ -109,49 +121,35 @@ func TestBaseUserService_CreateUserByUUIDAndEmailAndHashedPassword(t *testing.T)
 	defer mockController.Finish()
 
 	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
-	baseUserService := NewBaseUserService(mockUserRepository)
+	mockUserBuilder := repositories_mocks.NewMockUserBuilder(mockController)
+	mockUser := repositories_mocks.NewMockUser(mockController)
 
-	userOne := repositories.NewGormUser()
+	mockUserBuilder.EXPECT().New().Return(mockUserBuilder).AnyTimes()
+	mockUserBuilder.EXPECT().SetUUID(gomock.Any()).Return(mockUserBuilder).AnyTimes()
+	mockUserBuilder.EXPECT().SetEmail(gomock.Any()).Return(mockUserBuilder).AnyTimes()
+	mockUserBuilder.EXPECT().SetPassword(gomock.Any()).Return(mockUserBuilder).AnyTimes()
+	mockUserBuilder.EXPECT().SetCreatedAt(gomock.Any()).Return(mockUserBuilder).AnyTimes()
+	mockUserBuilder.EXPECT().SetUpdatedAt(gomock.Any()).Return(mockUserBuilder).AnyTimes()
+	mockUserBuilder.EXPECT().Build().Return(mockUser, nil)
 
-	userOne.SetUUID("1")
-	userOne.SetEmail("1")
-	userOne.SetPassword("1")
+	mockUserRepository.EXPECT().CreateUser(gomock.Any()).Return(nil)
 
-	userTwo := repositories.NewGormUser()
+	baseUserService := NewBaseUserService(mockUserRepository, mockUserBuilder)
 
-	userTwo.SetUUID("2")
-	userTwo.SetEmail("2")
-	userTwo.SetPassword("2")
-
-	mockUserRepository.
-		EXPECT().
-		CreateUser(gomock.Any()).
-		DoAndReturn(func(user repositories.User) error {
-			isEqualUUID := user.GetUUID() == userTwo.GetUUID()
-			isEqualEmail := user.GetEmail() == userTwo.GetEmail()
-			isEqualPassword := user.GetPassword() == userTwo.GetPassword()
-
-			if isEqualUUID && isEqualEmail && isEqualPassword {
-				return errors.New("error")
-			}
-
-			return nil
-		}).
-		AnyTimes()
-
-	err := baseUserService.CreateUserByUUIDAndEmailAndHashedPassword(
-		userOne.GetUUID(),
-		userOne.GetEmail(),
-		userOne.GetPassword(),
-	)
+	err := baseUserService.CreateUserByUUIDAndEmailAndHashedPassword("1", "1", "1")
 
 	assert.NoError(t, err)
 
-	err = baseUserService.CreateUserByUUIDAndEmailAndHashedPassword(
-		userTwo.GetUUID(),
-		userTwo.GetEmail(),
-		userTwo.GetPassword(),
-	)
+	mockUserRepository.EXPECT().CreateUser(gomock.Any()).Return(errors.New("error"))
+	mockUserBuilder.EXPECT().Build().Return(mockUser, nil)
+
+	err = baseUserService.CreateUserByUUIDAndEmailAndHashedPassword("1", "1", "1")
+
+	assert.Error(t, err)
+
+	mockUserBuilder.EXPECT().Build().Return(nil, errors.New("error"))
+
+	err = baseUserService.CreateUserByUUIDAndEmailAndHashedPassword("1", "1", "1")
 
 	assert.Error(t, err)
 }
@@ -161,23 +159,23 @@ func TestBaseUserService_UpdatePasswordByUUIDAndHashedPassword(t *testing.T) {
 	defer mockController.Finish()
 
 	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
-	baseUserService := NewBaseUserService(mockUserRepository)
+	mockUserBuilder := repositories_mocks.NewMockUserBuilder(mockController)
 
-	mockUserRepository.
-		EXPECT().
-		UpdatePasswordByUUIDAndPasswordAndUpdatedAt("1", gomock.Any(), gomock.Any()).
-		Return(nil).
-		AnyTimes()
+	baseUserService := NewBaseUserService(mockUserRepository, mockUserBuilder)
 
 	mockUserRepository.
 		EXPECT().
 		UpdatePasswordByUUIDAndPasswordAndUpdatedAt(gomock.Any(), gomock.Any(), gomock.Any()).
-		Return(errors.New("error")).
-		AnyTimes()
+		Return(nil)
 
 	err := baseUserService.UpdatePasswordByUUIDAndHashedPassword("1", "2")
 
 	assert.NoError(t, err)
+
+	mockUserRepository.
+		EXPECT().
+		UpdatePasswordByUUIDAndPasswordAndUpdatedAt(gomock.Any(), gomock.Any(), gomock.Any()).
+		Return(errors.New("error"))
 
 	err = baseUserService.UpdatePasswordByUUIDAndHashedPassword("0", "0")
 

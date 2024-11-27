@@ -1,59 +1,58 @@
 package requests
 
 import (
-	"github.com/fromsi/jwt-oauth-sso/internal/configs"
-	"github.com/fromsi/jwt-oauth-sso/internal/tokens"
+	"errors"
+	tokens_mocks "github.com/fromsi/jwt-oauth-sso/mocks/tokens"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/mock/gomock"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
-	"time"
 )
 
 func Test_NewBearerAuthRequestHeader(t *testing.T) {
-	config := configs.NewBaseConfig()
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
 
-	validToken, _ := tokens.NewAccessToken(
-		config,
-		"1",
-		"1",
-		"1",
-		time.Now(),
-	)
-
-	validTokenToJWT, _ := validToken.GetJWT()
-
-	invalidToken, _ := tokens.NewAccessToken(
-		config,
-		"1",
-		"1",
-		"1",
-		time.Unix(1, 1),
-	)
-
-	invalidTokenToJWT, _ := invalidToken.GetJWT()
+	mockAccessToken := tokens_mocks.NewMockAccessToken(mockController)
+	mockAccessTokenBuilder := tokens_mocks.NewMockAccessTokenBuilder(mockController)
 
 	tests := []struct {
-		name        string
-		accessToken string
-		error       bool
+		name                    string
+		accessToken             string
+		errorEmptyHeader        bool
+		errorAccessTokenBuilder error
+		errorAccessToken        error
 	}{
 		{
-			name:        "Valid request",
-			accessToken: validTokenToJWT,
-			error:       false,
+			name:                    "Valid request",
+			accessToken:             "1",
+			errorEmptyHeader:        false,
+			errorAccessTokenBuilder: nil,
+			errorAccessToken:        nil,
 		},
 		{
-			name:        "Invalid request",
-			accessToken: invalidTokenToJWT,
-			error:       true,
+			name:                    "Empty header",
+			accessToken:             "",
+			errorEmptyHeader:        true,
+			errorAccessTokenBuilder: nil,
+			errorAccessToken:        nil,
 		},
 		{
-			name:        "Empty request",
-			accessToken: "",
-			error:       true,
+			name:                    "Not valid access token builder",
+			accessToken:             "2",
+			errorEmptyHeader:        false,
+			errorAccessTokenBuilder: errors.New("error"),
+			errorAccessToken:        nil,
+		},
+		{
+			name:                    "Not valid access token",
+			accessToken:             "2",
+			errorEmptyHeader:        false,
+			errorAccessTokenBuilder: nil,
+			errorAccessToken:        errors.New("error"),
 		},
 	}
 
@@ -70,9 +69,21 @@ func Test_NewBearerAuthRequestHeader(t *testing.T) {
 				c.Request.Header.Set("Authorization", "Bearer "+tt.accessToken)
 			}
 
-			request, err := NewBearerAuthRequestHeader(c, config)
+			if !tt.errorEmptyHeader && tt.errorAccessTokenBuilder == nil {
+				mockAccessTokenBuilder.EXPECT().NewFromJwtString(tt.accessToken).Return(mockAccessTokenBuilder, nil)
+			} else if tt.errorAccessTokenBuilder != nil {
+				mockAccessTokenBuilder.EXPECT().NewFromJwtString(tt.accessToken).Return(nil, tt.errorAccessTokenBuilder)
+			}
 
-			if tt.error {
+			if !tt.errorEmptyHeader && tt.errorAccessTokenBuilder == nil && tt.errorAccessToken == nil {
+				mockAccessTokenBuilder.EXPECT().Build().Return(mockAccessToken, nil)
+			} else if tt.errorAccessToken != nil {
+				mockAccessTokenBuilder.EXPECT().Build().Return(nil, tt.errorAccessToken)
+			}
+
+			request, err := NewBearerAuthRequestHeader(c, mockAccessTokenBuilder)
+
+			if tt.errorEmptyHeader || tt.errorAccessTokenBuilder != nil || tt.errorAccessToken != nil {
 				assert.Error(t, err)
 				assert.Empty(t, request)
 			} else {

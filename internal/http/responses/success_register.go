@@ -1,7 +1,6 @@
 package responses
 
 import (
-	"github.com/fromsi/jwt-oauth-sso/internal/configs"
 	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
 )
 
@@ -16,16 +15,15 @@ type SuccessRegisterResponse struct {
 }
 
 func NewSuccessRegisterResponse(
-	configs configs.TokenConfig,
 	device repositories.Device,
 ) (*SuccessRegisterResponse, error) {
-	accessToken, err := device.GenerateAccessToken(configs)
+	accessToken, err := device.GenerateAccessToken()
 
 	if err != nil {
 		return nil, err
 	}
 
-	accessTokenToJWT, err := accessToken.GetJWT()
+	accessTokenToJWT, err := accessToken.ToString()
 
 	if err != nil {
 		return nil, err
@@ -42,7 +40,7 @@ func NewSuccessRegisterResponse(
 			AuthType:         "bearer",
 			AccessToken:      accessTokenToJWT,
 			RefreshToken:     device.GetRefreshToken(),
-			AccessExpiresIn:  int(accessToken.ExpirationTime.Unix()),
+			AccessExpiresIn:  accessToken.GetExpirationTime(),
 			RefreshExpiresIn: device.GetExpiresAt(),
 		},
 	}, err

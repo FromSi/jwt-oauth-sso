@@ -3,35 +3,61 @@ package responses
 import (
 	"encoding/json"
 	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
+	repositories_mocks "github.com/fromsi/jwt-oauth-sso/mocks/repositories"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/mock/gomock"
 	"testing"
 )
 
 func Test_NewSuccessDevicesResponse(t *testing.T) {
-	var devices []repositories.Device
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
 
-	device := repositories.NewGormDevice()
+	mockDevice := repositories_mocks.NewMockDevice(mockController)
 
-	device.SetUUID("1")
-	device.SetUserUUID("2")
-	device.SetUserAgent("3")
-	device.SetIp("4")
-	device.SetRefreshToken("5")
-	device.SetExpiresAt(6)
-	device.SetCreatedAt(7)
-	device.SetUpdatedAt(8)
+	tests := []struct {
+		name        string
+		valueInt    int
+		valueString string
+		expected    string
+	}{
+		{
+			name:        "Value one",
+			valueInt:    1,
+			valueString: "1",
+			expected:    `{"data":[{"uuid":"1","userUUID":"1","userAgent":"1","ip":"1","issuedAt":1,"expiresAt":1,"createdAt":1,"updatedAt":1}]}`,
+		},
+		{
+			name:        "Value two",
+			valueInt:    2,
+			valueString: "2",
+			expected:    `{"data":[{"uuid":"2","userUUID":"2","userAgent":"2","ip":"2","issuedAt":2,"expiresAt":2,"createdAt":2,"updatedAt":2}]}`,
+		},
+	}
 
-	devices = append(devices, device)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var devices []repositories.Device
 
-	response := NewSuccessDevicesResponse(devices)
+			mockDevice.EXPECT().GetUUID().Return(tt.valueString)
+			mockDevice.EXPECT().GetUserUUID().Return(tt.valueString)
+			mockDevice.EXPECT().GetUserAgent().Return(tt.valueString)
+			mockDevice.EXPECT().GetIp().Return(tt.valueString)
+			mockDevice.EXPECT().GetIssuedAt().Return(tt.valueInt)
+			mockDevice.EXPECT().GetExpiresAt().Return(tt.valueInt)
+			mockDevice.EXPECT().GetCreatedAt().Return(tt.valueInt)
+			mockDevice.EXPECT().GetUpdatedAt().Return(tt.valueInt)
 
-	assert.NotEmpty(t, response)
+			devices = append(devices, mockDevice)
 
-	responseToJson, err := json.Marshal(response)
+			response := NewSuccessDevicesResponse(devices)
 
-	assert.NoError(t, err)
+			assert.NotEmpty(t, response)
 
-	expected := `{"data":[{"uuid":"1","userUUID":"2","userAgent":"3","ip":"4","expiresAt":6,"createdAt":7,"updatedAt":8}]}`
+			responseToJson, err := json.Marshal(response)
 
-	assert.Equal(t, string(responseToJson), expected)
+			assert.NoError(t, err)
+			assert.Equal(t, tt.expected, string(responseToJson))
+		})
+	}
 }

@@ -1,26 +1,26 @@
 package routes
 
 import (
-	"github.com/fromsi/jwt-oauth-sso/internal/configs"
 	"github.com/fromsi/jwt-oauth-sso/internal/http/requests"
 	"github.com/fromsi/jwt-oauth-sso/internal/http/responses"
 	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
+	"github.com/fromsi/jwt-oauth-sso/internal/tokens"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type DevicesRoute struct {
-	config           configs.TokenConfig
-	deviceRepository repositories.DeviceRepository
+	deviceRepository   repositories.DeviceRepository
+	accessTokenBuilder tokens.AccessTokenBuilder
 }
 
 func NewDevicesRoute(
-	config configs.TokenConfig,
 	deviceRepository repositories.DeviceRepository,
+	accessTokenBuilder tokens.AccessTokenBuilder,
 ) *DevicesRoute {
 	return &DevicesRoute{
-		config:           config,
-		deviceRepository: deviceRepository,
+		deviceRepository:   deviceRepository,
+		accessTokenBuilder: accessTokenBuilder,
 	}
 }
 
@@ -33,7 +33,7 @@ func (receiver DevicesRoute) Pattern() string {
 }
 
 func (receiver DevicesRoute) Handle(context *gin.Context) {
-	headers, err := requests.NewBearerAuthRequestHeader(context, receiver.config)
+	headers, err := requests.NewBearerAuthRequestHeader(context, receiver.accessTokenBuilder)
 
 	if err != nil {
 		context.Status(http.StatusUnauthorized)
@@ -43,7 +43,7 @@ func (receiver DevicesRoute) Handle(context *gin.Context) {
 
 	_ = requests.NewDevicesRequest(context)
 
-	devices := receiver.deviceRepository.GetDevicesByUserUUID(headers.AccessToken.Subject)
+	devices := receiver.deviceRepository.GetDevicesByUserUUID(headers.AccessToken.GetSubject())
 
 	response := responses.NewSuccessDevicesResponse(devices)
 

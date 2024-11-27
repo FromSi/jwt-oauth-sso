@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"github.com/fromsi/jwt-oauth-sso/internal/configs"
 	"github.com/fromsi/jwt-oauth-sso/internal/tokens"
 )
 
@@ -29,12 +28,13 @@ type DeviceRepository interface {
 
 //go:generate mockgen -destination=../../mocks/repositories/mock_query_device.go -package=repositories_mocks github.com/fromsi/jwt-oauth-sso/internal/repositories QueryDevice
 type QueryDevice interface {
-	GenerateAccessToken(configs.TokenConfig) (*tokens.AccessToken, error)
+	GenerateAccessToken() (tokens.AccessToken, error)
 	GetUUID() string
 	GetUserUUID() string
 	GetUserAgent() string
 	GetIp() string
 	GetRefreshToken() string
+	GetIssuedAt() int
 	GetExpiresAt() int
 	GetCreatedAt() int
 	GetUpdatedAt() int
@@ -47,6 +47,7 @@ type MutableDevice interface {
 	SetUserAgent(string)
 	SetIp(string)
 	SetRefreshToken(string)
+	SetIssuedAt(int)
 	SetExpiresAt(int)
 	SetCreatedAt(int)
 	SetUpdatedAt(int)

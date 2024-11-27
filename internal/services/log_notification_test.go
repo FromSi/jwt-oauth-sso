@@ -2,8 +2,9 @@ package services
 
 import (
 	"bytes"
-	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
+	repositories_mocks "github.com/fromsi/jwt-oauth-sso/mocks/repositories"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/mock/gomock"
 	"log"
 	"testing"
 )
@@ -22,10 +23,14 @@ func TestLogNotificationService_SendTextByUser(t *testing.T) {
 	log.SetOutput(&buf)
 	log.SetFlags(0)
 
-	user := repositories.NewGormUser()
-	user.SetUUID("1")
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
 
-	err := logNotificationService.SendTextByUser(user, "1")
+	mockUser := repositories_mocks.NewMockUser(mockController)
+
+	mockUser.EXPECT().GetUUID().Return("1")
+
+	err := logNotificationService.SendTextByUser(mockUser, "1")
 
 	assert.NoError(t, err)
 
@@ -33,9 +38,9 @@ func TestLogNotificationService_SendTextByUser(t *testing.T) {
 
 	buf.Reset()
 
-	user.SetUUID("2")
+	mockUser.EXPECT().GetUUID().Return("2")
 
-	err = logNotificationService.SendTextByUser(user, "2")
+	err = logNotificationService.SendTextByUser(mockUser, "2")
 
 	assert.NoError(t, err)
 

@@ -50,7 +50,7 @@ func Test_Password(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			mock := mockFieldLevel{data: tt.password}
 
-			assert.Equal(t, Password(mock), !tt.error)
+			assert.Equal(t, !tt.error, Password(mock))
 		})
 	}
 }

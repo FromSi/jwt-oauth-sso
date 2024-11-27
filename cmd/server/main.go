@@ -7,6 +7,7 @@ import (
 	"github.com/fromsi/jwt-oauth-sso/internal/http/routes"
 	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
 	"github.com/fromsi/jwt-oauth-sso/internal/services"
+	"github.com/fromsi/jwt-oauth-sso/internal/tokens"
 	"github.com/fromsi/jwt-oauth-sso/internal/validator_rules"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/fx"
@@ -48,6 +49,24 @@ func CreateApp() fx.Option {
 				fx.As(new(configs.AppConfig)),
 				fx.As(new(configs.TokenConfig)),
 				fx.As(new(configs.DatabaseConfig)),
+			),
+
+			fx.Annotate(
+				tokens.NewJwtAccessTokenBuilder,
+				fx.As(new(tokens.AccessTokenBuilder)),
+			),
+
+			fx.Annotate(
+				repositories.NewBaseUserBuilder,
+				fx.As(new(repositories.UserBuilder)),
+			),
+			fx.Annotate(
+				repositories.NewBaseResetTokenBuilder,
+				fx.As(new(repositories.ResetTokenBuilder)),
+			),
+			fx.Annotate(
+				repositories.NewBaseDeviceBuilder,
+				fx.As(new(repositories.DeviceBuilder)),
 			),
 
 			fx.Annotate(

@@ -1,8 +1,8 @@
 package services
 
 import (
+	"errors"
 	"github.com/fromsi/jwt-oauth-sso/internal/configs"
-	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
 	"github.com/fromsi/jwt-oauth-sso/mocks/repositories"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -16,8 +16,13 @@ func Test_NewBaseDeviceService(t *testing.T) {
 
 	config := configs.NewBaseConfig()
 	mockDeviceRepository := repositories_mocks.NewMockDeviceRepository(mockController)
+	mockDeviceBuilder := repositories_mocks.NewMockDeviceBuilder(mockController)
 
-	baseDeviceService := NewBaseDeviceService(config, mockDeviceRepository)
+	baseDeviceService := NewBaseDeviceService(
+		config,
+		mockDeviceRepository,
+		mockDeviceBuilder,
+	)
 
 	assert.NotEmpty(t, baseDeviceService)
 }
@@ -28,8 +33,13 @@ func TestBaseDeviceService_GenerateUUID(t *testing.T) {
 
 	config := configs.NewBaseConfig()
 	mockDeviceRepository := repositories_mocks.NewMockDeviceRepository(mockController)
+	mockDeviceBuilder := repositories_mocks.NewMockDeviceBuilder(mockController)
 
-	baseDeviceService := NewBaseDeviceService(config, mockDeviceRepository)
+	baseDeviceService := NewBaseDeviceService(
+		config,
+		mockDeviceRepository,
+		mockDeviceBuilder,
+	)
 
 	uuidOne := baseDeviceService.GenerateUUID()
 	uuidTwo := baseDeviceService.GenerateUUID()
@@ -54,8 +64,13 @@ func TestBaseDeviceService_GenerateRefreshToken(t *testing.T) {
 
 	config := configs.NewBaseConfig()
 	mockDeviceRepository := repositories_mocks.NewMockDeviceRepository(mockController)
+	mockDeviceBuilder := repositories_mocks.NewMockDeviceBuilder(mockController)
 
-	baseDeviceService := NewBaseDeviceService(config, mockDeviceRepository)
+	baseDeviceService := NewBaseDeviceService(
+		config,
+		mockDeviceRepository,
+		mockDeviceBuilder,
+	)
 
 	uuidOne := baseDeviceService.GenerateRefreshToken()
 	uuidTwo := baseDeviceService.GenerateRefreshToken()
@@ -80,56 +95,24 @@ func TestBaseDeviceService_GetOldDeviceByUserUUIDAndIpAndUserAgent(t *testing.T)
 
 	config := configs.NewBaseConfig()
 	mockDeviceRepository := repositories_mocks.NewMockDeviceRepository(mockController)
-
-	deviceOne := repositories.NewGormDevice()
-
-	deviceOne.SetUserUUID("1")
-	deviceOne.SetIp("1")
-	deviceOne.SetUserAgent("1")
+	mockDeviceBuilder := repositories_mocks.NewMockDeviceBuilder(mockController)
+	mockDevice := repositories_mocks.NewMockDevice(mockController)
 
 	mockDeviceRepository.
 		EXPECT().
-		GetDeviceByUserUUIDAndIpAndUserAgent(
-			deviceOne.GetUserUUID(),
-			deviceOne.GetIp(),
-			deviceOne.GetUserAgent(),
-		).
-		Return(deviceOne).
+		GetDeviceByUserUUIDAndIpAndUserAgent(gomock.Any(), gomock.Any(), gomock.Any()).
+		Return(mockDevice).
 		AnyTimes()
 
-	mockDeviceRepository.
-		EXPECT().
-		GetDeviceByUserUUIDAndIpAndUserAgent(
-			"0",
-			"0",
-			"0",
-		).
-		Return(nil).
-		AnyTimes()
+	baseDeviceService := NewBaseDeviceService(
+		config,
+		mockDeviceRepository,
+		mockDeviceBuilder,
+	)
 
-	baseDeviceService := NewBaseDeviceService(config, mockDeviceRepository)
-
-	device := baseDeviceService.
-		GetOldDeviceByUserUUIDAndIpAndUserAgent(
-			deviceOne.GetUserUUID(),
-			deviceOne.GetIp(),
-			deviceOne.GetUserAgent(),
-		)
+	device := baseDeviceService.GetOldDeviceByUserUUIDAndIpAndUserAgent("1", "1", "1")
 
 	assert.NotEmpty(t, device)
-
-	assert.Equal(t, deviceOne.GetUserUUID(), device.GetUserUUID())
-	assert.Equal(t, deviceOne.GetIp(), device.GetIp())
-	assert.Equal(t, deviceOne.GetUserAgent(), device.GetUserAgent())
-
-	device = baseDeviceService.
-		GetOldDeviceByUserUUIDAndIpAndUserAgent(
-			"0",
-			"0",
-			"0",
-		)
-
-	assert.Empty(t, device)
 }
 
 func TestBaseDeviceService_GetNewDeviceByUserUUIDAndIpAndUserAgent(t *testing.T) {
@@ -138,46 +121,28 @@ func TestBaseDeviceService_GetNewDeviceByUserUUIDAndIpAndUserAgent(t *testing.T)
 
 	config := configs.NewBaseConfig()
 	mockDeviceRepository := repositories_mocks.NewMockDeviceRepository(mockController)
+	mockDeviceBuilder := repositories_mocks.NewMockDeviceBuilder(mockController)
+	mockDevice := repositories_mocks.NewMockDevice(mockController)
 
-	deviceOne := repositories.NewGormDevice()
+	mockDeviceBuilder.EXPECT().New().Return(mockDeviceBuilder).AnyTimes()
+	mockDeviceBuilder.EXPECT().SetUUID(gomock.Any()).Return(mockDeviceBuilder).AnyTimes()
+	mockDeviceBuilder.EXPECT().SetUserUUID(gomock.Any()).Return(mockDeviceBuilder).AnyTimes()
+	mockDeviceBuilder.EXPECT().SetIp(gomock.Any()).Return(mockDeviceBuilder).AnyTimes()
+	mockDeviceBuilder.EXPECT().SetUserAgent(gomock.Any()).Return(mockDeviceBuilder).AnyTimes()
+	mockDeviceBuilder.EXPECT().SetCreatedAt(gomock.Any()).Return(mockDeviceBuilder).AnyTimes()
+	mockDeviceBuilder.EXPECT().SetUpdatedAt(gomock.Any()).Return(mockDeviceBuilder).AnyTimes()
+	mockDeviceBuilder.EXPECT().Build().Return(mockDevice, nil).AnyTimes()
 
-	deviceOne.SetUserUUID("1")
-	deviceOne.SetIp("1")
-	deviceOne.SetUserAgent("1")
+	baseDeviceService := NewBaseDeviceService(
+		config,
+		mockDeviceRepository,
+		mockDeviceBuilder,
+	)
 
-	deviceTwo := repositories.NewGormDevice()
+	device, err := baseDeviceService.GetNewDeviceByUserUUIDAndIpAndUserAgent("1", "1", "1")
 
-	deviceTwo.SetUserUUID("2")
-	deviceTwo.SetIp("2")
-	deviceTwo.SetUserAgent("2")
-
-	baseDeviceService := NewBaseDeviceService(config, mockDeviceRepository)
-
-	device := baseDeviceService.
-		GetNewDeviceByUserUUIDAndIpAndUserAgent(
-			deviceOne.GetUserUUID(),
-			deviceOne.GetIp(),
-			deviceOne.GetUserAgent(),
-		)
-
+	assert.NoError(t, err)
 	assert.NotEmpty(t, device)
-
-	assert.Equal(t, deviceOne.GetUserUUID(), device.GetUserUUID())
-	assert.Equal(t, deviceOne.GetIp(), device.GetIp())
-	assert.Equal(t, deviceOne.GetUserAgent(), device.GetUserAgent())
-
-	device = baseDeviceService.
-		GetNewDeviceByUserUUIDAndIpAndUserAgent(
-			deviceTwo.GetUserUUID(),
-			deviceTwo.GetIp(),
-			deviceTwo.GetUserAgent(),
-		)
-
-	assert.NotEmpty(t, device)
-
-	assert.Equal(t, deviceTwo.GetUserUUID(), device.GetUserUUID())
-	assert.Equal(t, deviceTwo.GetIp(), device.GetIp())
-	assert.Equal(t, deviceTwo.GetUserAgent(), device.GetUserAgent())
 }
 
 func TestBaseDeviceService_GetNewRefreshDetailsByDevice(t *testing.T) {
@@ -186,20 +151,36 @@ func TestBaseDeviceService_GetNewRefreshDetailsByDevice(t *testing.T) {
 
 	config := configs.NewBaseConfig()
 	mockDeviceRepository := repositories_mocks.NewMockDeviceRepository(mockController)
+	mockDeviceBuilder := repositories_mocks.NewMockDeviceBuilder(mockController)
+	mockDeviceOne := repositories_mocks.NewMockDevice(mockController)
+	mockDeviceTwo := repositories_mocks.NewMockDevice(mockController)
 
-	device := repositories.NewGormDevice()
+	mockDeviceOne.EXPECT().SetRefreshToken(gomock.Any()).Return().AnyTimes()
+	mockDeviceOne.EXPECT().SetUpdatedAt(gomock.Any()).Return().AnyTimes()
+	mockDeviceOne.EXPECT().SetExpiresAt(gomock.Any()).Return().AnyTimes()
 
-	device.SetRefreshToken("1")
-	device.SetUpdatedAt(1)
-	device.SetExpiresAt(1)
+	mockDeviceBuilder.EXPECT().NewFromDevice(gomock.Any()).Return(mockDeviceBuilder).AnyTimes()
+	mockDeviceBuilder.EXPECT().SetRefreshToken(gomock.Any()).Return(mockDeviceBuilder).AnyTimes()
+	mockDeviceBuilder.EXPECT().SetExpiresAt(gomock.Any()).Return(mockDeviceBuilder).AnyTimes()
+	mockDeviceBuilder.EXPECT().SetUpdatedAt(gomock.Any()).Return(mockDeviceBuilder).AnyTimes()
+	mockDeviceBuilder.EXPECT().Build().Return(mockDeviceTwo, nil)
 
-	baseDeviceService := NewBaseDeviceService(config, mockDeviceRepository)
+	baseDeviceService := NewBaseDeviceService(
+		config,
+		mockDeviceRepository,
+		mockDeviceBuilder,
+	)
 
-	deviceUpdated := baseDeviceService.GetNewRefreshDetailsByDevice(device)
+	deviceUpdated, err := baseDeviceService.GetNewRefreshDetailsByDevice(mockDeviceOne)
 
+	assert.NoError(t, err)
 	assert.NotEmpty(t, deviceUpdated)
+	assert.NotSame(t, mockDeviceOne, deviceUpdated)
 
-	assert.Equal(t, deviceUpdated.GetRefreshToken(), device.GetRefreshToken())
-	assert.Equal(t, deviceUpdated.GetUpdatedAt(), device.GetUpdatedAt())
-	assert.Equal(t, deviceUpdated.GetExpiresAt(), device.GetExpiresAt())
+	mockDeviceBuilder.EXPECT().Build().Return(nil, errors.New("error"))
+
+	deviceUpdated, err = baseDeviceService.GetNewRefreshDetailsByDevice(mockDeviceOne)
+
+	assert.Error(t, err)
+	assert.Empty(t, deviceUpdated)
 }

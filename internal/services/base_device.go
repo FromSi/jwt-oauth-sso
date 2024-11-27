@@ -10,15 +10,18 @@ import (
 type BaseDeviceService struct {
 	config           configs.TokenConfig
 	deviceRepository repositories.DeviceRepository
+	deviceBuilder    repositories.DeviceBuilder
 }
 
 func NewBaseDeviceService(
 	config configs.TokenConfig,
 	deviceRepository repositories.DeviceRepository,
+	deviceBuilder repositories.DeviceBuilder,
 ) *BaseDeviceService {
 	return &BaseDeviceService{
 		config:           config,
 		deviceRepository: deviceRepository,
+		deviceBuilder:    deviceBuilder,
 	}
 }
 
@@ -44,34 +47,39 @@ func (receiver *BaseDeviceService) GetNewDeviceByUserUUIDAndIpAndUserAgent(
 	userUUID string,
 	ip string,
 	userAgent string,
-) repositories.Device {
+) (repositories.Device, error) {
 	timeNow := time.Now()
-	device := repositories.NewGormDevice()
 
-	device.SetUUID(receiver.GenerateUUID())
-	device.SetUserUUID(userUUID)
-	device.SetIp(ip)
-	device.SetUserAgent(userAgent)
-
-	device.SetCreatedAt(int(timeNow.Unix()))
-	device.SetUpdatedAt(int(timeNow.Unix()))
-
-	return device
+	return receiver.deviceBuilder.
+		New().
+		SetUUID(receiver.GenerateUUID()).
+		SetUserUUID(userUUID).
+		SetIp(ip).
+		SetUserAgent(userAgent).
+		SetCreatedAt(int(timeNow.Unix())).
+		SetUpdatedAt(int(timeNow.Unix())).
+		Build()
 }
 
 func (receiver *BaseDeviceService) GetNewRefreshDetailsByDevice(
 	device repositories.Device,
-) repositories.Device {
+) (repositories.Device, error) {
 	timeNow := time.Now()
-
-	device.SetRefreshToken(receiver.GenerateRefreshToken())
-	device.SetUpdatedAt(int(timeNow.Unix()))
-
 	expiresAt := timeNow.
 		AddDate(0, 0, receiver.config.GetExpirationRefreshInDays()).
 		Unix()
 
-	device.SetExpiresAt(int(expiresAt))
+	deviceResult, err := receiver.
+		deviceBuilder.
+		NewFromDevice(device).
+		SetRefreshToken(receiver.GenerateRefreshToken()).
+		SetUpdatedAt(int(timeNow.Unix())).
+		SetExpiresAt(int(expiresAt)).
+		Build()
 
-	return device
+	if err != nil {
+		return nil, err
+	}
+
+	return deviceResult, nil
 }

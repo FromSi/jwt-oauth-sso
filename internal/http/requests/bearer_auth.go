@@ -2,7 +2,6 @@ package requests
 
 import (
 	"errors"
-	"github.com/fromsi/jwt-oauth-sso/internal/configs"
 	"github.com/fromsi/jwt-oauth-sso/internal/tokens"
 	"github.com/gin-gonic/gin"
 	"strings"
@@ -14,7 +13,7 @@ type BearerAuthRequestHeader struct {
 
 func NewBearerAuthRequestHeader(
 	context *gin.Context,
-	config configs.TokenConfig,
+	accessTokenBuilder tokens.AccessTokenBuilder,
 ) (*BearerAuthRequestHeader, error) {
 	authHeader := context.GetHeader("Authorization")
 
@@ -24,13 +23,19 @@ func NewBearerAuthRequestHeader(
 
 	token := strings.TrimPrefix(authHeader, "Bearer ")
 
-	accessToken, err := tokens.NewAccessTokenByJWT(config, token)
+	accessTokenBuilder, err := accessTokenBuilder.NewFromJwtString(token)
+
+	if err != nil {
+		return nil, err
+	}
+
+	accessToken, err := accessTokenBuilder.Build()
 
 	if err != nil {
 		return nil, err
 	}
 
 	return &BearerAuthRequestHeader{
-		AccessToken: *accessToken,
+		AccessToken: accessToken,
 	}, nil
 }
