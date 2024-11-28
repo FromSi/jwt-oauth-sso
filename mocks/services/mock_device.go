@@ -84,11 +84,12 @@ func (mr *MockDeviceServiceMockRecorder) GetNewDeviceByUserUUIDAndIpAndUserAgent
 }
 
 // GetNewRefreshDetailsByDevice mocks base method.
-func (m *MockDeviceService) GetNewRefreshDetailsByDevice(arg0 repositories.Device) repositories.Device {
+func (m *MockDeviceService) GetNewRefreshDetailsByDevice(arg0 repositories.Device) (repositories.Device, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetNewRefreshDetailsByDevice", arg0)
 	ret0, _ := ret[0].(repositories.Device)
-	return ret0
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // GetNewRefreshDetailsByDevice indicates an expected call of GetNewRefreshDetailsByDevice.
