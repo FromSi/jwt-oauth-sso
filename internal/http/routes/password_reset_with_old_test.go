@@ -1,9 +1,10 @@
 package routes
 
 import (
+	requests_mocks "github.com/fromsi/jwt-oauth-sso/mocks/http/requests"
+	responses_mocks "github.com/fromsi/jwt-oauth-sso/mocks/http/responses"
 	repositories_mocks "github.com/fromsi/jwt-oauth-sso/mocks/repositories"
 	services_mocks "github.com/fromsi/jwt-oauth-sso/mocks/services"
-	tokens_mocks "github.com/fromsi/jwt-oauth-sso/mocks/tokens"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 	"testing"
@@ -13,14 +14,22 @@ func Test_NewPasswordResetWithOldRoute(t *testing.T) {
 	mockController := gomock.NewController(t)
 	defer mockController.Finish()
 
-	mockUserService := services_mocks.NewMockUserService(mockController)
 	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
-	mockAccessTokenBuilder := tokens_mocks.NewMockAccessTokenBuilder(mockController)
+	mockUserService := services_mocks.NewMockUserService(mockController)
+	mockBearerAuthRequestHeader := requests_mocks.NewMockBearerAuthRequestHeader(mockController)
+	mockPasswordResetWithOldRequest := requests_mocks.NewMockPasswordResetWithOldRequest(mockController)
+	mockErrorBadRequestResponse := responses_mocks.NewMockErrorBadRequestResponse(mockController)
+	mockErrorConflictResponse := responses_mocks.NewMockErrorConflictResponse(mockController)
+	mockErrorInternalServerResponse := responses_mocks.NewMockErrorInternalServerResponse(mockController)
 
 	passwordResetWithOldRoute := NewPasswordResetWithOldRoute(
 		mockUserRepository,
 		mockUserService,
-		mockAccessTokenBuilder,
+		mockBearerAuthRequestHeader,
+		mockPasswordResetWithOldRequest,
+		mockErrorBadRequestResponse,
+		mockErrorConflictResponse,
+		mockErrorInternalServerResponse,
 	)
 
 	assert.NotEmpty(t, passwordResetWithOldRoute)
@@ -30,14 +39,22 @@ func TestNewPasswordResetWithOldRoute_Method(t *testing.T) {
 	mockController := gomock.NewController(t)
 	defer mockController.Finish()
 
-	mockUserService := services_mocks.NewMockUserService(mockController)
 	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
-	mockAccessTokenBuilder := tokens_mocks.NewMockAccessTokenBuilder(mockController)
+	mockUserService := services_mocks.NewMockUserService(mockController)
+	mockBearerAuthRequestHeader := requests_mocks.NewMockBearerAuthRequestHeader(mockController)
+	mockPasswordResetWithOldRequest := requests_mocks.NewMockPasswordResetWithOldRequest(mockController)
+	mockErrorBadRequestResponse := responses_mocks.NewMockErrorBadRequestResponse(mockController)
+	mockErrorConflictResponse := responses_mocks.NewMockErrorConflictResponse(mockController)
+	mockErrorInternalServerResponse := responses_mocks.NewMockErrorInternalServerResponse(mockController)
 
 	passwordResetWithOldRoute := NewPasswordResetWithOldRoute(
 		mockUserRepository,
 		mockUserService,
-		mockAccessTokenBuilder,
+		mockBearerAuthRequestHeader,
+		mockPasswordResetWithOldRequest,
+		mockErrorBadRequestResponse,
+		mockErrorConflictResponse,
+		mockErrorInternalServerResponse,
 	)
 
 	assert.NotEmpty(t, passwordResetWithOldRoute)
@@ -49,14 +66,22 @@ func TestNewPasswordResetWithOldRoute_Pattern(t *testing.T) {
 	mockController := gomock.NewController(t)
 	defer mockController.Finish()
 
-	mockUserService := services_mocks.NewMockUserService(mockController)
 	mockUserRepository := repositories_mocks.NewMockUserRepository(mockController)
-	mockAccessTokenBuilder := tokens_mocks.NewMockAccessTokenBuilder(mockController)
+	mockUserService := services_mocks.NewMockUserService(mockController)
+	mockBearerAuthRequestHeader := requests_mocks.NewMockBearerAuthRequestHeader(mockController)
+	mockPasswordResetWithOldRequest := requests_mocks.NewMockPasswordResetWithOldRequest(mockController)
+	mockErrorBadRequestResponse := responses_mocks.NewMockErrorBadRequestResponse(mockController)
+	mockErrorConflictResponse := responses_mocks.NewMockErrorConflictResponse(mockController)
+	mockErrorInternalServerResponse := responses_mocks.NewMockErrorInternalServerResponse(mockController)
 
 	passwordResetWithOldRoute := NewPasswordResetWithOldRoute(
 		mockUserRepository,
 		mockUserService,
-		mockAccessTokenBuilder,
+		mockBearerAuthRequestHeader,
+		mockPasswordResetWithOldRequest,
+		mockErrorBadRequestResponse,
+		mockErrorConflictResponse,
+		mockErrorInternalServerResponse,
 	)
 
 	assert.NotEmpty(t, passwordResetWithOldRoute)

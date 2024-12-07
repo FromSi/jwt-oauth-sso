@@ -6,26 +6,37 @@ import (
 	"github.com/fromsi/jwt-oauth-sso/internal/http/responses"
 	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
 	"github.com/fromsi/jwt-oauth-sso/internal/services"
-	"github.com/fromsi/jwt-oauth-sso/internal/tokens"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type PasswordResetWithOldRoute struct {
-	userRepository     repositories.UserRepository
-	userService        services.UserService
-	accessTokenBuilder tokens.AccessTokenBuilder
+	userRepository              repositories.UserRepository
+	userService                 services.UserService
+	bearerAuthRequestHeader     requests.BearerAuthRequestHeader
+	passwordResetWithOldRequest requests.PasswordResetWithOldRequest
+	errorBadRequestResponse     responses.ErrorBadRequestResponse
+	errorConflictResponse       responses.ErrorConflictResponse
+	errorInternalServerResponse responses.ErrorInternalServerResponse
 }
 
 func NewPasswordResetWithOldRoute(
 	userRepository repositories.UserRepository,
 	userService services.UserService,
-	accessTokenBuilder tokens.AccessTokenBuilder,
+	bearerAuthRequestHeader requests.BearerAuthRequestHeader,
+	passwordResetWithOldRequest requests.PasswordResetWithOldRequest,
+	errorBadRequestResponse responses.ErrorBadRequestResponse,
+	errorConflictResponse responses.ErrorConflictResponse,
+	errorInternalServerResponse responses.ErrorInternalServerResponse,
 ) *PasswordResetWithOldRoute {
 	return &PasswordResetWithOldRoute{
-		userRepository:     userRepository,
-		userService:        userService,
-		accessTokenBuilder: accessTokenBuilder,
+		userRepository:              userRepository,
+		userService:                 userService,
+		bearerAuthRequestHeader:     bearerAuthRequestHeader,
+		passwordResetWithOldRequest: passwordResetWithOldRequest,
+		errorBadRequestResponse:     errorBadRequestResponse,
+		errorConflictResponse:       errorConflictResponse,
+		errorInternalServerResponse: errorInternalServerResponse,
 	}
 }
 
@@ -38,7 +49,7 @@ func (receiver PasswordResetWithOldRoute) Pattern() string {
 }
 
 func (receiver PasswordResetWithOldRoute) Handle(context *gin.Context) {
-	headers, err := requests.NewBearerAuthRequestHeader(context, receiver.accessTokenBuilder)
+	headers, err := receiver.bearerAuthRequestHeader.Make(context)
 
 	if err != nil {
 		context.Status(http.StatusUnauthorized)
@@ -46,20 +57,23 @@ func (receiver PasswordResetWithOldRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	request, errResponse := requests.NewPasswordResetWithOldRequest(context)
+	request, err := receiver.passwordResetWithOldRequest.Make(context)
 
-	if errResponse != nil {
-		context.JSON(http.StatusBadRequest, errResponse)
+	if err != nil {
+		context.JSON(
+			http.StatusBadRequest,
+			receiver.errorBadRequestResponse.Make(err),
+		)
 
 		return
 	}
 
-	user := receiver.userRepository.GetUserByUUID(headers.AccessToken.GetSubject())
+	user := receiver.userRepository.GetUserByUUID(headers.GetAccessToken().GetSubject())
 
 	if user == nil {
 		context.JSON(
 			http.StatusInternalServerError,
-			responses.NewErrorInternalServerResponse(errors.New("user not found")),
+			receiver.errorInternalServerResponse.Make(errors.New("user not found")),
 		)
 
 		return
@@ -67,13 +81,13 @@ func (receiver PasswordResetWithOldRoute) Handle(context *gin.Context) {
 
 	err = receiver.userService.CheckHashedPasswordAndNativePassword(
 		user.GetPassword(),
-		request.Body.OldPassword,
+		request.GetBody().GetOldPassword(),
 	)
 
 	if err != nil {
 		context.JSON(
 			http.StatusConflict,
-			responses.NewErrorConflictResponse(errors.New("invalid old password")),
+			receiver.errorConflictResponse.Make(errors.New("invalid old password")),
 		)
 
 		return
@@ -81,13 +95,13 @@ func (receiver PasswordResetWithOldRoute) Handle(context *gin.Context) {
 
 	err = receiver.userService.UpdatePasswordByUUIDAndHashedPassword(
 		user.GetUUID(),
-		request.Body.NewPassword,
+		request.GetBody().GetNewPassword(),
 	)
 
 	if err != nil {
 		context.JSON(
 			http.StatusInternalServerError,
-			responses.NewErrorInternalServerResponse(err),
+			receiver.errorInternalServerResponse.Make(err),
 		)
 
 		return

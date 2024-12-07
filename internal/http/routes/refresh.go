@@ -11,17 +11,32 @@ import (
 )
 
 type RefreshRoute struct {
-	deviceService    services.DeviceService
-	deviceRepository repositories.DeviceRepository
+	deviceService               services.DeviceService
+	deviceRepository            repositories.DeviceRepository
+	refreshRequest              requests.RefreshRequest
+	successRefreshResponse      responses.SuccessRefreshResponse
+	errorBadRequestResponse     responses.ErrorBadRequestResponse
+	errorConflictResponse       responses.ErrorConflictResponse
+	errorInternalServerResponse responses.ErrorInternalServerResponse
 }
 
 func NewRefreshRoute(
 	deviceService services.DeviceService,
 	deviceRepository repositories.DeviceRepository,
+	refreshRequest requests.RefreshRequest,
+	successRefreshResponse responses.SuccessRefreshResponse,
+	errorBadRequestResponse responses.ErrorBadRequestResponse,
+	errorConflictResponse responses.ErrorConflictResponse,
+	errorInternalServerResponse responses.ErrorInternalServerResponse,
 ) *RefreshRoute {
 	return &RefreshRoute{
-		deviceService:    deviceService,
-		deviceRepository: deviceRepository,
+		deviceService:               deviceService,
+		deviceRepository:            deviceRepository,
+		refreshRequest:              refreshRequest,
+		successRefreshResponse:      successRefreshResponse,
+		errorBadRequestResponse:     errorBadRequestResponse,
+		errorConflictResponse:       errorConflictResponse,
+		errorInternalServerResponse: errorInternalServerResponse,
 	}
 }
 
@@ -34,33 +49,36 @@ func (receiver RefreshRoute) Pattern() string {
 }
 
 func (receiver RefreshRoute) Handle(context *gin.Context) {
-	request, errResponse := requests.NewRefreshRequest(context)
+	request, err := receiver.refreshRequest.Make(context)
 
-	if errResponse != nil {
-		context.JSON(http.StatusBadRequest, errResponse)
-
-		return
-	}
-
-	device := receiver.deviceRepository.GetDeviceByRefreshToken(
-		request.Body.RefreshToken,
-	)
-
-	if device == nil {
+	if err != nil {
 		context.JSON(
-			http.StatusConflict,
-			responses.NewErrorConflictResponse(errors.New("invalid refresh token")),
+			http.StatusBadRequest,
+			receiver.errorBadRequestResponse.Make(err),
 		)
 
 		return
 	}
 
-	device, err := receiver.deviceService.GetNewRefreshDetailsByDevice(device)
+	device := receiver.deviceRepository.GetDeviceByRefreshToken(
+		request.GetBody().GetRefreshToken(),
+	)
+
+	if device == nil {
+		context.JSON(
+			http.StatusConflict,
+			receiver.errorConflictResponse.Make(errors.New("invalid refresh token")),
+		)
+
+		return
+	}
+
+	device, err = receiver.deviceService.GetNewRefreshDetailsByDevice(device)
 
 	if err != nil {
 		context.JSON(
 			http.StatusInternalServerError,
-			responses.NewErrorInternalServerResponse(err),
+			receiver.errorInternalServerResponse.Make(err),
 		)
 
 		return
@@ -71,18 +89,18 @@ func (receiver RefreshRoute) Handle(context *gin.Context) {
 	if err != nil {
 		context.JSON(
 			http.StatusInternalServerError,
-			responses.NewErrorInternalServerResponse(err),
+			receiver.errorInternalServerResponse.Make(err),
 		)
 
 		return
 	}
 
-	response, err := responses.NewSuccessRefreshResponse(device)
+	response, err := receiver.successRefreshResponse.Make(device)
 
 	if err != nil {
 		context.JSON(
 			http.StatusInternalServerError,
-			responses.NewErrorInternalServerResponse(err),
+			receiver.errorInternalServerResponse.Make(err),
 		)
 
 		return

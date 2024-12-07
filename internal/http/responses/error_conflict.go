@@ -1,11 +1,6 @@
 package responses
 
-type ErrorConflictResponse struct {
-	Message string `json:"message"`
-}
-
-func NewErrorConflictResponse(err error) *ErrorConflictResponse {
-	return &ErrorConflictResponse{
-		Message: err.Error(),
-	}
+//go:generate mockgen -destination=../../../mocks/http/responses/mock_error_conflict_response.go -package=responses_mocks github.com/fromsi/jwt-oauth-sso/internal/http/responses ErrorConflictResponse
+type ErrorConflictResponse interface {
+	Make(error) ErrorConflictResponse
 }

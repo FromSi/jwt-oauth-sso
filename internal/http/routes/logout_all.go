@@ -10,17 +10,26 @@ import (
 )
 
 type LogoutAllRoute struct {
-	deviceRepository   repositories.DeviceRepository
-	accessTokenBuilder tokens.AccessTokenBuilder
+	deviceRepository            repositories.DeviceRepository
+	accessTokenBuilder          tokens.AccessTokenBuilder
+	bearerAuthRequestHeader     requests.BearerAuthRequestHeader
+	logoutAllRequest            requests.LogoutAllRequest
+	errorInternalServerResponse responses.ErrorInternalServerResponse
 }
 
 func NewLogoutAllRoute(
 	deviceRepository repositories.DeviceRepository,
 	accessTokenBuilder tokens.AccessTokenBuilder,
+	bearerAuthRequestHeader requests.BearerAuthRequestHeader,
+	logoutAllRequest requests.LogoutAllRequest,
+	errorInternalServerResponse responses.ErrorInternalServerResponse,
 ) *LogoutAllRoute {
 	return &LogoutAllRoute{
-		deviceRepository:   deviceRepository,
-		accessTokenBuilder: accessTokenBuilder,
+		deviceRepository:            deviceRepository,
+		accessTokenBuilder:          accessTokenBuilder,
+		bearerAuthRequestHeader:     bearerAuthRequestHeader,
+		logoutAllRequest:            logoutAllRequest,
+		errorInternalServerResponse: errorInternalServerResponse,
 	}
 }
 
@@ -33,7 +42,7 @@ func (receiver LogoutAllRoute) Pattern() string {
 }
 
 func (receiver LogoutAllRoute) Handle(context *gin.Context) {
-	headers, err := requests.NewBearerAuthRequestHeader(context, receiver.accessTokenBuilder)
+	headers, err := receiver.bearerAuthRequestHeader.Make(context)
 
 	if err != nil {
 		context.Status(http.StatusUnauthorized)
@@ -41,14 +50,14 @@ func (receiver LogoutAllRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	_ = requests.NewLogoutAllRequest(context)
+	_ = receiver.logoutAllRequest.Make(context)
 
-	err = receiver.deviceRepository.DeleteAllDevicesByUserUUID(headers.AccessToken.GetSubject())
+	err = receiver.deviceRepository.DeleteAllDevicesByUserUUID(headers.GetAccessToken().GetSubject())
 
 	if err != nil {
 		context.JSON(
 			http.StatusInternalServerError,
-			responses.NewErrorInternalServerResponse(err),
+			receiver.errorInternalServerResponse.Make(err),
 		)
 
 		return

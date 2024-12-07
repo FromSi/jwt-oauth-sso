@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/fromsi/jwt-oauth-sso/internal/configs"
+	"github.com/fromsi/jwt-oauth-sso/internal/http/requests"
+	"github.com/fromsi/jwt-oauth-sso/internal/http/responses"
 	"github.com/fromsi/jwt-oauth-sso/internal/http/routes"
 	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
 	"github.com/fromsi/jwt-oauth-sso/internal/services"
@@ -86,6 +88,120 @@ func CreateApp() fx.Option {
 				fx.As(new(repositories.UserRepository)),
 				fx.As(new(repositories.QueryUserRepository)),
 				fx.As(new(repositories.MutableUserRepository)),
+			),
+
+			fx.Annotate(
+				requests.NewBaseBearerAuthRequestHeader,
+				fx.As(new(requests.BearerAuthRequestHeader)),
+			),
+			fx.Annotate(
+				requests.NewBaseDevicesRequest,
+				fx.As(new(requests.DevicesRequest)),
+			),
+			fx.Annotate(
+				requests.NewBaseDevicesRequestBody,
+				fx.As(new(requests.DevicesRequestBody)),
+			),
+			fx.Annotate(
+				requests.NewBaseLoginRequest,
+				fx.As(new(requests.LoginRequest)),
+			),
+			fx.Annotate(
+				requests.NewBaseLoginRequestBody,
+				fx.As(new(requests.LoginRequestBody)),
+			),
+			fx.Annotate(
+				requests.NewBaseLogoutRequest,
+				fx.As(new(requests.LogoutRequest)),
+			),
+			fx.Annotate(
+				requests.NewBaseLogoutRequestBody,
+				fx.As(new(requests.LogoutRequestBody)),
+			),
+			fx.Annotate(
+				requests.NewBaseLogoutAllRequest,
+				fx.As(new(requests.LogoutAllRequest)),
+			),
+			fx.Annotate(
+				requests.NewBaseLogoutAllRequestBody,
+				fx.As(new(requests.LogoutAllRequestBody)),
+			),
+			fx.Annotate(
+				requests.NewBaseLogoutDeviceRequest,
+				fx.As(new(requests.LogoutDeviceRequest)),
+			),
+			fx.Annotate(
+				requests.NewBaseLogoutDeviceRequestBody,
+				fx.As(new(requests.LogoutDeviceRequestBody)),
+			),
+			fx.Annotate(
+				requests.NewBasePasswordResetWithOldRequest,
+				fx.As(new(requests.PasswordResetWithOldRequest)),
+			),
+			fx.Annotate(
+				requests.NewBasePasswordResetWithOldRequestBody,
+				fx.As(new(requests.PasswordResetWithOldRequestBody)),
+			),
+			fx.Annotate(
+				requests.NewBasePasswordResetWithTokenRequest,
+				fx.As(new(requests.PasswordResetWithTokenRequest)),
+			),
+			fx.Annotate(
+				requests.NewBasePasswordResetWithTokenRequestBody,
+				fx.As(new(requests.PasswordResetWithTokenRequestBody)),
+			),
+			fx.Annotate(
+				requests.NewBaseRefreshRequest,
+				fx.As(new(requests.RefreshRequest)),
+			),
+			fx.Annotate(
+				requests.NewBaseRefreshRequestBody,
+				fx.As(new(requests.RefreshRequestBody)),
+			),
+			fx.Annotate(
+				requests.NewBaseRegisterRequest,
+				fx.As(new(requests.RegisterRequest)),
+			),
+			fx.Annotate(
+				requests.NewBaseRegisterRequestBody,
+				fx.As(new(requests.RegisterRequestBody)),
+			),
+			fx.Annotate(
+				requests.NewBaseSendResetTokenRequest,
+				fx.As(new(requests.SendResetTokenRequest)),
+			),
+			fx.Annotate(
+				requests.NewBaseSendResetTokenRequestBody,
+				fx.As(new(requests.SendResetTokenRequestBody)),
+			),
+
+			fx.Annotate(
+				responses.NewBaseErrorBadRequestResponse,
+				fx.As(new(responses.ErrorBadRequestResponse)),
+			),
+			fx.Annotate(
+				responses.NewBaseErrorConflictResponse,
+				fx.As(new(responses.ErrorConflictResponse)),
+			),
+			fx.Annotate(
+				responses.NewBaseErrorInternalServerResponse,
+				fx.As(new(responses.ErrorInternalServerResponse)),
+			),
+			fx.Annotate(
+				responses.NewBaseSuccessDevicesResponse,
+				fx.As(new(responses.SuccessDevicesResponse)),
+			),
+			fx.Annotate(
+				responses.NewBaseSuccessLoginResponse,
+				fx.As(new(responses.SuccessLoginResponse)),
+			),
+			fx.Annotate(
+				responses.NewBaseSuccessRefreshResponse,
+				fx.As(new(responses.SuccessRefreshResponse)),
+			),
+			fx.Annotate(
+				responses.NewBaseSuccessRegisterResponse,
+				fx.As(new(responses.SuccessRegisterResponse)),
 			),
 
 			fx.Annotate(

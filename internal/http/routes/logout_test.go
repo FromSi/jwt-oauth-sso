@@ -1,8 +1,9 @@
 package routes
 
 import (
+	requests_mocks "github.com/fromsi/jwt-oauth-sso/mocks/http/requests"
+	responses_mocks "github.com/fromsi/jwt-oauth-sso/mocks/http/responses"
 	repositories_mocks "github.com/fromsi/jwt-oauth-sso/mocks/repositories"
-	tokens_mocks "github.com/fromsi/jwt-oauth-sso/mocks/tokens"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 	"testing"
@@ -13,9 +14,16 @@ func Test_NewLogoutRoute(t *testing.T) {
 	defer mockController.Finish()
 
 	mockDeviceRepository := repositories_mocks.NewMockDeviceRepository(mockController)
-	mockAccessTokenBuilder := tokens_mocks.NewMockAccessTokenBuilder(mockController)
+	mockBearerAuthRequestHeader := requests_mocks.NewMockBearerAuthRequestHeader(mockController)
+	mockLogoutRequest := requests_mocks.NewMockLogoutRequest(mockController)
+	mockErrorInternalServerResponse := responses_mocks.NewMockErrorInternalServerResponse(mockController)
 
-	logoutRoute := NewLogoutRoute(mockDeviceRepository, mockAccessTokenBuilder)
+	logoutRoute := NewLogoutRoute(
+		mockDeviceRepository,
+		mockBearerAuthRequestHeader,
+		mockLogoutRequest,
+		mockErrorInternalServerResponse,
+	)
 
 	assert.NotEmpty(t, logoutRoute)
 }
@@ -25,9 +33,16 @@ func TestNewLogoutRoute_Method(t *testing.T) {
 	defer mockController.Finish()
 
 	mockDeviceRepository := repositories_mocks.NewMockDeviceRepository(mockController)
-	mockAccessTokenBuilder := tokens_mocks.NewMockAccessTokenBuilder(mockController)
+	mockBearerAuthRequestHeader := requests_mocks.NewMockBearerAuthRequestHeader(mockController)
+	mockLogoutRequest := requests_mocks.NewMockLogoutRequest(mockController)
+	mockErrorInternalServerResponse := responses_mocks.NewMockErrorInternalServerResponse(mockController)
 
-	logoutRoute := NewLogoutRoute(mockDeviceRepository, mockAccessTokenBuilder)
+	logoutRoute := NewLogoutRoute(
+		mockDeviceRepository,
+		mockBearerAuthRequestHeader,
+		mockLogoutRequest,
+		mockErrorInternalServerResponse,
+	)
 
 	assert.NotEmpty(t, logoutRoute)
 
@@ -39,9 +54,16 @@ func TestNewLogoutRoute_Pattern(t *testing.T) {
 	defer mockController.Finish()
 
 	mockDeviceRepository := repositories_mocks.NewMockDeviceRepository(mockController)
-	mockAccessTokenBuilder := tokens_mocks.NewMockAccessTokenBuilder(mockController)
+	mockBearerAuthRequestHeader := requests_mocks.NewMockBearerAuthRequestHeader(mockController)
+	mockLogoutRequest := requests_mocks.NewMockLogoutRequest(mockController)
+	mockErrorInternalServerResponse := responses_mocks.NewMockErrorInternalServerResponse(mockController)
 
-	logoutRoute := NewLogoutRoute(mockDeviceRepository, mockAccessTokenBuilder)
+	logoutRoute := NewLogoutRoute(
+		mockDeviceRepository,
+		mockBearerAuthRequestHeader,
+		mockLogoutRequest,
+		mockErrorInternalServerResponse,
+	)
 
 	assert.NotEmpty(t, logoutRoute)
 

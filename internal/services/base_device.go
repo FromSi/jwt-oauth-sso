@@ -73,6 +73,7 @@ func (receiver *BaseDeviceService) GetNewRefreshDetailsByDevice(
 		deviceBuilder.
 		NewFromDevice(device).
 		SetRefreshToken(receiver.GenerateRefreshToken()).
+		SetIssuedAt(int(timeNow.Unix())).
 		SetUpdatedAt(int(timeNow.Unix())).
 		SetExpiresAt(int(expiresAt)).
 		Build()

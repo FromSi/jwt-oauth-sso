@@ -11,20 +11,32 @@ import (
 )
 
 type PasswordResetWithTokenRoute struct {
-	resetTokenRepository repositories.ResetTokenRepository
-	resetTokenService    services.ResetTokenService
-	userService          services.UserService
+	resetTokenRepository          repositories.ResetTokenRepository
+	resetTokenService             services.ResetTokenService
+	userService                   services.UserService
+	passwordResetWithTokenRequest requests.PasswordResetWithTokenRequest
+	errorBadRequestResponse       responses.ErrorBadRequestResponse
+	errorConflictResponse         responses.ErrorConflictResponse
+	errorInternalServerResponse   responses.ErrorInternalServerResponse
 }
 
 func NewPasswordResetWithTokenRoute(
 	resetTokenRepository repositories.ResetTokenRepository,
 	resetTokenService services.ResetTokenService,
 	userService services.UserService,
+	passwordResetWithTokenRequest requests.PasswordResetWithTokenRequest,
+	errorBadRequestResponse responses.ErrorBadRequestResponse,
+	errorConflictResponse responses.ErrorConflictResponse,
+	errorInternalServerResponse responses.ErrorInternalServerResponse,
 ) *PasswordResetWithTokenRoute {
 	return &PasswordResetWithTokenRoute{
-		resetTokenRepository: resetTokenRepository,
-		resetTokenService:    resetTokenService,
-		userService:          userService,
+		resetTokenRepository:          resetTokenRepository,
+		resetTokenService:             resetTokenService,
+		userService:                   userService,
+		passwordResetWithTokenRequest: passwordResetWithTokenRequest,
+		errorBadRequestResponse:       errorBadRequestResponse,
+		errorConflictResponse:         errorConflictResponse,
+		errorInternalServerResponse:   errorInternalServerResponse,
 	}
 }
 
@@ -37,31 +49,34 @@ func (receiver PasswordResetWithTokenRoute) Pattern() string {
 }
 
 func (receiver PasswordResetWithTokenRoute) Handle(context *gin.Context) {
-	request, errResponse := requests.NewPasswordResetWithTokenRequest(context)
+	request, err := receiver.passwordResetWithTokenRequest.Make(context)
 
-	if errResponse != nil {
-		context.JSON(http.StatusBadRequest, errResponse)
-
-		return
-	}
-
-	token := receiver.resetTokenRepository.GetActiveResetTokenByToken(request.Body.Token)
-
-	if token == nil {
+	if err != nil {
 		context.JSON(
-			http.StatusConflict,
-			responses.NewErrorConflictResponse(errors.New("token is expired")),
+			http.StatusBadRequest,
+			receiver.errorBadRequestResponse.Make(err),
 		)
 
 		return
 	}
 
-	hashedPassword, err := receiver.userService.HashPassword(request.Body.NewPassword)
+	token := receiver.resetTokenRepository.GetActiveResetTokenByToken(request.GetBody().GetToken())
+
+	if token == nil {
+		context.JSON(
+			http.StatusConflict,
+			receiver.errorConflictResponse.Make(errors.New("token is expired")),
+		)
+
+		return
+	}
+
+	hashedPassword, err := receiver.userService.HashPassword(request.GetBody().GetNewPassword())
 
 	if err != nil {
 		context.JSON(
 			http.StatusInternalServerError,
-			responses.NewErrorInternalServerResponse(err),
+			receiver.errorInternalServerResponse.Make(err),
 		)
 
 		return
@@ -75,18 +90,18 @@ func (receiver PasswordResetWithTokenRoute) Handle(context *gin.Context) {
 	if err != nil {
 		context.JSON(
 			http.StatusInternalServerError,
-			responses.NewErrorInternalServerResponse(err),
+			receiver.errorInternalServerResponse.Make(err),
 		)
 
 		return
 	}
 
-	err = receiver.resetTokenRepository.DeleteResetToken(request.Body.Token)
+	err = receiver.resetTokenRepository.DeleteResetToken(request.GetBody().GetToken())
 
 	if err != nil {
 		context.JSON(
 			http.StatusInternalServerError,
-			responses.NewErrorInternalServerResponse(err),
+			receiver.errorInternalServerResponse.Make(err),
 		)
 
 		return

@@ -4,23 +4,31 @@ import (
 	"github.com/fromsi/jwt-oauth-sso/internal/http/requests"
 	"github.com/fromsi/jwt-oauth-sso/internal/http/responses"
 	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
-	"github.com/fromsi/jwt-oauth-sso/internal/tokens"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type LogoutDeviceRoute struct {
-	deviceRepository   repositories.DeviceRepository
-	accessTokenBuilder tokens.AccessTokenBuilder
+	deviceRepository            repositories.DeviceRepository
+	bearerAuthRequestHeader     requests.BearerAuthRequestHeader
+	logoutDeviceRequest         requests.LogoutDeviceRequest
+	errorBadRequestResponse     responses.ErrorBadRequestResponse
+	errorInternalServerResponse responses.ErrorInternalServerResponse
 }
 
 func NewLogoutDeviceRoute(
 	deviceRepository repositories.DeviceRepository,
-	accessTokenBuilder tokens.AccessTokenBuilder,
+	bearerAuthRequestHeader requests.BearerAuthRequestHeader,
+	logoutDeviceRequest requests.LogoutDeviceRequest,
+	errorBadRequestResponse responses.ErrorBadRequestResponse,
+	errorInternalServerResponse responses.ErrorInternalServerResponse,
 ) *LogoutDeviceRoute {
 	return &LogoutDeviceRoute{
-		deviceRepository:   deviceRepository,
-		accessTokenBuilder: accessTokenBuilder,
+		deviceRepository:            deviceRepository,
+		bearerAuthRequestHeader:     bearerAuthRequestHeader,
+		logoutDeviceRequest:         logoutDeviceRequest,
+		errorBadRequestResponse:     errorBadRequestResponse,
+		errorInternalServerResponse: errorInternalServerResponse,
 	}
 }
 
@@ -33,7 +41,7 @@ func (receiver LogoutDeviceRoute) Pattern() string {
 }
 
 func (receiver LogoutDeviceRoute) Handle(context *gin.Context) {
-	headers, err := requests.NewBearerAuthRequestHeader(context, receiver.accessTokenBuilder)
+	headers, err := receiver.bearerAuthRequestHeader.Make(context)
 
 	if err != nil {
 		context.Status(http.StatusUnauthorized)
@@ -41,23 +49,26 @@ func (receiver LogoutDeviceRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	request, errResponse := requests.NewLogoutDeviceRequest(context)
+	request, err := receiver.logoutDeviceRequest.Make(context)
 
-	if errResponse != nil {
-		context.JSON(http.StatusBadRequest, errResponse)
+	if err != nil {
+		context.JSON(
+			http.StatusBadRequest,
+			receiver.errorBadRequestResponse.Make(err),
+		)
 
 		return
 	}
 
 	err = receiver.deviceRepository.DeleteDeviceByUUIDAndUserUUID(
-		request.Body.DeviceUUID,
-		headers.AccessToken.GetSubject(),
+		request.GetBody().GetDeviceUUID(),
+		headers.GetAccessToken().GetSubject(),
 	)
 
 	if err != nil {
 		context.JSON(
 			http.StatusInternalServerError,
-			responses.NewErrorInternalServerResponse(err),
+			receiver.errorInternalServerResponse.Make(err),
 		)
 
 		return

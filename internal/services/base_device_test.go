@@ -101,8 +101,7 @@ func TestBaseDeviceService_GetOldDeviceByUserUUIDAndIpAndUserAgent(t *testing.T)
 	mockDeviceRepository.
 		EXPECT().
 		GetDeviceByUserUUIDAndIpAndUserAgent(gomock.Any(), gomock.Any(), gomock.Any()).
-		Return(mockDevice).
-		AnyTimes()
+		Return(mockDevice)
 
 	baseDeviceService := NewBaseDeviceService(
 		config,
@@ -124,14 +123,14 @@ func TestBaseDeviceService_GetNewDeviceByUserUUIDAndIpAndUserAgent(t *testing.T)
 	mockDeviceBuilder := repositories_mocks.NewMockDeviceBuilder(mockController)
 	mockDevice := repositories_mocks.NewMockDevice(mockController)
 
-	mockDeviceBuilder.EXPECT().New().Return(mockDeviceBuilder).AnyTimes()
-	mockDeviceBuilder.EXPECT().SetUUID(gomock.Any()).Return(mockDeviceBuilder).AnyTimes()
-	mockDeviceBuilder.EXPECT().SetUserUUID(gomock.Any()).Return(mockDeviceBuilder).AnyTimes()
-	mockDeviceBuilder.EXPECT().SetIp(gomock.Any()).Return(mockDeviceBuilder).AnyTimes()
-	mockDeviceBuilder.EXPECT().SetUserAgent(gomock.Any()).Return(mockDeviceBuilder).AnyTimes()
-	mockDeviceBuilder.EXPECT().SetCreatedAt(gomock.Any()).Return(mockDeviceBuilder).AnyTimes()
-	mockDeviceBuilder.EXPECT().SetUpdatedAt(gomock.Any()).Return(mockDeviceBuilder).AnyTimes()
-	mockDeviceBuilder.EXPECT().Build().Return(mockDevice, nil).AnyTimes()
+	mockDeviceBuilder.EXPECT().New().Return(mockDeviceBuilder)
+	mockDeviceBuilder.EXPECT().SetUUID(gomock.Any()).Return(mockDeviceBuilder)
+	mockDeviceBuilder.EXPECT().SetUserUUID(gomock.Any()).Return(mockDeviceBuilder)
+	mockDeviceBuilder.EXPECT().SetIp(gomock.Any()).Return(mockDeviceBuilder)
+	mockDeviceBuilder.EXPECT().SetUserAgent(gomock.Any()).Return(mockDeviceBuilder)
+	mockDeviceBuilder.EXPECT().SetCreatedAt(gomock.Any()).Return(mockDeviceBuilder)
+	mockDeviceBuilder.EXPECT().SetUpdatedAt(gomock.Any()).Return(mockDeviceBuilder)
+	mockDeviceBuilder.EXPECT().Build().Return(mockDevice, nil)
 
 	baseDeviceService := NewBaseDeviceService(
 		config,
@@ -155,14 +154,11 @@ func TestBaseDeviceService_GetNewRefreshDetailsByDevice(t *testing.T) {
 	mockDeviceOne := repositories_mocks.NewMockDevice(mockController)
 	mockDeviceTwo := repositories_mocks.NewMockDevice(mockController)
 
-	mockDeviceOne.EXPECT().SetRefreshToken(gomock.Any()).Return().AnyTimes()
-	mockDeviceOne.EXPECT().SetUpdatedAt(gomock.Any()).Return().AnyTimes()
-	mockDeviceOne.EXPECT().SetExpiresAt(gomock.Any()).Return().AnyTimes()
-
-	mockDeviceBuilder.EXPECT().NewFromDevice(gomock.Any()).Return(mockDeviceBuilder).AnyTimes()
-	mockDeviceBuilder.EXPECT().SetRefreshToken(gomock.Any()).Return(mockDeviceBuilder).AnyTimes()
-	mockDeviceBuilder.EXPECT().SetExpiresAt(gomock.Any()).Return(mockDeviceBuilder).AnyTimes()
-	mockDeviceBuilder.EXPECT().SetUpdatedAt(gomock.Any()).Return(mockDeviceBuilder).AnyTimes()
+	mockDeviceBuilder.EXPECT().NewFromDevice(gomock.Any()).Return(mockDeviceBuilder)
+	mockDeviceBuilder.EXPECT().SetRefreshToken(gomock.Any()).Return(mockDeviceBuilder)
+	mockDeviceBuilder.EXPECT().SetIssuedAt(gomock.Any()).Return(mockDeviceBuilder)
+	mockDeviceBuilder.EXPECT().SetExpiresAt(gomock.Any()).Return(mockDeviceBuilder)
+	mockDeviceBuilder.EXPECT().SetUpdatedAt(gomock.Any()).Return(mockDeviceBuilder)
 	mockDeviceBuilder.EXPECT().Build().Return(mockDeviceTwo, nil)
 
 	baseDeviceService := NewBaseDeviceService(
@@ -177,6 +173,11 @@ func TestBaseDeviceService_GetNewRefreshDetailsByDevice(t *testing.T) {
 	assert.NotEmpty(t, deviceUpdated)
 	assert.NotSame(t, mockDeviceOne, deviceUpdated)
 
+	mockDeviceBuilder.EXPECT().NewFromDevice(gomock.Any()).Return(mockDeviceBuilder)
+	mockDeviceBuilder.EXPECT().SetRefreshToken(gomock.Any()).Return(mockDeviceBuilder)
+	mockDeviceBuilder.EXPECT().SetIssuedAt(gomock.Any()).Return(mockDeviceBuilder)
+	mockDeviceBuilder.EXPECT().SetExpiresAt(gomock.Any()).Return(mockDeviceBuilder)
+	mockDeviceBuilder.EXPECT().SetUpdatedAt(gomock.Any()).Return(mockDeviceBuilder)
 	mockDeviceBuilder.EXPECT().Build().Return(nil, errors.New("error"))
 
 	deviceUpdated, err = baseDeviceService.GetNewRefreshDetailsByDevice(mockDeviceOne)

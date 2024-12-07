@@ -4,23 +4,28 @@ import (
 	"github.com/fromsi/jwt-oauth-sso/internal/http/requests"
 	"github.com/fromsi/jwt-oauth-sso/internal/http/responses"
 	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
-	"github.com/fromsi/jwt-oauth-sso/internal/tokens"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type DevicesRoute struct {
-	deviceRepository   repositories.DeviceRepository
-	accessTokenBuilder tokens.AccessTokenBuilder
+	deviceRepository        repositories.DeviceRepository
+	bearerAuthRequestHeader requests.BearerAuthRequestHeader
+	devicesRequest          requests.DevicesRequest
+	successDevicesResponse  responses.SuccessDevicesResponse
 }
 
 func NewDevicesRoute(
 	deviceRepository repositories.DeviceRepository,
-	accessTokenBuilder tokens.AccessTokenBuilder,
+	bearerAuthRequestHeader requests.BearerAuthRequestHeader,
+	devicesRequest requests.DevicesRequest,
+	successDevicesResponse responses.SuccessDevicesResponse,
 ) *DevicesRoute {
 	return &DevicesRoute{
-		deviceRepository:   deviceRepository,
-		accessTokenBuilder: accessTokenBuilder,
+		deviceRepository:        deviceRepository,
+		bearerAuthRequestHeader: bearerAuthRequestHeader,
+		devicesRequest:          devicesRequest,
+		successDevicesResponse:  successDevicesResponse,
 	}
 }
 
@@ -33,7 +38,7 @@ func (receiver DevicesRoute) Pattern() string {
 }
 
 func (receiver DevicesRoute) Handle(context *gin.Context) {
-	headers, err := requests.NewBearerAuthRequestHeader(context, receiver.accessTokenBuilder)
+	headers, err := receiver.bearerAuthRequestHeader.Make(context)
 
 	if err != nil {
 		context.Status(http.StatusUnauthorized)
@@ -41,11 +46,11 @@ func (receiver DevicesRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	_ = requests.NewDevicesRequest(context)
+	_ = receiver.devicesRequest.Make(context)
 
-	devices := receiver.deviceRepository.GetDevicesByUserUUID(headers.AccessToken.GetSubject())
+	devices := receiver.deviceRepository.GetDevicesByUserUUID(headers.GetAccessToken().GetSubject())
 
-	response := responses.NewSuccessDevicesResponse(devices)
+	response := receiver.successDevicesResponse.Make(devices)
 
 	context.JSON(http.StatusOK, response)
 }

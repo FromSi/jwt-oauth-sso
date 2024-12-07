@@ -1,42 +1,17 @@
 package requests
 
 import (
-	"github.com/fromsi/jwt-oauth-sso/internal/http/responses"
 	"github.com/gin-gonic/gin"
 )
 
-type RefreshRequest struct {
-	Body RefreshRequestBody
+//go:generate mockgen -destination=../../../mocks/http/requests/mock_refresh_request.go -package=requests_mocks github.com/fromsi/jwt-oauth-sso/internal/http/requests RefreshRequest
+type RefreshRequest interface {
+	Make(*gin.Context) (RefreshRequest, error)
+	GetBody() RefreshRequestBody
 }
 
-func NewRefreshRequest(
-	context *gin.Context,
-) (*RefreshRequest, *responses.ErrorBadRequestResponse) {
-	var request RefreshRequest
-
-	requestBody, err := NewRefreshRequestBody(context)
-
-	if err != nil {
-		return nil, err
-	}
-
-	request.Body = *requestBody
-
-	return &request, nil
-}
-
-type RefreshRequestBody struct {
-	RefreshToken string `json:"refreshToken" binding:"required,uuid4"`
-}
-
-func NewRefreshRequestBody(
-	context *gin.Context,
-) (*RefreshRequestBody, *responses.ErrorBadRequestResponse) {
-	var requestBody RefreshRequestBody
-
-	if err := context.ShouldBindJSON(&requestBody); err != nil && err.Error() != "EOF" {
-		return nil, responses.NewErrorBadRequestResponseByError(err)
-	}
-
-	return &requestBody, nil
+//go:generate mockgen -destination=../../../mocks/http/requests/mock_refresh_request_body.go -package=requests_mocks github.com/fromsi/jwt-oauth-sso/internal/http/requests RefreshRequestBody
+type RefreshRequestBody interface {
+	Make(*gin.Context) (RefreshRequestBody, error)
+	GetRefreshToken() string
 }

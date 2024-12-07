@@ -4,26 +4,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type LogoutAllRequest struct {
-	Body LogoutAllRequestBody
+//go:generate mockgen -destination=../../../mocks/http/requests/mock_logout_all_request.go -package=requests_mocks github.com/fromsi/jwt-oauth-sso/internal/http/requests LogoutAllRequest
+type LogoutAllRequest interface {
+	Make(*gin.Context) LogoutAllRequest
+	GetBody() LogoutAllRequestBody
 }
 
-func NewLogoutAllRequest(context *gin.Context) *LogoutAllRequest {
-	var request LogoutAllRequest
-
-	requestBody := NewLogoutAllRequestBody(context)
-
-	request.Body = *requestBody
-
-	return &request
-}
-
-type LogoutAllRequestBody struct{}
-
-func NewLogoutAllRequestBody(
-	context *gin.Context,
-) *LogoutAllRequestBody {
-	var requestBody LogoutAllRequestBody
-
-	return &requestBody
+//go:generate mockgen -destination=../../../mocks/http/requests/mock_logout_all_request_body.go -package=requests_mocks github.com/fromsi/jwt-oauth-sso/internal/http/requests LogoutAllRequestBody
+type LogoutAllRequestBody interface {
+	Make(*gin.Context) LogoutAllRequestBody
 }

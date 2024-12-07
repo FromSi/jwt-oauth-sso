@@ -44,14 +44,6 @@ func TestBaseResetTokenService_GenerateToken(t *testing.T) {
 	mockResetTokenRepository := repositories_mocks.NewMockResetTokenRepository(mockController)
 	mockNotificationService := services_mocks.NewMockNotificationService(mockController)
 	mockResetTokenBuilder := repositories_mocks.NewMockResetTokenBuilder(mockController)
-	mockResetToken := repositories_mocks.NewMockResetToken(mockController)
-
-	mockResetTokenBuilder.EXPECT().New().Return(mockResetTokenBuilder).AnyTimes()
-	mockResetTokenBuilder.EXPECT().SetToken(gomock.Any()).Return(mockResetTokenBuilder).AnyTimes()
-	mockResetTokenBuilder.EXPECT().SetUserUUID(gomock.Any()).Return(mockResetTokenBuilder).AnyTimes()
-	mockResetTokenBuilder.EXPECT().SetExpiresAt(gomock.Any()).Return(mockResetTokenBuilder).AnyTimes()
-	mockResetTokenBuilder.EXPECT().SetCreatedAt(gomock.Any()).Return(mockResetTokenBuilder).AnyTimes()
-	mockResetTokenBuilder.EXPECT().Build().Return(mockResetToken, nil).AnyTimes()
 
 	baseResetTokenService := NewBaseResetTokenService(
 		config,
@@ -92,15 +84,15 @@ func TestBaseResetTokenService_SendNewResetTokenByUser(t *testing.T) {
 	mockResetToken := repositories_mocks.NewMockResetToken(mockController)
 	mockUser := repositories_mocks.NewMockUser(mockController)
 
-	mockUser.EXPECT().GetUUID().Return("1").AnyTimes()
+	mockUser.EXPECT().GetUUID().Return("1")
 
-	mockResetToken.EXPECT().GetToken().Return("1").AnyTimes()
+	mockResetToken.EXPECT().GetToken().Return("1")
 
-	mockResetTokenBuilder.EXPECT().New().Return(mockResetTokenBuilder).AnyTimes()
-	mockResetTokenBuilder.EXPECT().SetToken(gomock.Any()).Return(mockResetTokenBuilder).AnyTimes()
-	mockResetTokenBuilder.EXPECT().SetUserUUID(gomock.Any()).Return(mockResetTokenBuilder).AnyTimes()
-	mockResetTokenBuilder.EXPECT().SetExpiresAt(gomock.Any()).Return(mockResetTokenBuilder).AnyTimes()
-	mockResetTokenBuilder.EXPECT().SetCreatedAt(gomock.Any()).Return(mockResetTokenBuilder).AnyTimes()
+	mockResetTokenBuilder.EXPECT().New().Return(mockResetTokenBuilder)
+	mockResetTokenBuilder.EXPECT().SetToken(gomock.Any()).Return(mockResetTokenBuilder)
+	mockResetTokenBuilder.EXPECT().SetUserUUID(gomock.Any()).Return(mockResetTokenBuilder)
+	mockResetTokenBuilder.EXPECT().SetExpiresAt(gomock.Any()).Return(mockResetTokenBuilder)
+	mockResetTokenBuilder.EXPECT().SetCreatedAt(gomock.Any()).Return(mockResetTokenBuilder)
 	mockResetTokenBuilder.EXPECT().Build().Return(mockResetToken, nil)
 
 	mockResetTokenRepository.EXPECT().CreateResetToken(gomock.Any()).Return(nil)
@@ -120,6 +112,15 @@ func TestBaseResetTokenService_SendNewResetTokenByUser(t *testing.T) {
 
 	assert.NoError(t, err)
 
+	mockUser.EXPECT().GetUUID().Return("1")
+
+	mockResetToken.EXPECT().GetToken().Return("1")
+
+	mockResetTokenBuilder.EXPECT().New().Return(mockResetTokenBuilder)
+	mockResetTokenBuilder.EXPECT().SetToken(gomock.Any()).Return(mockResetTokenBuilder)
+	mockResetTokenBuilder.EXPECT().SetUserUUID(gomock.Any()).Return(mockResetTokenBuilder)
+	mockResetTokenBuilder.EXPECT().SetExpiresAt(gomock.Any()).Return(mockResetTokenBuilder)
+	mockResetTokenBuilder.EXPECT().SetCreatedAt(gomock.Any()).Return(mockResetTokenBuilder)
 	mockResetTokenBuilder.EXPECT().Build().Return(mockResetToken, nil)
 	mockResetTokenRepository.EXPECT().CreateResetToken(gomock.Any()).Return(nil)
 	mockNotificationService.EXPECT().SendTextByUser(gomock.Any(), gomock.Any()).Return(errors.New("error"))
@@ -128,6 +129,13 @@ func TestBaseResetTokenService_SendNewResetTokenByUser(t *testing.T) {
 
 	assert.Error(t, err)
 
+	mockUser.EXPECT().GetUUID().Return("1")
+
+	mockResetTokenBuilder.EXPECT().New().Return(mockResetTokenBuilder)
+	mockResetTokenBuilder.EXPECT().SetToken(gomock.Any()).Return(mockResetTokenBuilder)
+	mockResetTokenBuilder.EXPECT().SetUserUUID(gomock.Any()).Return(mockResetTokenBuilder)
+	mockResetTokenBuilder.EXPECT().SetExpiresAt(gomock.Any()).Return(mockResetTokenBuilder)
+	mockResetTokenBuilder.EXPECT().SetCreatedAt(gomock.Any()).Return(mockResetTokenBuilder)
 	mockResetTokenBuilder.EXPECT().Build().Return(mockResetToken, nil)
 	mockResetTokenRepository.EXPECT().CreateResetToken(gomock.Any()).Return(errors.New("error"))
 
@@ -135,6 +143,13 @@ func TestBaseResetTokenService_SendNewResetTokenByUser(t *testing.T) {
 
 	assert.Error(t, err)
 
+	mockUser.EXPECT().GetUUID().Return("1")
+
+	mockResetTokenBuilder.EXPECT().New().Return(mockResetTokenBuilder)
+	mockResetTokenBuilder.EXPECT().SetToken(gomock.Any()).Return(mockResetTokenBuilder)
+	mockResetTokenBuilder.EXPECT().SetUserUUID(gomock.Any()).Return(mockResetTokenBuilder)
+	mockResetTokenBuilder.EXPECT().SetExpiresAt(gomock.Any()).Return(mockResetTokenBuilder)
+	mockResetTokenBuilder.EXPECT().SetCreatedAt(gomock.Any()).Return(mockResetTokenBuilder)
 	mockResetTokenBuilder.EXPECT().Build().Return(nil, errors.New("error"))
 
 	err = baseResetTokenService.SendNewResetTokenByUser(mockUser)

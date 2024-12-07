@@ -4,23 +4,28 @@ import (
 	"github.com/fromsi/jwt-oauth-sso/internal/http/requests"
 	"github.com/fromsi/jwt-oauth-sso/internal/http/responses"
 	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
-	"github.com/fromsi/jwt-oauth-sso/internal/tokens"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type LogoutRoute struct {
-	deviceRepository   repositories.DeviceRepository
-	accessTokenBuilder tokens.AccessTokenBuilder
+	deviceRepository            repositories.DeviceRepository
+	bearerAuthRequestHeader     requests.BearerAuthRequestHeader
+	logoutRequest               requests.LogoutRequest
+	errorInternalServerResponse responses.ErrorInternalServerResponse
 }
 
 func NewLogoutRoute(
 	deviceRepository repositories.DeviceRepository,
-	accessTokenBuilder tokens.AccessTokenBuilder,
+	bearerAuthRequestHeader requests.BearerAuthRequestHeader,
+	logoutRequest requests.LogoutRequest,
+	errorInternalServerResponse responses.ErrorInternalServerResponse,
 ) *LogoutRoute {
 	return &LogoutRoute{
-		deviceRepository:   deviceRepository,
-		accessTokenBuilder: accessTokenBuilder,
+		deviceRepository:            deviceRepository,
+		bearerAuthRequestHeader:     bearerAuthRequestHeader,
+		logoutRequest:               logoutRequest,
+		errorInternalServerResponse: errorInternalServerResponse,
 	}
 }
 
@@ -33,7 +38,7 @@ func (receiver LogoutRoute) Pattern() string {
 }
 
 func (receiver LogoutRoute) Handle(context *gin.Context) {
-	headers, err := requests.NewBearerAuthRequestHeader(context, receiver.accessTokenBuilder)
+	headers, err := receiver.bearerAuthRequestHeader.Make(context)
 
 	if err != nil {
 		context.Status(http.StatusUnauthorized)
@@ -41,14 +46,14 @@ func (receiver LogoutRoute) Handle(context *gin.Context) {
 		return
 	}
 
-	_ = requests.NewLogoutRequest(context)
+	_ = receiver.logoutRequest.Make(context)
 
-	err = receiver.deviceRepository.DeleteDeviceByUUID(headers.AccessToken.GetDeviceUUID())
+	err = receiver.deviceRepository.DeleteDeviceByUUID(headers.GetAccessToken().GetDeviceUUID())
 
 	if err != nil {
 		context.JSON(
 			http.StatusInternalServerError,
-			responses.NewErrorInternalServerResponse(err),
+			receiver.errorInternalServerResponse.Make(err),
 		)
 
 		return

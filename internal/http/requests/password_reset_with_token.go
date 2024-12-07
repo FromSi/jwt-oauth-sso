@@ -1,43 +1,18 @@
 package requests
 
 import (
-	"github.com/fromsi/jwt-oauth-sso/internal/http/responses"
 	"github.com/gin-gonic/gin"
 )
 
-type PasswordResetWithTokenRequest struct {
-	Body PasswordResetWithTokenRequestBody
+//go:generate mockgen -destination=../../../mocks/http/requests/mock_password_reset_with_token_request.go -package=requests_mocks github.com/fromsi/jwt-oauth-sso/internal/http/requests PasswordResetWithTokenRequest
+type PasswordResetWithTokenRequest interface {
+	Make(*gin.Context) (PasswordResetWithTokenRequest, error)
+	GetBody() PasswordResetWithTokenRequestBody
 }
 
-func NewPasswordResetWithTokenRequest(
-	context *gin.Context,
-) (*PasswordResetWithTokenRequest, *responses.ErrorBadRequestResponse) {
-	var request PasswordResetWithTokenRequest
-
-	requestBody, err := NewPasswordResetWithTokenRequestBody(context)
-
-	if err != nil {
-		return nil, err
-	}
-
-	request.Body = *requestBody
-
-	return &request, nil
-}
-
-type PasswordResetWithTokenRequestBody struct {
-	Token       string `json:"token" binding:"required,uuid4"`
-	NewPassword string `json:"newPassword" binding:"required,password"`
-}
-
-func NewPasswordResetWithTokenRequestBody(
-	context *gin.Context,
-) (*PasswordResetWithTokenRequestBody, *responses.ErrorBadRequestResponse) {
-	var requestBody PasswordResetWithTokenRequestBody
-
-	if err := context.ShouldBindJSON(&requestBody); err != nil && err.Error() != "EOF" {
-		return nil, responses.NewErrorBadRequestResponseByError(err)
-	}
-
-	return &requestBody, nil
+//go:generate mockgen -destination=../../../mocks/http/requests/mock_password_reset_with_token_request_body.go -package=requests_mocks github.com/fromsi/jwt-oauth-sso/internal/http/requests PasswordResetWithTokenRequestBody
+type PasswordResetWithTokenRequestBody interface {
+	Make(*gin.Context) (PasswordResetWithTokenRequestBody, error)
+	GetToken() string
+	GetNewPassword() string
 }

@@ -11,10 +11,15 @@ import (
 )
 
 type LoginRoute struct {
-	userService      services.UserService
-	deviceService    services.DeviceService
-	userRepository   repositories.UserRepository
-	deviceRepository repositories.DeviceRepository
+	userService                 services.UserService
+	deviceService               services.DeviceService
+	userRepository              repositories.UserRepository
+	deviceRepository            repositories.DeviceRepository
+	loginRequest                requests.LoginRequest
+	successLoginResponse        responses.SuccessLoginResponse
+	errorBadRequestResponse     responses.ErrorBadRequestResponse
+	errorConflictResponse       responses.ErrorConflictResponse
+	errorInternalServerResponse responses.ErrorInternalServerResponse
 }
 
 func NewLoginRoute(
@@ -22,12 +27,22 @@ func NewLoginRoute(
 	deviceService services.DeviceService,
 	userRepository repositories.UserRepository,
 	deviceRepository repositories.DeviceRepository,
+	loginRequest requests.LoginRequest,
+	successLoginResponse responses.SuccessLoginResponse,
+	errorBadRequestResponse responses.ErrorBadRequestResponse,
+	errorConflictResponse responses.ErrorConflictResponse,
+	errorInternalServerResponse responses.ErrorInternalServerResponse,
 ) *LoginRoute {
 	return &LoginRoute{
-		userService:      userService,
-		deviceService:    deviceService,
-		userRepository:   userRepository,
-		deviceRepository: deviceRepository,
+		userService:                 userService,
+		deviceService:               deviceService,
+		userRepository:              userRepository,
+		deviceRepository:            deviceRepository,
+		loginRequest:                loginRequest,
+		successLoginResponse:        successLoginResponse,
+		errorBadRequestResponse:     errorBadRequestResponse,
+		errorConflictResponse:       errorConflictResponse,
+		errorInternalServerResponse: errorInternalServerResponse,
 	}
 }
 
@@ -40,34 +55,34 @@ func (receiver LoginRoute) Pattern() string {
 }
 
 func (receiver LoginRoute) Handle(context *gin.Context) {
-	request, errResponse := requests.NewLoginRequest(context)
+	request, err := receiver.loginRequest.Make(context)
 
-	if errResponse != nil {
-		context.JSON(http.StatusBadRequest, errResponse)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, receiver.errorBadRequestResponse.Make(err))
 
 		return
 	}
 
-	user := receiver.userRepository.GetUserByEmail(request.Body.Email)
+	user := receiver.userRepository.GetUserByEmail(request.GetBody().GetEmail())
 
 	if user == nil {
 		context.JSON(
 			http.StatusConflict,
-			responses.NewErrorConflictResponse(errors.New("invalid email or password")),
+			receiver.errorConflictResponse.Make(errors.New("invalid email or password")),
 		)
 
 		return
 	}
 
-	err := receiver.userService.CheckHashedPasswordAndNativePassword(
+	err = receiver.userService.CheckHashedPasswordAndNativePassword(
 		user.GetPassword(),
-		request.Body.Password,
+		request.GetBody().GetPassword(),
 	)
 
 	if err != nil {
 		context.JSON(
 			http.StatusConflict,
-			responses.NewErrorConflictResponse(errors.New("invalid email or password")),
+			receiver.errorConflictResponse.Make(errors.New("invalid email or password")),
 		)
 
 		return
@@ -75,21 +90,21 @@ func (receiver LoginRoute) Handle(context *gin.Context) {
 
 	device := receiver.deviceService.GetOldDeviceByUserUUIDAndIpAndUserAgent(
 		user.GetUUID(),
-		request.IP,
-		request.UserAgent,
+		request.GetIP(),
+		request.GetUserAgent(),
 	)
 
 	if device == nil {
 		device, err = receiver.deviceService.GetNewDeviceByUserUUIDAndIpAndUserAgent(
 			user.GetUUID(),
-			request.IP,
-			request.UserAgent,
+			request.GetIP(),
+			request.GetUserAgent(),
 		)
 
 		if err != nil {
 			context.JSON(
 				http.StatusInternalServerError,
-				responses.NewErrorInternalServerResponse(err),
+				receiver.errorInternalServerResponse.Make(err),
 			)
 
 			return
@@ -100,7 +115,7 @@ func (receiver LoginRoute) Handle(context *gin.Context) {
 		if err != nil {
 			context.JSON(
 				http.StatusInternalServerError,
-				responses.NewErrorInternalServerResponse(err),
+				receiver.errorInternalServerResponse.Make(err),
 			)
 
 			return
@@ -112,7 +127,7 @@ func (receiver LoginRoute) Handle(context *gin.Context) {
 	if err != nil {
 		context.JSON(
 			http.StatusInternalServerError,
-			responses.NewErrorInternalServerResponse(err),
+			receiver.errorInternalServerResponse.Make(err),
 		)
 
 		return
@@ -123,18 +138,18 @@ func (receiver LoginRoute) Handle(context *gin.Context) {
 	if err != nil {
 		context.JSON(
 			http.StatusInternalServerError,
-			responses.NewErrorInternalServerResponse(err),
+			receiver.errorInternalServerResponse.Make(err),
 		)
 
 		return
 	}
 
-	response, err := responses.NewSuccessLoginResponse(device)
+	response, err := receiver.successLoginResponse.Make(device)
 
 	if err != nil {
 		context.JSON(
 			http.StatusInternalServerError,
-			responses.NewErrorInternalServerResponse(err),
+			receiver.errorInternalServerResponse.Make(err),
 		)
 
 		return

@@ -1,42 +1,17 @@
 package requests
 
 import (
-	"github.com/fromsi/jwt-oauth-sso/internal/http/responses"
 	"github.com/gin-gonic/gin"
 )
 
-type SendResetTokenRequest struct {
-	Body SendResetTokenRequestBody
+//go:generate mockgen -destination=../../../mocks/http/requests/mock_send_reset_token_request.go -package=requests_mocks github.com/fromsi/jwt-oauth-sso/internal/http/requests SendResetTokenRequest
+type SendResetTokenRequest interface {
+	Make(*gin.Context) (SendResetTokenRequest, error)
+	GetBody() SendResetTokenRequestBody
 }
 
-func NewSendResetTokenRequest(
-	context *gin.Context,
-) (*SendResetTokenRequest, *responses.ErrorBadRequestResponse) {
-	var request SendResetTokenRequest
-
-	requestBody, err := NewSendResetTokenRequestBody(context)
-
-	if err != nil {
-		return nil, err
-	}
-
-	request.Body = *requestBody
-
-	return &request, nil
-}
-
-type SendResetTokenRequestBody struct {
-	Email string `json:"email" binding:"required,email"`
-}
-
-func NewSendResetTokenRequestBody(
-	context *gin.Context,
-) (*SendResetTokenRequestBody, *responses.ErrorBadRequestResponse) {
-	var requestBody SendResetTokenRequestBody
-
-	if err := context.ShouldBindJSON(&requestBody); err != nil && err.Error() != "EOF" {
-		return nil, responses.NewErrorBadRequestResponseByError(err)
-	}
-
-	return &requestBody, nil
+//go:generate mockgen -destination=../../../mocks/http/requests/mock_send_reset_token_request_body.go -package=requests_mocks github.com/fromsi/jwt-oauth-sso/internal/http/requests SendResetTokenRequestBody
+type SendResetTokenRequestBody interface {
+	Make(*gin.Context) (SendResetTokenRequestBody, error)
+	GetEmail() string
 }

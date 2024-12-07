@@ -11,10 +11,15 @@ import (
 )
 
 type RegisterRoute struct {
-	userRepository   repositories.UserRepository
-	deviceRepository repositories.DeviceRepository
-	userService      services.UserService
-	deviceService    services.DeviceService
+	userRepository              repositories.UserRepository
+	deviceRepository            repositories.DeviceRepository
+	userService                 services.UserService
+	deviceService               services.DeviceService
+	registerRequest             requests.RegisterRequest
+	successRegisterResponse     responses.SuccessRegisterResponse
+	errorBadRequestResponse     responses.ErrorBadRequestResponse
+	errorConflictResponse       responses.ErrorConflictResponse
+	errorInternalServerResponse responses.ErrorInternalServerResponse
 }
 
 func NewRegisterRoute(
@@ -22,12 +27,22 @@ func NewRegisterRoute(
 	deviceRepository repositories.DeviceRepository,
 	userService services.UserService,
 	deviceService services.DeviceService,
+	registerRequest requests.RegisterRequest,
+	successRegisterResponse responses.SuccessRegisterResponse,
+	errorBadRequestResponse responses.ErrorBadRequestResponse,
+	errorConflictResponse responses.ErrorConflictResponse,
+	errorInternalServerResponse responses.ErrorInternalServerResponse,
 ) *RegisterRoute {
 	return &RegisterRoute{
-		userRepository:   userRepository,
-		deviceRepository: deviceRepository,
-		userService:      userService,
-		deviceService:    deviceService,
+		userRepository:              userRepository,
+		deviceRepository:            deviceRepository,
+		userService:                 userService,
+		deviceService:               deviceService,
+		registerRequest:             registerRequest,
+		successRegisterResponse:     successRegisterResponse,
+		errorBadRequestResponse:     errorBadRequestResponse,
+		errorConflictResponse:       errorConflictResponse,
+		errorInternalServerResponse: errorInternalServerResponse,
 	}
 }
 
@@ -40,58 +55,66 @@ func (receiver RegisterRoute) Pattern() string {
 }
 
 func (receiver RegisterRoute) Handle(context *gin.Context) {
-	request, errResponse := requests.NewRegisterRequest(context)
+	request, err := receiver.registerRequest.Make(context)
 
-	if errResponse != nil {
-		context.JSON(http.StatusBadRequest, errResponse)
+	if err != nil {
+		context.JSON(
+			http.StatusBadRequest,
+			receiver.errorBadRequestResponse.Make(err),
+		)
 
 		return
 	}
 
-	user := receiver.userRepository.GetUserByEmail(request.Body.Email)
+	user := receiver.userRepository.GetUserByEmail(request.GetBody().GetEmail())
 
 	if user != nil {
-		err := responses.NewErrorConflictResponse(
+		context.JSON(
+			http.StatusConflict,
 			errors.New("user already exists with this email"),
 		)
-
-		context.JSON(http.StatusConflict, err)
 
 		return
 	}
 
 	userUUID := receiver.userService.GenerateUUID()
 
-	hashedPassword, err := receiver.userService.HashPassword(request.Body.Password)
+	hashedPassword, err := receiver.userService.HashPassword(request.GetBody().GetPassword())
 
 	if err != nil {
-		context.JSON(http.StatusConflict, responses.NewErrorConflictResponse(err))
+		context.JSON(
+			http.StatusConflict,
+			receiver.errorConflictResponse.Make(err),
+		)
 
 		return
 	}
 
 	err = receiver.userService.CreateUserByUUIDAndEmailAndHashedPassword(
 		userUUID,
-		request.Body.Email,
+		request.GetBody().GetEmail(),
 		hashedPassword,
 	)
 
 	if err != nil {
-		context.JSON(http.StatusConflict, responses.NewErrorConflictResponse(err))
+		context.JSON(
+			http.StatusConflict,
+			receiver.errorConflictResponse.Make(err),
+		)
 
 		return
 	}
 
 	device, err := receiver.deviceService.GetNewDeviceByUserUUIDAndIpAndUserAgent(
 		userUUID,
-		request.IP,
-		request.UserAgent,
+		request.GetIP(),
+		request.GetUserAgent(),
 	)
 
 	if err != nil {
 		context.JSON(
 			http.StatusInternalServerError,
-			responses.NewErrorInternalServerResponse(err),
+			receiver.errorInternalServerResponse.Make(err),
 		)
 
 		return
@@ -102,7 +125,7 @@ func (receiver RegisterRoute) Handle(context *gin.Context) {
 	if err != nil {
 		context.JSON(
 			http.StatusInternalServerError,
-			responses.NewErrorInternalServerResponse(err),
+			receiver.errorInternalServerResponse.Make(err),
 		)
 
 		return
@@ -113,7 +136,7 @@ func (receiver RegisterRoute) Handle(context *gin.Context) {
 	if err != nil {
 		context.JSON(
 			http.StatusInternalServerError,
-			responses.NewErrorInternalServerResponse(err),
+			receiver.errorInternalServerResponse.Make(err),
 		)
 
 		return
@@ -124,18 +147,18 @@ func (receiver RegisterRoute) Handle(context *gin.Context) {
 	if err != nil {
 		context.JSON(
 			http.StatusInternalServerError,
-			responses.NewErrorInternalServerResponse(err),
+			receiver.errorInternalServerResponse.Make(err),
 		)
 
 		return
 	}
 
-	response, err := responses.NewSuccessRegisterResponse(device)
+	response, err := receiver.successRegisterResponse.Make(device)
 
 	if err != nil {
 		context.JSON(
 			http.StatusInternalServerError,
-			responses.NewErrorInternalServerResponse(err),
+			receiver.errorInternalServerResponse.Make(err),
 		)
 
 		return

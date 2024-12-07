@@ -4,24 +4,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type DevicesRequest struct {
-	Body DevicesRequestBody
+//go:generate mockgen -destination=../../../mocks/http/requests/mock_devices_request.go -package=requests_mocks github.com/fromsi/jwt-oauth-sso/internal/http/requests DevicesRequest
+type DevicesRequest interface {
+	Make(*gin.Context) DevicesRequest
+	GetBody() DevicesRequestBody
 }
 
-func NewDevicesRequest(context *gin.Context) *DevicesRequest {
-	var request DevicesRequest
-
-	requestBody := NewDevicesRequestBody(context)
-
-	request.Body = *requestBody
-
-	return &request
-}
-
-type DevicesRequestBody struct{}
-
-func NewDevicesRequestBody(context *gin.Context) *DevicesRequestBody {
-	var requestBody DevicesRequestBody
-
-	return &requestBody
+//go:generate mockgen -destination=../../../mocks/http/requests/mock_devices_request_body.go -package=requests_mocks github.com/fromsi/jwt-oauth-sso/internal/http/requests DevicesRequestBody
+type DevicesRequestBody interface {
+	Make(*gin.Context) DevicesRequestBody
 }

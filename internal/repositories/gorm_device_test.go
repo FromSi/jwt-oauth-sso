@@ -17,13 +17,13 @@ func TestGormDevice_GenerateAccessToken(t *testing.T) {
 	mockAccessTokenBuilder := tokens_mocks.NewMockAccessTokenBuilder(mockController)
 	mockAccessToken := tokens_mocks.NewMockAccessToken(mockController)
 
-	mockAccessTokenBuilder.EXPECT().New().Return(mockAccessTokenBuilder).AnyTimes()
-	mockAccessTokenBuilder.EXPECT().SetSubject(gomock.Any()).Return(mockAccessTokenBuilder).AnyTimes()
-	mockAccessTokenBuilder.EXPECT().SetDeviceUUID(gomock.Any()).Return(mockAccessTokenBuilder).AnyTimes()
-	mockAccessTokenBuilder.EXPECT().SetDeviceUserAgent(gomock.Any()).Return(mockAccessTokenBuilder).AnyTimes()
-	mockAccessTokenBuilder.EXPECT().SetIssuedAt(gomock.Any()).Return(mockAccessTokenBuilder).AnyTimes()
-	mockAccessTokenBuilder.EXPECT().SetExpirationTime(gomock.Any()).Return(mockAccessTokenBuilder).AnyTimes()
-	mockAccessTokenBuilder.EXPECT().Build().Return(mockAccessToken, nil).AnyTimes()
+	mockAccessTokenBuilder.EXPECT().New().Return(mockAccessTokenBuilder)
+	mockAccessTokenBuilder.EXPECT().SetSubject(gomock.Any()).Return(mockAccessTokenBuilder)
+	mockAccessTokenBuilder.EXPECT().SetDeviceUUID(gomock.Any()).Return(mockAccessTokenBuilder)
+	mockAccessTokenBuilder.EXPECT().SetDeviceUserAgent(gomock.Any()).Return(mockAccessTokenBuilder)
+	mockAccessTokenBuilder.EXPECT().SetIssuedAt(gomock.Any()).Return(mockAccessTokenBuilder)
+	mockAccessTokenBuilder.EXPECT().SetExpirationTime(gomock.Any()).Return(mockAccessTokenBuilder)
+	mockAccessTokenBuilder.EXPECT().Build().Return(mockAccessToken, nil)
 
 	gormDevice := GormDevice{
 		accessTokenBuilder: mockAccessTokenBuilder,

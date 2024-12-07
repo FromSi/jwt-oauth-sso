@@ -11,17 +11,26 @@ import (
 )
 
 type SendResetTokenRoute struct {
-	userRepository    repositories.UserRepository
-	resetTokenService services.ResetTokenService
+	userRepository          repositories.UserRepository
+	resetTokenService       services.ResetTokenService
+	sendResetTokenRequest   requests.SendResetTokenRequest
+	errorBadRequestResponse responses.ErrorBadRequestResponse
+	errorConflictResponse   responses.ErrorConflictResponse
 }
 
 func NewSendResetTokenRoute(
 	userRepository repositories.UserRepository,
 	resetTokenService services.ResetTokenService,
+	sendResetTokenRequest requests.SendResetTokenRequest,
+	errorBadRequestResponse responses.ErrorBadRequestResponse,
+	errorConflictResponse responses.ErrorConflictResponse,
 ) *SendResetTokenRoute {
 	return &SendResetTokenRoute{
-		userRepository:    userRepository,
-		resetTokenService: resetTokenService,
+		userRepository:          userRepository,
+		resetTokenService:       resetTokenService,
+		sendResetTokenRequest:   sendResetTokenRequest,
+		errorBadRequestResponse: errorBadRequestResponse,
+		errorConflictResponse:   errorConflictResponse,
 	}
 }
 
@@ -34,30 +43,35 @@ func (receiver SendResetTokenRoute) Pattern() string {
 }
 
 func (receiver SendResetTokenRoute) Handle(context *gin.Context) {
-	request, errResponse := requests.NewSendResetTokenRequest(context)
+	request, err := receiver.sendResetTokenRequest.Make(context)
 
-	if errResponse != nil {
-		context.JSON(http.StatusBadRequest, errResponse)
+	if err != nil {
+		context.JSON(
+			http.StatusBadRequest,
+			receiver.errorBadRequestResponse.Make(err),
+		)
 
 		return
 	}
 
-	user := receiver.userRepository.GetUserByEmail(request.Body.Email)
+	user := receiver.userRepository.GetUserByEmail(request.GetBody().GetEmail())
 
 	if user == nil {
-		err := responses.NewErrorConflictResponse(
+		context.JSON(
+			http.StatusConflict,
 			errors.New("user not found with this email"),
 		)
 
-		context.JSON(http.StatusConflict, err)
-
 		return
 	}
 
-	err := receiver.resetTokenService.SendNewResetTokenByUser(user)
+	err = receiver.resetTokenService.SendNewResetTokenByUser(user)
 
 	if err != nil {
-		context.JSON(http.StatusConflict, responses.NewErrorConflictResponse(err))
+		context.JSON(
+			http.StatusConflict,
+			receiver.errorConflictResponse.Make(err),
+		)
 
 		return
 	}
