@@ -4,14 +4,12 @@ import (
 	"github.com/fromsi/jwt-oauth-sso/internal/http/requests"
 	"github.com/fromsi/jwt-oauth-sso/internal/http/responses"
 	"github.com/fromsi/jwt-oauth-sso/internal/repositories"
-	"github.com/fromsi/jwt-oauth-sso/internal/tokens"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type LogoutAllRoute struct {
 	deviceRepository            repositories.DeviceRepository
-	accessTokenBuilder          tokens.AccessTokenBuilder
 	bearerAuthRequestHeader     requests.BearerAuthRequestHeader
 	logoutAllRequest            requests.LogoutAllRequest
 	errorInternalServerResponse responses.ErrorInternalServerResponse
@@ -19,14 +17,12 @@ type LogoutAllRoute struct {
 
 func NewLogoutAllRoute(
 	deviceRepository repositories.DeviceRepository,
-	accessTokenBuilder tokens.AccessTokenBuilder,
 	bearerAuthRequestHeader requests.BearerAuthRequestHeader,
 	logoutAllRequest requests.LogoutAllRequest,
 	errorInternalServerResponse responses.ErrorInternalServerResponse,
 ) *LogoutAllRoute {
 	return &LogoutAllRoute{
 		deviceRepository:            deviceRepository,
-		accessTokenBuilder:          accessTokenBuilder,
 		bearerAuthRequestHeader:     bearerAuthRequestHeader,
 		logoutAllRequest:            logoutAllRequest,
 		errorInternalServerResponse: errorInternalServerResponse,

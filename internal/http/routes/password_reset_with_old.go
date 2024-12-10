@@ -72,8 +72,8 @@ func (receiver PasswordResetWithOldRoute) Handle(context *gin.Context) {
 
 	if user == nil {
 		context.JSON(
-			http.StatusInternalServerError,
-			receiver.errorInternalServerResponse.Make(errors.New("user not found")),
+			http.StatusConflict,
+			receiver.errorConflictResponse.Make(errors.New("user not found")),
 		)
 
 		return

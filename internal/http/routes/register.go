@@ -71,13 +71,11 @@ func (receiver RegisterRoute) Handle(context *gin.Context) {
 	if user != nil {
 		context.JSON(
 			http.StatusConflict,
-			errors.New("user already exists with this email"),
+			receiver.errorConflictResponse.Make(errors.New("user already exists with this email")),
 		)
 
 		return
 	}
-
-	userUUID := receiver.userService.GenerateUUID()
 
 	hashedPassword, err := receiver.userService.HashPassword(request.GetBody().GetPassword())
 
@@ -89,6 +87,8 @@ func (receiver RegisterRoute) Handle(context *gin.Context) {
 
 		return
 	}
+
+	userUUID := receiver.userService.GenerateUUID()
 
 	err = receiver.userService.CreateUserByUUIDAndEmailAndHashedPassword(
 		userUUID,

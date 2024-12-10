@@ -58,7 +58,10 @@ func (receiver LoginRoute) Handle(context *gin.Context) {
 	request, err := receiver.loginRequest.Make(context)
 
 	if err != nil {
-		context.JSON(http.StatusBadRequest, receiver.errorBadRequestResponse.Make(err))
+		context.JSON(
+			http.StatusBadRequest,
+			receiver.errorBadRequestResponse.Make(err),
+		)
 
 		return
 	}

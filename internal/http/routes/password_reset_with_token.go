@@ -12,7 +12,6 @@ import (
 
 type PasswordResetWithTokenRoute struct {
 	resetTokenRepository          repositories.ResetTokenRepository
-	resetTokenService             services.ResetTokenService
 	userService                   services.UserService
 	passwordResetWithTokenRequest requests.PasswordResetWithTokenRequest
 	errorBadRequestResponse       responses.ErrorBadRequestResponse
@@ -22,7 +21,6 @@ type PasswordResetWithTokenRoute struct {
 
 func NewPasswordResetWithTokenRoute(
 	resetTokenRepository repositories.ResetTokenRepository,
-	resetTokenService services.ResetTokenService,
 	userService services.UserService,
 	passwordResetWithTokenRequest requests.PasswordResetWithTokenRequest,
 	errorBadRequestResponse responses.ErrorBadRequestResponse,
@@ -31,7 +29,6 @@ func NewPasswordResetWithTokenRoute(
 ) *PasswordResetWithTokenRoute {
 	return &PasswordResetWithTokenRoute{
 		resetTokenRepository:          resetTokenRepository,
-		resetTokenService:             resetTokenService,
 		userService:                   userService,
 		passwordResetWithTokenRequest: passwordResetWithTokenRequest,
 		errorBadRequestResponse:       errorBadRequestResponse,
